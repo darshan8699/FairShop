@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import { View, StyleSheet, Image } from "react-native";
 import { Size } from "../Utility/sizes";
 import { Images } from "../Assets/images";
+import Colors from "../Utility/Colors";
 
 // create a component
 const Header = (props) => {
@@ -26,11 +27,13 @@ const Header = (props) => {
 // define your styles
 const styles = StyleSheet.create({
   container: {
-    height: Size.FindSize(50),
-    marginVertical: Size.FindSize(10),
+    height: Size.FindSize(60),
+    marginBottom: Size.FindSize(10),
     justifyContent: "space-between",
     flexDirection: "row",
-    paddingHorizontal: Size.FindSize(20),
+    paddingHorizontal: Size.FindSize(15),
+    borderBottomColor: Colors.headerline,
+    borderBottomWidth: Size.FindSize(0.5),
   },
   logo: {
     height: Size.FindSize(70),
@@ -39,8 +42,8 @@ const styles = StyleSheet.create({
     left: Size.FindSize(-135),
   },
   icon: {
-    height: Size.FindSize(30),
-    width: Size.FindSize(30),
+    height: Size.FindSize(25),
+    width: Size.FindSize(25),
     alignSelf: "center",
   },
 });

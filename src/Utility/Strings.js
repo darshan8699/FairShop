@@ -14,5 +14,9 @@ export const Strings = {
   Logout: "Logout",
   Select_store: "Select Store",
   Enter_pincode: "Enter Pincode",
+  My_Cart: "My Cart",
+  Best_value: "Best Value Offers",
+  BrowseText: "Browse By Category",
+  Popular_product: "Popular Products",
 };
 export default Strings;

@@ -1,25 +1,22 @@
 //import liraries
-import React, { Component } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { View, Text, TouchableOpacity, Image } from "react-native";
+import styles from "./styles";
+import { Route } from "../../../Navigation/Routes";
+import Navigator from "../../../Utility/Navigator";
+import Header from "../../../Components/Header";
+import Strings from "../../../Utility/Strings";
+import { Images } from "../../../Assets/images";
 
 // create a component
-const MyComponent = () => {
+const MyComponent = (props) => {
   return (
     <View style={styles.container}>
-      <Text>MyComponent</Text>
+      <Header />
+      <Text style={styles.headerText}>{Strings.My_Order}</Text>
     </View>
   );
 };
-
-// define your styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#2c3e50",
-  },
-});
 
 //make this component available to the app
 export default MyComponent;

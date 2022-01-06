@@ -1,17 +1,17 @@
 //import liraries
-import React, {Component, useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {Size} from '../Utility/sizes';
-import Colors from '../Utility/Colors';
-import {Regular} from '../Assets/fonts';
-import {Route} from '../Navigation/Routes';
-import Navigator from '../Utility/Navigator';
+import React, { Component, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { Size } from "../Utility/sizes";
+import Colors from "../Utility/Colors";
+import { Regular } from "../Assets/fonts";
+import { Route } from "../Navigation/Routes";
+import Navigator from "../Utility/Navigator";
 
 // create a component
-const MyComponent = props => {
-  const [listview, setlistview] = useState(false);
+const MyComponent = (props) => {
+  const [listview, setlistview] = useState(true);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -19,31 +19,35 @@ const MyComponent = props => {
         <TouchableOpacity
           onPress={() => {
             props.navigation.closeDrawer();
-          }}>
-          <MaterialCommunityIcons name={'close'} size={20} />
+          }}
+        >
+          <MaterialCommunityIcons name={"close"} size={20} />
         </TouchableOpacity>
       </View>
       <View style={styles.lineView} />
       <View style={styles.body}>
-        <View
+        <TouchableOpacity
+          onPress={() => setlistview(!listview)}
           style={[
             styles.categoryButton,
-            {backgroundColor: listview ? '#fff' : '#fdecef'},
-          ]}>
+            { backgroundColor: listview ? "#fdecef" : Colors.white },
+          ]}
+        >
           <Text
             style={[
               styles.textToggleView,
-              {color: listview ? '#000' : Colors.Background},
-            ]}>
+              { color: listview ? Colors.Background : Colors.forgotText },
+            ]}
+          >
             Shop by Categories
           </Text>
           <TouchableOpacity onPress={() => setlistview(!listview)}>
             <MaterialIcons
-              name={listview ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+              name={listview ? "keyboard-arrow-down" : "keyboard-arrow-up"}
               size={20}
             />
           </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => Navigator.navigate(Route.Recipes)}>
           <Text style={styles.textView}>Recipes</Text>
         </TouchableOpacity>
@@ -51,7 +55,8 @@ const MyComponent = props => {
           <Text style={styles.textView}>Offers</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => Navigator.navigate(Route.StoreLocator)}>
+          onPress={() => Navigator.navigate(Route.StoreLocator)}
+        >
           <Text style={styles.textView}>Store Locator</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => Navigator.navigate(Route.AboutUs)}>
@@ -66,29 +71,30 @@ const MyComponent = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
   },
   header: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     padding: 20,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   lineView: {
     padding: 0.3,
-    backgroundColor: 'grey',
+    backgroundColor: "grey",
   },
   body: {
     padding: 20,
   },
   categoryButton: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   textView: {
     paddingHorizontal: 20,
     paddingVertical: 15,
+    color: Colors.forgotText,
   },
   textToggleView: {},
 });

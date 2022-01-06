@@ -1,7 +1,7 @@
-import {StyleSheet} from 'react-native';
-import {Size} from '../../../Utility/sizes';
-import Colors from '../../../Utility/Colors';
-import {Bold, Regular} from '../../../Assets/fonts';
+import { StyleSheet } from "react-native";
+import { Size } from "../../../Utility/sizes";
+import Colors from "../../../Utility/Colors";
+import { Bold, Regular } from "../../../Assets/fonts";
 
 export default styles = StyleSheet.create({
   container: {
@@ -13,7 +13,7 @@ export default styles = StyleSheet.create({
     fontSize: Size.FindSize(30),
     fontFamily: Bold,
     color: Colors.loginText,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: Size.FindSize(60),
   },
   button: {
@@ -34,8 +34,8 @@ export default styles = StyleSheet.create({
     color: Colors.Background,
   },
   nameView: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: Size.FindSize(-25),
   },
   halfView: {

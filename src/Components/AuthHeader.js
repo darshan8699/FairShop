@@ -1,16 +1,16 @@
 //import liraries
-import React, {Component} from 'react';
-import {View, StyleSheet, Image} from 'react-native';
-import {Size} from '../Utility/sizes';
-import {Images} from '../Assets/images';
+import React, { Component } from "react";
+import { View, StyleSheet, Image } from "react-native";
+import { Size } from "../Utility/sizes";
+import { Images } from "../Assets/images";
 
 // create a component
-const AuthHeader = props => {
+const AuthHeader = (props) => {
   return (
     <View style={styles.container}>
       <Image
         source={Images.headerLogo}
-        resizeMode={'contain'}
+        resizeMode={"contain"}
         style={styles.logo}
       />
     </View>
@@ -21,9 +21,9 @@ const AuthHeader = props => {
 const styles = StyleSheet.create({
   container: {
     height: Size.FindSize(70),
-    marginVertical: Size.FindSize(10),
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginBottom: Size.FindSize(10),
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
     height: Size.FindSize(70),

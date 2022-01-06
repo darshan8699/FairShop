@@ -175,6 +175,8 @@ function RootNavigation() {
         <Stack.Screen name={Route.Login} component={screen.Login} />
         <Stack.Screen name={Route.SignUp} component={screen.SignUp} />
         <Stack.Screen name={Route.DrawerApp} component={DrawerApp} />
+        <Stack.Screen name={Route.MyOrders} component={screen.MyOrders} />
+        <Stack.Screen name={Route.MyProfile} component={screen.MyProfile} />
       </Stack.Navigator>
     </NavigationContainer>
   );
