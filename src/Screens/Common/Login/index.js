@@ -1,6 +1,12 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Keyboard,
+} from "react-native";
 import styles from "./styles";
 import { Route } from "../../../Navigation/Routes";
 import Navigator from "../../../Utility/Navigator";
@@ -9,6 +15,15 @@ import CustomText from "../../../Components/CustomText";
 import CustomInput from "../../../Components/CustomInput";
 import CustomButton from "../../../Components/CustomButton";
 import Strings from "../../../Utility/Strings";
+import APICallService from "../../../API/APICallService";
+import { LOGIN, PREF_TOKEN } from "../../../Utility/Constants";
+import {
+  showErrorMessage,
+  showInternetMessage,
+  validateResponse,
+} from "../../../Utility/Helper";
+import Logger from "../../../Utility/Logger";
+import { isTextNotEmpty, validateEmail } from "../../../Utility/Validation";
 
 // create a component
 const MyComponent = (props) => {
@@ -16,6 +31,37 @@ const MyComponent = (props) => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 
+  const onSubmit = () => {
+    Keyboard.dismiss();
+    if (!isTextNotEmpty(email)) {
+      showErrorMessage(Strings.error_email);
+    }
+    // else if (!validateEmail(email)) {
+    //   showErrorMessage(Strings.error_valid_email);
+    // }
+    else if (!isTextNotEmpty(password)) {
+      showErrorMessage(Strings.error_password);
+    } else {
+      APICall();
+    }
+  };
+  const APICall = () => {
+    const apiClass = new APICallService(LOGIN, {
+      login: email,
+      password: password,
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        if (validateResponse(res)) {
+          Logger.log("response data", res.data);
+          // Navigator.navigate(Route.DrawerApp);
+        }
+      })
+      .catch((err) => {
+        showErrorMessage(err.message);
+      });
+  };
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -30,7 +76,11 @@ const MyComponent = (props) => {
           onRightButtonPress={() => setShowPassword(!showPassword)}
           onChangeText={(text) => setPassword(text)}
         />
-        <Text style={styles.forgotText}>{Strings.Forgot_Password}</Text>
+        <TouchableOpacity
+          onPress={() => Navigator.navigate(Route.ForgotPassword)}
+        >
+          <Text style={styles.forgotText}>{Strings.Forgot_Password}</Text>
+        </TouchableOpacity>
         <View style={styles.buttonView}>
           <CustomButton
             text={Strings.LoginWithOTP}
@@ -43,7 +93,7 @@ const MyComponent = (props) => {
             style={styles.button1}
             textStyle={styles.buttonText1}
             onPress={() => {
-              Navigator.navigate(Route.DrawerApp);
+              onSubmit();
             }}
           />
         </View>

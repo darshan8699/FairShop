@@ -11,4 +11,5 @@ export default Colors = {
   line: "#EFEFEF",
   headerline: "#DBDBDB",
   shadow: "#00000029",
+  black: "#000",
 };

@@ -18,5 +18,18 @@ export const Strings = {
   Best_value: "Best Value Offers",
   BrowseText: "Browse By Category",
   Popular_product: "Popular Products",
+  Cancel: "Cancel",
+  Ok: "OK",
+  Internet_Error: "No internet connection, please try again later.",
+  Server_Error: "Server Error, please try again later.",
+  Network_Error: "Network Error",
+  No_Internet_Error: "No Internet Connection",
+  Retry: "Retry",
+  Forgot_password: "Forgot Password",
+  Send: "Send",
+  //Error
+  error_email: "Enter your email",
+  error_valid_email: "Enter your valid email",
+  error_password: "Enter your password",
 };
 export default Strings;
