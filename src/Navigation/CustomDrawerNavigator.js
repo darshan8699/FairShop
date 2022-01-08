@@ -1,12 +1,10 @@
 //import liraries
-import React, { Component, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { Size } from "../Utility/sizes";
-import Colors from "../Utility/Colors";
-import { Regular } from "../Assets/fonts";
 import { Route } from "../Navigation/Routes";
+import Colors from "../Utility/Colors";
 import Navigator from "../Utility/Navigator";
 
 // create a component

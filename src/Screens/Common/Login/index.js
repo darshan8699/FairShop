@@ -1,39 +1,43 @@
 //import liraries
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
   Keyboard,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import styles from "./styles";
-import { Route } from "../../../Navigation/Routes";
-import Navigator from "../../../Utility/Navigator";
-import AuthHeader from "../../../Components/AuthHeader";
-import CustomText from "../../../Components/CustomText";
-import CustomInput from "../../../Components/CustomInput";
-import CustomButton from "../../../Components/CustomButton";
-import Strings from "../../../Utility/Strings";
 import APICallService from "../../../API/APICallService";
-import { LOGIN, PREF_TOKEN } from "../../../Utility/Constants";
+import AuthHeader from "../../../Components/AuthHeader";
+import CustomButton from "../../../Components/CustomButton";
+import CustomInput from "../../../Components/CustomInput";
+import CustomText from "../../../Components/CustomText";
+import Loader2 from "../../../Components/Loader2";
+import { Route } from "../../../Navigation/Routes";
+import { LOGIN } from "../../../Utility/Constants";
 import {
   showErrorMessage,
-  showInternetMessage,
+  showSuccessMessage,
   validateResponse,
 } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
-import { isTextNotEmpty, validateEmail } from "../../../Utility/Validation";
+import Navigator from "../../../Utility/Navigator";
+import Strings from "../../../Utility/Strings";
+import { isTextNotEmpty } from "../../../Utility/Validation";
+import styles from "./styles";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // create a component
-const MyComponent = (props) => {
+const Login = (props) => {
   const [showPassword, setShowPassword] = useState(true);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [isShowLoader, setLoader] = useState(false);
 
   const onSubmit = () => {
     Keyboard.dismiss();
     if (!isTextNotEmpty(email)) {
+      Logger.log("onSubmit", email);
       showErrorMessage(Strings.error_email);
     }
     // else if (!validateEmail(email)) {
@@ -46,6 +50,7 @@ const MyComponent = (props) => {
     }
   };
   const APICall = () => {
+    setLoader(true);
     const apiClass = new APICallService(LOGIN, {
       login: email,
       password: password,
@@ -53,28 +58,37 @@ const MyComponent = (props) => {
     apiClass
       .callAPI()
       .then(async function (res) {
+        setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("response data", res.data);
-          // Navigator.navigate(Route.DrawerApp);
+          showSuccessMessage(res.message);
+          const jsonValue = JSON.stringify(res.data);
+          await AsyncStorage.setItem("loginInfo", jsonValue);
+          Navigator.resetFrom(Route.DrawerApp);
         }
       })
       .catch((err) => {
+        setLoader(false);
         showErrorMessage(err.message);
       });
   };
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <Loader2 modalVisible={isShowLoader} />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="always"
+      >
         <AuthHeader />
         <Text style={styles.loginText}>{Strings.Login}</Text>
         <CustomText name={Strings.Email_or_Phone} />
-        <CustomInput onChangeText={(text) => setEmail(text)} />
+        <CustomInput onChangeText={(text) => setEmail(text)} text={email} />
         <CustomText name={Strings.Password} />
         <CustomInput
           RightIcon={showPassword ? "eye-slash" : "eye"}
           secureTextEntry={showPassword}
           onRightButtonPress={() => setShowPassword(!showPassword)}
           onChangeText={(text) => setPassword(text)}
+          text={password}
         />
         <TouchableOpacity
           onPress={() => Navigator.navigate(Route.ForgotPassword)}
@@ -111,4 +125,4 @@ const MyComponent = (props) => {
 };
 
 //make this component available to the app
-export default MyComponent;
+export default Login;

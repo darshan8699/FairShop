@@ -1,25 +1,52 @@
 //import liraries
-import React, { Component } from "react";
-import { View, StyleSheet, Image } from "react-native";
-import { Size } from "../Utility/sizes";
+import React from "react";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Images } from "../Assets/images";
 import Colors from "../Utility/Colors";
+import Logger from "../Utility/Logger";
+import { Size } from "../Utility/sizes";
 
 // create a component
 const Header = (props) => {
+  const { isBack = false, navigation, isRightIcon = true } = props;
   return (
     <View style={styles.container}>
-      <Image source={Images.menu} resizeMode={"contain"} style={styles.icon} />
       <Image
         source={Images.headerLogo}
         resizeMode={"contain"}
         style={styles.logo}
       />
-      <Image
-        source={Images.location}
-        resizeMode={"contain"}
-        style={styles.icon}
-      />
+      <TouchableOpacity
+        style={styles.iconView}
+        onPress={() => {
+          Logger.log("ISBack", navigation);
+          if (isBack) {
+            navigation.goBack();
+          } else {
+            navigation.openDrawer();
+          }
+        }}
+      >
+        <Image
+          source={isBack ? Images.back : Images.menu}
+          resizeMode={"contain"}
+          style={styles.icon}
+        />
+      </TouchableOpacity>
+      {isRightIcon && (
+        <TouchableOpacity
+          style={styles.iconView}
+          onPress={() => {
+            Logger.log("Location");
+          }}
+        >
+          <Image
+            source={Images.location}
+            resizeMode={"contain"}
+            style={styles.icon}
+          />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -44,6 +71,9 @@ const styles = StyleSheet.create({
   icon: {
     height: Size.FindSize(25),
     width: Size.FindSize(25),
+    alignSelf: "center",
+  },
+  iconView: {
     alignSelf: "center",
   },
 });

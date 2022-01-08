@@ -11,6 +11,7 @@ export const Images = {
   myorder: require("./myorder.png"),
   logout: require("./logout.png"),
   back: require("./back.png"),
+  homeBG: require("./homeBG.png"),
   rightArrow: require("./rightArrow.png"),
   back1: require("./back1.png"),
 

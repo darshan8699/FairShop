@@ -12,7 +12,7 @@ import { Images } from "../../../Assets/images";
 const MyComponent = (props) => {
   return (
     <View style={styles.container}>
-      <Header />
+      <Header navigation={props.navigation} />
       <Text style={styles.headerText}>{Strings.My_Cart}</Text>
     </View>
   );

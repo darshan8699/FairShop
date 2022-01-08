@@ -13,6 +13,13 @@ export default styles = StyleSheet.create({
     fontFamily: SemiBold,
     color: Colors.headerText,
     marginVertical: Size.FindSize(20),
-    paddingHorizontal: Size.FindSize(15),
+  },
+  nameView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: Size.FindSize(-25),
+  },
+  halfView: {
+    width: Size.width / 2 - 20,
   },
 });

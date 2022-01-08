@@ -12,6 +12,7 @@ export const Strings = {
   My_Profile: "My Profile",
   My_Order: "My Orders",
   Logout: "Logout",
+  Logout_Msg: "Are you sure you want to logout?",
   Select_store: "Select Store",
   Enter_pincode: "Enter Pincode",
   My_Cart: "My Cart",
@@ -27,9 +28,18 @@ export const Strings = {
   Retry: "Retry",
   Forgot_password: "Forgot Password",
   Send: "Send",
+  Yes: "Yes",
+  No: "No",
   //Error
-  error_email: "Enter your email",
-  error_valid_email: "Enter your valid email",
-  error_password: "Enter your password",
+  error_email: "Please enter your email",
+  error_valid_email: "Please enter your valid email",
+  error_password: "Please enter your password",
+  error_firstname: "Please enter first Name",
+  error_lastname: "Please enter last Name",
+  error_phone: "Please enter your phone",
+  error_valid_phone_number: "Please enter valid Phone Number of 10 digits",
+  error_valid_password:
+    // "Password must be 8 characters long with at least one uppercase letter, one special character and one number",
+    "Password must be at least 8 characters long",
 };
 export default Strings;

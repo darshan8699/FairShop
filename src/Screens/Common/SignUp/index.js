@@ -1,27 +1,94 @@
 //import liraries
-import React, { useEffect, useRef, useState } from "react";
-import { View, Text, ScrollView } from "react-native";
-import styles from "./styles";
-import { Route } from "../../../Navigation/Routes";
-import Navigator from "../../../Utility/Navigator";
+import React, { useState } from "react";
+import { Keyboard, ScrollView, Text, View } from "react-native";
+import APICallService from "../../../API/APICallService";
 import AuthHeader from "../../../Components/AuthHeader";
-import CustomText from "../../../Components/CustomText";
-import CustomInput from "../../../Components/CustomInput";
 import CustomButton from "../../../Components/CustomButton";
+import CustomInput from "../../../Components/CustomInput";
+import CustomText from "../../../Components/CustomText";
+import Loader2 from "../../../Components/Loader2";
+import { Route } from "../../../Navigation/Routes";
+import { REGISTER } from "../../../Utility/Constants";
+import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import Logger from "../../../Utility/Logger";
+import Navigator from "../../../Utility/Navigator";
 import Strings from "../../../Utility/Strings";
+import {
+  isTextNotEmpty,
+  validateEmail,
+  validatePassword,
+} from "../../../Utility/Validation";
+import styles from "./styles";
 
 // create a component
-const MyComponent = (props) => {
+const Signup = (props) => {
   const [showPassword, setShowPassword] = useState(true);
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
+  const [isShowLoader, setLoader] = useState(false);
+
+  const onSubmit = () => {
+    Keyboard.dismiss();
+    if (!isTextNotEmpty(firstname)) {
+      showErrorMessage(Strings.error_firstname);
+    } else if (!isTextNotEmpty(lastname)) {
+      showErrorMessage(Strings.error_lastname);
+    } else if (!isTextNotEmpty(email)) {
+      showErrorMessage(Strings.error_email);
+    } else if (!validateEmail(email)) {
+      showErrorMessage(Strings.error_valid_email);
+    } else if (!isTextNotEmpty(phone)) {
+      showErrorMessage(Strings.error_phone);
+    } else if (phone.trim().length != 10) {
+      showErrorMessage(Strings.error_valid_phone_number);
+    } else if (!isTextNotEmpty(password)) {
+      showErrorMessage(Strings.error_password);
+    } else if (password.trim().length < 8) {
+      showErrorMessage(Strings.error_valid_password);
+    } else {
+      APICall();
+    }
+  };
+
+  const APICall = () => {
+    setLoader(true);
+    const apiClass = new APICallService(REGISTER, {
+      email: email,
+      password: password,
+      phone: phone,
+      first_name: firstname,
+      last_name: lastname,
+      home_store_id: "1",
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        Logger.log("APICall", res);
+        if (validateResponse(res)) {
+          Logger.log("response data", res);
+          Navigator.navigate(Route.DrawerApp);
+        } else {
+          Logger.log("Erro", res.message);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        Logger.log("APICall==>", err);
+        showErrorMessage(err.message);
+      });
+  };
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <Loader2 modalVisible={isShowLoader} />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="always"
+      >
         <AuthHeader />
         <Text style={styles.loginText}>{Strings.Sign_Up}</Text>
         <View style={styles.nameView}>
@@ -53,7 +120,7 @@ const MyComponent = (props) => {
           style={styles.button}
           textStyle={styles.buttonText}
           onPress={() => {
-            Navigator.navigate(Route.DrawerApp);
+            onSubmit();
           }}
         />
         <CustomButton
@@ -70,4 +137,4 @@ const MyComponent = (props) => {
 };
 
 //make this component available to the app
-export default MyComponent;
+export default Signup;

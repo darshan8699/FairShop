@@ -1,28 +1,60 @@
 //import liraries
-import React, { Component } from "react";
-import { View, TextInput, StyleSheet } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { StyleSheet, TextInput, View } from "react-native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { Size } from "../Utility/sizes";
 import Colors from "../Utility/Colors";
-import { Regular } from "../Assets/fonts";
+import { Size } from "../Utility/sizes";
 
 // create a component
 const CustomInput = (props) => {
+  const [text, setText] = useState("");
+  const {
+    placeHolder,
+    secureTextEntry,
+    onChangeText,
+    keyboardType,
+    RightIcon,
+    onRightButtonPress,
+    enable = true,
+    value = "",
+  } = props;
+
+  const isFirstRun = useRef(true);
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      //componentDidMount
+      setText(props.value ? props.value : "");
+    } else {
+      //componentWillReceiveProps
+      if (text != props.value) {
+        setText(props.value ? props.value : "");
+      }
+    }
+  }, [props.value]);
   return (
     <View style={styles.container}>
       <TextInput
-        placeholder={props.placeHolder}
+        placeholder={placeHolder}
         style={styles.input}
-        secureTextEntry={props.secureTextEntry}
-        onChangeText={(text) => props.onChangeText(text)}
-        keyboardType={props.keyboardType ? props.keyboardType : "default"}
+        editable={enable}
+        value={text}
+        secureTextEntry={secureTextEntry}
+        keyboardType={keyboardType ? keyboardType : "default"}
+        returnKeyType={"done"}
+        onChangeText={(text) => {
+          setText(text);
+          if (onChangeText) {
+            onChangeText(text);
+          }
+        }}
       />
-      {props.RightIcon ? (
+      {RightIcon ? (
         <FontAwesome5
-          name={props.RightIcon}
+          name={RightIcon}
           size={18}
           style={styles.RightIcon}
-          onPress={() => props.onRightButtonPress()}
+          onPress={() => onRightButtonPress()}
         />
       ) : null}
     </View>

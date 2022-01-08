@@ -2,17 +2,17 @@ import { Alert } from "react-native";
 import RNExitApp from "react-native-exit-app";
 import Toast from "react-native-tiny-toast";
 import { Regular } from "../Assets/fonts";
-import { Route } from "../Navigation/Routes";
 import Colors from "./Colors";
 import Logger from "./Logger";
-import Navigator from "./Navigator";
 import { Size } from "./sizes";
 import Strings from "./Strings";
+import Toast2 from "react-native-toast-message";
 
 export function validateResponse(res) {
-  if (res.status === 200) {
+  Logger.log(res);
+  if (res.code === 0) {
     return true;
-  } else if (res.status == 401) {
+  } else if (res.code == 401) {
     if (res.message == "Unauthorized") {
       showErrorMessage(Strings.Token_expired);
       callLogoutRedirectToLogin();
@@ -29,6 +29,9 @@ export function validateResponse(res) {
 }
 
 export function showSuccessMessage(message, isMoreSpace) {
+  Logger.log({ message });
+  Toast.show(message);
+  return;
   Toast.show(message, {
     containerStyle: {
       backgroundColor: Colors.button,
@@ -45,6 +48,9 @@ export function showSuccessMessage(message, isMoreSpace) {
 }
 
 export function showErrorMessage(message) {
+  Logger.log({ message });
+  Toast.show(message);
+  return;
   try {
     Toast.show(message, {
       containerStyle: {
@@ -78,3 +84,4 @@ export function showInternetMessage() {
     { cancelable: false }
   );
 }
+

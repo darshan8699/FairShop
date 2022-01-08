@@ -16,7 +16,7 @@ import Colors from "../../../Utility/Colors";
 import styles from "./styles";
 import Strings from "../../../Utility/Strings";
 // create a component
-const MyComponent = () => {
+const MyComponent = (props) => {
   const images = [Images.test, Images.test, Images.test];
   const bestValues = [Images.test2, Images.test2];
   const BrowseCategory = [
@@ -36,11 +36,11 @@ const MyComponent = () => {
   );
   return (
     <View style={styles.container}>
-      <Header />
+      <Header navigation={props.navigation} />
       <ScrollView>
         <SliderBox
           images={images}
-          resizeMode="stretch"
+          resizeMode="cover"
           onCurrentImagePressed={(index) =>
             console.warn(`image ${index} pressed`)
           }
@@ -51,7 +51,7 @@ const MyComponent = () => {
             console.warn(`current pos is: ${index}`)
           }
         />
-        <ImageBackground source={Images.back} style={styles.back}>
+        <ImageBackground source={Images.homeBG} style={styles.back}>
           <View style={styles.bestView}>
             <Text style={styles.bestText}>{Strings.Best_value}</Text>
             <TouchableOpacity>
