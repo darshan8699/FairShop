@@ -2,6 +2,7 @@ export const Route = {
   Splash: "Splash",
   Login: "Login",
   SignUp: "SignUp",
+  ForgotPassword: "ForgotPassword",
   AboutUs: "AboutUs",
   Offers: "Offers",
   Recipes: "Recipes",

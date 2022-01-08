@@ -83,6 +83,7 @@ const MyComponent = () => {
           <FlatList
             data={BrowseCategory}
             horizontal={true}
+            contentContainerStyle={{ paddingRight: 15 }}
             renderItem={(item) => renderBrowseCategory(item)}
             showsHorizontalScrollIndicator={false}
           />
