@@ -1,12 +1,8 @@
 import { Alert } from "react-native";
 import RNExitApp from "react-native-exit-app";
-import Toast from "react-native-tiny-toast";
-import { Regular } from "../Assets/fonts";
-import Colors from "./Colors";
+import Toast from "react-native-toast-message";
 import Logger from "./Logger";
-import { Size } from "./sizes";
 import Strings from "./Strings";
-import Toast2 from "react-native-toast-message";
 
 export function validateResponse(res) {
   Logger.log(res);
@@ -30,40 +26,49 @@ export function validateResponse(res) {
 
 export function showSuccessMessage(message, isMoreSpace) {
   Logger.log({ message });
-  Toast.show(message);
-  return;
-  Toast.show(message, {
-    containerStyle: {
-      backgroundColor: Colors.button,
-      borderRadius: Size.FindSize(50),
-      paddingHorizontal: Size.FindSize(20),
-      marginHorizontal: Size.FindSize(20),
-      marginBottom: isMoreSpace ? Size.FindSize(100) : 0,
-      opacity: 0.5,
-    },
-    textStyle: {
-      fontFamily: Regular,
-    },
+  Toast.show({
+    type: "success",
+    text1: "Hello",
+    text2: "This is some something 👋",
   });
+  // Toast.show(message, {
+  //   position: "TOP",
+  //   containerStyle: {
+  //     backgroundColor: Colors.button,
+  //     borderRadius: Size.FindSize(50),
+  //     paddingHorizontal: Size.FindSize(20),
+  //     marginHorizontal: Size.FindSize(20),
+  //     marginBottom: isMoreSpace ? Size.FindSize(100) : 0,
+  //     opacity: 0.5,
+  //   },
+  //   textStyle: {
+  //     fontFamily: Regular,
+  //   },
+  // });
 }
 
 export function showErrorMessage(message) {
   Logger.log({ message });
-  Toast.show(message);
-  return;
+
   try {
-    Toast.show(message, {
-      containerStyle: {
-        backgroundColor: Colors.Background,
-        borderRadius: Size.FindSize(50),
-        paddingHorizontal: Size.FindSize(20),
-        marginHorizontal: Size.FindSize(20),
-        opacity: 0.5,
-      },
-      textStyle: {
-        fontFamily: Regular,
-      },
+    Toast.show({
+      type: "success",
+      text1: "Hello",
+      text2: "This is some something 👋",
     });
+    // Toast.show(message, {
+    //   position: "top",
+    //   containerStyle: {
+    //     backgroundColor: Colors.Background,
+    //     borderRadius: Size.FindSize(50),
+    //     paddingHorizontal: Size.FindSize(20),
+    //     marginHorizontal: Size.FindSize(20),
+    //     opacity: 0.5,
+    //   },
+    //   textStyle: {
+    //     fontFamily: Regular,
+    //   },
+    // });
   } catch (e) {
     Logger.log(e);
   }
@@ -84,4 +89,3 @@ export function showInternetMessage() {
     { cancelable: false }
   );
 }
-

@@ -1,13 +1,20 @@
 //import liraries
-import React, { useEffect, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
-import styles from "./styles";
-import { Route } from "../../../Navigation/Routes";
-import Navigator from "../../../Utility/Navigator";
-import Header from "../../../Components/Header";
-import Strings from "../../../Utility/Strings";
-import { Images } from "../../../Assets/images";
 import AsyncStorageLib from "@react-native-async-storage/async-storage";
+import React from "react";
+import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
+import APICallService from "../../../API/APICallService";
+import { Images } from "../../../Assets/images";
+import Header from "../../../Components/Header";
+import { Route } from "../../../Navigation/Routes";
+import { LOGOUT } from "../../../Utility/Constants";
+import {
+  showErrorMessage,
+  showSuccessMessage,
+  validateResponse,
+} from "../../../Utility/Helper";
+import Navigator from "../../../Utility/Navigator";
+import Strings from "../../../Utility/Strings";
+import styles from "./styles";
 
 // create a component
 const MyComponent = (props) => {
@@ -21,14 +28,27 @@ const MyComponent = (props) => {
         },
         {
           text: Strings.Yes,
-          onPress: async () => {
-            await AsyncStorageLib.setItem("loginInfo", "");
-            Navigator.resetFrom(Route.Login);
-          },
+          onPress: async () => callAPILogout(),
         },
       ],
       { cancelable: false }
     );
+  }
+
+  async function callAPILogout() {
+    const apiClass = new APICallService(LOGOUT, {});
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        if (validateResponse(res)) {
+          showSuccessMessage(res.message);
+          await AsyncStorageLib.setItem("loginInfo", "");
+          Navigator.resetFrom(Route.Login);
+        }
+      })
+      .catch((err) => {
+        showErrorMessage(err.message);
+      });
   }
 
   return (

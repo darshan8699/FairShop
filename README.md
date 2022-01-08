@@ -16,8 +16,6 @@ webmail url: https://aavatto.com/webmail
 jay.prajapati@aavatto.com
 jay.prajapati@123
 
-
-
 Asana Credentials
 https://app.asana.com
 jay.prajapati@aavatto.com

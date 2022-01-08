@@ -1,3 +1,4 @@
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
 import React, { useState } from "react";
 import { Keyboard, ScrollView, Text, View } from "react-native";
@@ -8,16 +9,12 @@ import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
 import Loader2 from "../../../Components/Loader2";
 import { Route } from "../../../Navigation/Routes";
-import { REGISTER } from "../../../Utility/Constants";
-import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import { PREF_TOKEN, REGISTER } from "../../../Utility/Constants";
+import { showErrorMessage } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import Navigator from "../../../Utility/Navigator";
 import Strings from "../../../Utility/Strings";
-import {
-  isTextNotEmpty,
-  validateEmail,
-  validatePassword,
-} from "../../../Utility/Validation";
+import { isTextNotEmpty, validateEmail } from "../../../Utility/Validation";
 import styles from "./styles";
 
 // create a component
@@ -67,13 +64,20 @@ const Signup = (props) => {
       .callAPI()
       .then(async function (res) {
         setLoader(false);
-        Logger.log("APICall", res);
-        if (validateResponse(res)) {
-          Logger.log("response data", res);
-          Navigator.navigate(Route.DrawerApp);
+        if (res.item) {
+          const jsonValue = JSON.stringify(res);
+          await AsyncStorageLib.setItem(PREF_TOKEN, res.data?.token);
+          await AsyncStorageLib.setItem("loginInfo", jsonValue);
+          Navigator.resetFrom(Route.DrawerApp);
         } else {
-          Logger.log("Erro", res.message);
+          showErrorMessage(res.message);
         }
+        // if (validateResponse(res)) {
+        //   Logger.log("response data", res);
+        //   Navigator.navigate(Route.DrawerApp);
+        // } else {
+        //   Logger.log("Erro", res.message);
+        // }
       })
       .catch((err) => {
         setLoader(false);
@@ -102,7 +106,11 @@ const Signup = (props) => {
           </View>
         </View>
         <CustomText name={Strings.Email} />
-        <CustomInput onChangeText={(text) => setEmail(text)} />
+        <CustomInput
+          onChangeText={(text) => setEmail(text)}
+          keyboardType={"email-address"}
+          autoCapitalize={false}
+        />
         <CustomText name={Strings.Phone} />
         <CustomInput
           onChangeText={(text) => setPhone(text)}

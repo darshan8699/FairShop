@@ -4,9 +4,11 @@ export const Strings = {
   Password: "Password",
   Forgot_Password: "Forgot Password ?",
   LoginWithOTP: "Login with OTP",
+  ResendOTP: "Resend OTP",
   Sign_Up: "Sign Up",
   Email: "Email Address",
   Phone: "Phone",
+  OTP: "OTP",
   First_Name: "First Name",
   Last_Name: "Last Name",
   My_Profile: "My Profile",
@@ -21,6 +23,7 @@ export const Strings = {
   Popular_product: "Popular Products",
   Cancel: "Cancel",
   Ok: "OK",
+  Submit: "Submit",
   Internet_Error: "No internet connection, please try again later.",
   Server_Error: "Server Error, please try again later.",
   Network_Error: "Network Error",
@@ -31,6 +34,7 @@ export const Strings = {
   Yes: "Yes",
   No: "No",
   //Error
+  error_email_phone: "Please enter your email or phone",
   error_email: "Please enter your email",
   error_valid_email: "Please enter your valid email",
   error_password: "Please enter your password",
@@ -41,5 +45,6 @@ export const Strings = {
   error_valid_password:
     // "Password must be 8 characters long with at least one uppercase letter, one special character and one number",
     "Password must be at least 8 characters long",
+  error_otp: "Please enter OTP",
 };
 export default Strings;

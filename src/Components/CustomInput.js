@@ -12,10 +12,12 @@ const CustomInput = (props) => {
     placeHolder,
     secureTextEntry,
     onChangeText,
+    onSubmitEditing,
     keyboardType,
     RightIcon,
     onRightButtonPress,
     enable = true,
+    autoCapitalize = true,
     value = "",
   } = props;
 
@@ -36,9 +38,13 @@ const CustomInput = (props) => {
     <View style={styles.container}>
       <TextInput
         placeholder={placeHolder}
-        style={styles.input}
+        style={[
+          styles.input,
+          { backgroundColor: enable ? Colors.white : Colors.line },
+        ]}
         editable={enable}
         value={text}
+        autoCapitalize={autoCapitalize}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType ? keyboardType : "default"}
         returnKeyType={"done"}
@@ -48,6 +54,7 @@ const CustomInput = (props) => {
             onChangeText(text);
           }
         }}
+        onSubmitEditing={() => onSubmitEditing && onSubmitEditing()}
       />
       {RightIcon ? (
         <FontAwesome5

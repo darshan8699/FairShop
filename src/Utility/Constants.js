@@ -16,3 +16,10 @@ export const MULTI_PART = "MULTI_PART";
 
 export const LOGIN = "/login" + " " + POST_FORM;
 export const REGISTER = "/users" + " " + POST_FORM;
+export const SEND_OTP = "/user/send-otp" + " " + POST_FORM;
+export const VERIFY_OTP = "/user/verify-code" + " " + POST_FORM;
+export const FORGOT_PASSWORD = "/forgotpassword" + " " + POST_FORM;
+
+export const VERIFY_FORGOT_PASSWORD_OTP =
+  "/verify-reset-password-token" + " " + POST_FORM;
+export const LOGOUT = "/logout" + " " + GET;

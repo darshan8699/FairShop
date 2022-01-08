@@ -27,13 +27,42 @@ export default styles = StyleSheet.create({
     backgroundColor: Colors.Background,
     borderColor: Colors.Background,
     marginTop: Size.FindSize(40),
+    flex: 1,
+  },
+  button1: {
+    backgroundColor: Colors.white,
+    borderColor: Colors.Background,
+    //width: Size.width / 2 - 20,
+    flex: 1,
   },
   buttonText: {
     color: Colors.white,
+  },
+  buttonText1: {
+    color: Colors.Background,
   },
   buttonView: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: Size.FindSize(45),
+  },
+  OTPView: {
+    height: Size.FindSize(60),
+    alignSelf: "center",
+    marginTop: Size.FindSize(20),
+    width: Size.width - Size.FindSize(100),
+  },
+  underlineStyleBase: {
+    width: (Size.width * 0.6) / 4,
+    height: Size.FindSize(60),
+    borderWidth: 0,
+    fontFamily: Bold,
+    fontSize: Size.FindSize(24),
+    lineHeight: Size.FindSize(33),
+    borderBottomWidth: 2,
+    color: Colors.black,
+  },
+  underlineStyleHighLighted: {
+    borderColor: Colors.border,
   },
 });

@@ -1,20 +1,7 @@
 //import liraries
-import React, { Fragment, useEffect, useRef } from "react";
-import {
-  Platform,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  useColorScheme,
-} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Provider } from "react-redux";
-import { applyMiddleware, createStore } from "redux";
-import ReduxThunk from "redux-thunk";
+import React, { useEffect, useRef } from "react";
+import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
 import MainRouteConfig from "./src/Navigation/RootNavigation";
-import { Route } from "./src/Navigation/Routes";
-import Logger from "./src/Utility/Logger";
-import Navigator from "./src/Utility/Navigator";
 import Colors from "./src/Utility/Colors";
 
 // export const store = createStore(mainReducer, applyMiddleware(ReduxThunk));
@@ -32,9 +19,13 @@ const MyComponent = () => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <MainRouteConfig />
-    </SafeAreaView>
+    <View style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 0, backgroundColor: Colors.Background }} />
+      <StatusBar backgroundColor={Colors.Background} />
+      <SafeAreaView style={styles.container}>
+        <MainRouteConfig />
+      </SafeAreaView>
+    </View>
   );
 };
 

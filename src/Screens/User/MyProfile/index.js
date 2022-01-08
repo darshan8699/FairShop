@@ -1,15 +1,15 @@
 //import liraries
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
 import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
 import Header from "../../../Components/Header";
+import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Logger from "../../../Utility/Logger";
 
 // create a component
 const MyComponent = (props) => {
@@ -48,7 +48,6 @@ const MyComponent = (props) => {
             <CustomText name={Strings.First_Name} />
             <CustomInput
               onChangeText={(text) => setFirstname(text)}
-              enable={false}
               value={firstname}
             />
           </View>
@@ -56,7 +55,6 @@ const MyComponent = (props) => {
             <CustomText name={Strings.Last_Name} />
             <CustomInput
               onChangeText={(text) => setLastname(text)}
-              enable={false}
               value={lastname}
             />
           </View>
