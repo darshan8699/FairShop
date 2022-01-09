@@ -31,6 +31,7 @@ export default styles = StyleSheet.create({
   bestImage: {
     height: Size.FindSize(181),
     width: Size.FindSize(275),
+    marginTop: Size.FindSize(10),
   },
   BrowseView: {
     height: Size.FindSize(300),
@@ -76,5 +77,31 @@ export default styles = StyleSheet.create({
   },
   back1: {
     height: Size.FindSize(300),
+  },
+  back2: {
+    height: Size.FindSize(800),
+  },
+  whyFairshopImage: {
+    height: Size.FindSize(250),
+    width: (Size.width - Size.FindSize(60)) / 2,
+  },
+  whyFairShopView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: Size.FindSize(15),
+    alignItems: "center",
+  },
+  fairshopView: {
+    height: Size.FindSize(330),
+  },
+  Popularback: {
+    height: Size.FindSize(400),
+  },
+  popularCatImage: {
+    height: Size.FindSize(200),
+    width: Size.width,
+    marginBottom: Size.FindSize(15),
+    paddingHorizontal: Size.FindSize(15),
+    alignSelf: "center",
   },
 });

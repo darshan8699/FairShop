@@ -33,6 +33,11 @@ export const Strings = {
   Send: "Send",
   Yes: "Yes",
   No: "No",
+  NewProduct: "New Products",
+  Popular_category: "Popular Categories",
+  Why_Fairshop: "Why Fairshop",
+  today_cook: "What do you want to\ncook today ?",
+  Select_Store: "Select Store",
   //Error
   error_email_phone: "Please enter your email or phone",
   error_email: "Please enter your email",

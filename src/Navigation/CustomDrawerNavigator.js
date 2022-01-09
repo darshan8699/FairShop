@@ -1,15 +1,30 @@
 //import liraries
 import React, { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  FlatList,
+} from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Route } from "../Navigation/Routes";
 import Colors from "../Utility/Colors";
 import Navigator from "../Utility/Navigator";
+import { Size } from "../Utility/sizes";
 
 // create a component
 const MyComponent = (props) => {
-  const [listview, setlistview] = useState(true);
+  const [listview, setlistview] = useState(false);
+  const category = ["Fruits", "Slug", "Fruits", "Slug", "Fruits", "Slug"];
+  const renderItem = (item) => (
+    <TouchableOpacity onPress={() => {}}>
+      <Text style={[styles.textView, { marginLeft: Size.FindSize(20) }]}>
+        {"Fruits"}
+      </Text>
+    </TouchableOpacity>
+  );
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -41,11 +56,21 @@ const MyComponent = (props) => {
           </Text>
           <TouchableOpacity onPress={() => setlistview(!listview)}>
             <MaterialIcons
-              name={listview ? "keyboard-arrow-down" : "keyboard-arrow-up"}
+              name={listview ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+              color={listview ? Colors.Background : Colors.forgotText}
               size={20}
             />
           </TouchableOpacity>
         </TouchableOpacity>
+        {listview ? (
+          <FlatList
+            data={category}
+            renderItem={(item) => renderItem(item)}
+            showsVerticalScrollIndicator={false}
+            style={{ height: Size.FindSize(250) }}
+            bounces={false}
+          />
+        ) : null}
         <TouchableOpacity onPress={() => Navigator.navigate(Route.Recipes)}>
           <Text style={styles.textView}>Recipes</Text>
         </TouchableOpacity>

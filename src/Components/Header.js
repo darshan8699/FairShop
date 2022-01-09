@@ -5,10 +5,16 @@ import { Images } from "../Assets/images";
 import Colors from "../Utility/Colors";
 import Logger from "../Utility/Logger";
 import { Size } from "../Utility/sizes";
+import { Route } from "../Navigation/Routes";
 
 // create a component
 const Header = (props) => {
-  const { isBack = false, navigation, isRightIcon = true } = props;
+  const {
+    isBack = false,
+    navigation,
+    isRightIcon = true,
+    isLocation = false,
+  } = props;
   return (
     <View style={styles.container}>
       <Image
@@ -37,13 +43,16 @@ const Header = (props) => {
         <TouchableOpacity
           style={styles.iconView}
           onPress={() => {
-            Logger.log("Location");
+            navigation.navigate(Route.StoreLocator);
           }}
         >
           <Image
             source={Images.location}
             resizeMode={"contain"}
-            style={styles.icon}
+            style={[
+              styles.icon,
+              { tintColor: isLocation ? Colors.Background : Colors.button },
+            ]}
           />
         </TouchableOpacity>
       )}

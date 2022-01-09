@@ -15,10 +15,12 @@ import { Images } from "../../../Assets/images";
 import Colors from "../../../Utility/Colors";
 import styles from "./styles";
 import Strings from "../../../Utility/Strings";
+import { Size } from "../../../Utility/sizes";
 // create a component
 const MyComponent = (props) => {
   const images = [Images.test, Images.test, Images.test];
   const bestValues = [Images.test2, Images.test2];
+  const popularCategory = [Images.catTest, Images.catTest, Images.catTest];
   const BrowseCategory = [
     Images.test3,
     Images.test3,
@@ -34,10 +36,19 @@ const MyComponent = (props) => {
       <Text style={styles.browseCategoryText}>{"Fruits and Vegetables"}</Text>
     </View>
   );
+  const renderPopularCategory = (item) => (
+    <Image source={Images.catTest} style={styles.popularCatImage} />
+  );
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} />
-      <ScrollView>
+      <ScrollView
+        // overScrollMode="never"
+        bounces={false}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
+      >
         <SliderBox
           images={images}
           resizeMode="cover"
@@ -91,7 +102,7 @@ const MyComponent = (props) => {
         <ImageBackground
           source={Images.back1}
           resizeMode="stretch"
-          style={styles.back1}
+          style={styles.Popularback}
         >
           <View style={styles.bestView}>
             <Text style={styles.bestText}>{Strings.Popular_product}</Text>
@@ -104,6 +115,70 @@ const MyComponent = (props) => {
             </TouchableOpacity>
           </View>
         </ImageBackground>
+        <View style={styles.BrowseView}>
+          <View style={styles.BrowseTextView}>
+            <Text style={styles.BrowseText}>{Strings.NewProduct}</Text>
+            <TouchableOpacity>
+              <Image
+                source={Images.rightArrow}
+                resizeMode="contain"
+                style={styles.browserightIcon}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <ImageBackground
+          source={Images.redBack}
+          resizeMode="stretch"
+          style={styles.back2}
+        >
+          <View style={styles.bestView}>
+            <Text style={styles.bestText}>{Strings.Popular_category}</Text>
+            <TouchableOpacity>
+              <Image
+                source={Images.rightArrow}
+                resizeMode="contain"
+                style={styles.rightIcon}
+              />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={popularCategory}
+            style={{ paddingTop: Size.FindSize(30) }}
+            renderItem={(item) => renderPopularCategory(item)}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={true}
+          />
+        </ImageBackground>
+        <View style={styles.fairshopView}>
+          <View style={styles.BrowseTextView}>
+            <Text style={styles.BrowseText}>{Strings.Why_Fairshop}</Text>
+          </View>
+          <View style={styles.whyFairShopView}>
+            <Image
+              source={Images.whyFairShop}
+              resizeMode={"contain"}
+              style={styles.whyFairshopImage}
+            />
+            <Image
+              source={Images.whyFairShop1}
+              resizeMode={"contain"}
+              style={styles.whyFairshopImage}
+            />
+          </View>
+        </View>
+        <View style={styles.BrowseView}>
+          <View style={styles.BrowseTextView}>
+            <Text style={styles.BrowseText}>{Strings.today_cook}</Text>
+          </View>
+          <FlatList
+            data={BrowseCategory}
+            horizontal={true}
+            contentContainerStyle={{ paddingRight: 15 }}
+            renderItem={(item) => renderBrowseCategory(item)}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
       </ScrollView>
     </View>
   );

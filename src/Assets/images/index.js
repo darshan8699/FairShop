@@ -14,6 +14,16 @@ export const Images = {
   homeBG: require("./homeBG.png"),
   rightArrow: require("./rightArrow.png"),
   back1: require("./back1.png"),
+  redBack: require("./redBack.png"),
+  whyFairShop: require("./whyFairShop.png"),
+  whyFairShop1: require("./whyFairShop1.png"),
+  veg: require("./veg.png"),
+  nonveg: require("./nonveg.png"),
+  fav: require("./fav.png"),
+  time: require("./time.png"),
+  catTest: require("./catTest.png"),
+  videoTest: require("./videoTest.png"),
+  flag: require("./flag.png"),
 
   //test images
   test: require("./test.png"),
