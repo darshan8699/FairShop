@@ -1,7 +1,7 @@
 import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
 import React, { useState } from "react";
-import { Keyboard, ScrollView, Text, View } from "react-native";
+import { Keyboard, ScrollView, Text, ToastAndroid, View } from "react-native";
 import APICallService from "../../../API/APICallService";
 import AuthHeader from "../../../Components/AuthHeader";
 import CustomButton from "../../../Components/CustomButton";
@@ -10,7 +10,7 @@ import CustomText from "../../../Components/CustomText";
 import Loader2 from "../../../Components/Loader2";
 import { Route } from "../../../Navigation/Routes";
 import { PREF_TOKEN, REGISTER } from "../../../Utility/Constants";
-import { showErrorMessage } from "../../../Utility/Helper";
+import { showErrorMessage, showSuccessMessage } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import Navigator from "../../../Utility/Navigator";
 import Strings from "../../../Utility/Strings";
@@ -65,10 +65,13 @@ const Signup = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (res.item) {
-          const jsonValue = JSON.stringify(res);
-          await AsyncStorageLib.setItem(PREF_TOKEN, res.data?.token);
-          await AsyncStorageLib.setItem("loginInfo", jsonValue);
-          Navigator.resetFrom(Route.DrawerApp);
+          showSuccessMessage(
+            "Register Successfully. re-login with username and password"
+          );
+          // const jsonValue = JSON.stringify(res);
+          // await AsyncStorageLib.setItem(PREF_TOKEN, res.data?.token);
+          // await AsyncStorageLib.setItem("loginInfo", jsonValue);
+          props.navigation.goBack();
         } else {
           showErrorMessage(res.message);
         }
@@ -115,6 +118,8 @@ const Signup = (props) => {
         <CustomInput
           onChangeText={(text) => setPhone(text)}
           keyboardType="numeric"
+          placeHolder={"+91"}
+          isPhone
         />
         <CustomText name={Strings.Password} />
         <CustomInput

@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
 import MainRouteConfig from "./src/Navigation/RootNavigation";
 import Colors from "./src/Utility/Colors";
-
+import { RootSiblingParent } from "react-native-root-siblings";
 // export const store = createStore(mainReducer, applyMiddleware(ReduxThunk));
 
 // create a component
@@ -19,13 +19,15 @@ const MyComponent = () => {
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 0, backgroundColor: Colors.Background }} />
-      <StatusBar backgroundColor={Colors.Background} />
-      <SafeAreaView style={styles.container}>
-        <MainRouteConfig />
-      </SafeAreaView>
-    </View>
+    <RootSiblingParent>
+      <View style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 0, backgroundColor: Colors.Background }} />
+        <StatusBar backgroundColor={Colors.Background} />
+        <SafeAreaView style={styles.container}>
+          <MainRouteConfig />
+        </SafeAreaView>
+      </View>
+    </RootSiblingParent>
   );
 };
 

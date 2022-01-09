@@ -1,6 +1,7 @@
 import { Alert } from "react-native";
 import RNExitApp from "react-native-exit-app";
-import Toast from "react-native-toast-message";
+import Toast from "react-native-root-toast";
+import Colors from "./Colors";
 import Logger from "./Logger";
 import Strings from "./Strings";
 
@@ -26,49 +27,42 @@ export function validateResponse(res) {
 
 export function showSuccessMessage(message, isMoreSpace) {
   Logger.log({ message });
-  Toast.show({
-    type: "success",
-    text1: "Hello",
-    text2: "This is some something 👋",
+  let toast = Toast.show(message, {
+    duration: Toast.durations.SHORT,
+    position: Toast.positions.BOTTOM,
+    backgroundColor: Colors.green,
+    textColor: Colors.white,
+    shadow: true,
+    animation: true,
+    hideOnPress: true,
+    delay: 0,
   });
-  // Toast.show(message, {
-  //   position: "TOP",
-  //   containerStyle: {
-  //     backgroundColor: Colors.button,
-  //     borderRadius: Size.FindSize(50),
-  //     paddingHorizontal: Size.FindSize(20),
-  //     marginHorizontal: Size.FindSize(20),
-  //     marginBottom: isMoreSpace ? Size.FindSize(100) : 0,
-  //     opacity: 0.5,
-  //   },
-  //   textStyle: {
-  //     fontFamily: Regular,
-  //   },
-  // });
+
+  // You can manually hide the Toast, or it will automatically disappear after a `duration` ms timeout.
+  setTimeout(function () {
+    Toast.hide(toast);
+  }, 800);
 }
 
 export function showErrorMessage(message) {
   Logger.log({ message });
 
   try {
-    Toast.show({
-      type: "success",
-      text1: "Hello",
-      text2: "This is some something 👋",
+    let toast = Toast.show(message, {
+      duration: Toast.durations.SHORT,
+      position: Toast.positions.BOTTOM,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      shadow: true,
+      animation: true,
+      hideOnPress: true,
+      delay: 0,
     });
-    // Toast.show(message, {
-    //   position: "top",
-    //   containerStyle: {
-    //     backgroundColor: Colors.Background,
-    //     borderRadius: Size.FindSize(50),
-    //     paddingHorizontal: Size.FindSize(20),
-    //     marginHorizontal: Size.FindSize(20),
-    //     opacity: 0.5,
-    //   },
-    //   textStyle: {
-    //     fontFamily: Regular,
-    //   },
-    // });
+
+    // You can manually hide the Toast, or it will automatically disappear after a `duration` ms timeout.
+    setTimeout(function () {
+      Toast.hide(toast);
+    }, 800);
   } catch (e) {
     Logger.log(e);
   }

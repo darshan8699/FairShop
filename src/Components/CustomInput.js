@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { Regular } from "../Assets/fonts";
 import Colors from "../Utility/Colors";
 import { Size } from "../Utility/sizes";
 
@@ -19,6 +20,7 @@ const CustomInput = (props) => {
     enable = true,
     autoCapitalize = true,
     value = "",
+    isPhone = false,
   } = props;
 
   const isFirstRun = useRef(true);
@@ -44,11 +46,16 @@ const CustomInput = (props) => {
         ]}
         editable={enable}
         value={text}
+        maxLength={isPhone ? 10 : null}
         autoCapitalize={autoCapitalize}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType ? keyboardType : "default"}
         returnKeyType={"done"}
         onChangeText={(text) => {
+          // var txt = isPhone && text.trim().length == 1 ? "+91 " + text : text;
+          // if (text == "+91") {
+          //   txt = "";
+          // }
           setText(text);
           if (onChangeText) {
             onChangeText(text);
@@ -81,6 +88,7 @@ const styles = StyleSheet.create({
     borderWidth: Size.FindSize(1),
     marginTop: Size.FindSize(8),
     color: Colors.black,
+    fontFamily: Regular,
   },
   RightIcon: {
     position: "absolute",
