@@ -1,5 +1,5 @@
 //import liraries
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -13,20 +13,53 @@ import { Route } from "../Navigation/Routes";
 import Colors from "../Utility/Colors";
 import Navigator from "../Utility/Navigator";
 import { Size } from "../Utility/sizes";
+import APICallService from "../API/APICallService";
+import { CATEGORY_DROPDOWN } from "../Utility/Constants";
+import {
+  showErrorMessage,
+  showSuccessMessage,
+  validateResponse,
+} from "../Utility/Helper";
+import Logger from "../Utility/Logger";
+import Loader2 from "../Components/Loader2";
 
 // create a component
 const MyComponent = (props) => {
   const [listview, setlistview] = useState(false);
   const category = ["Fruits", "Slug", "Fruits", "Slug", "Fruits", "Slug"];
-  const renderItem = (item) => (
+  const [isShowLoader, setLoader] = useState(false);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    APICall();
+  }, []);
+  const APICall = () => {
+    setLoader(true);
+    const apiClass = new APICallService(CATEGORY_DROPDOWN);
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          Logger.log("res.data", res.data.items);
+          setData(res.data.items);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+  const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => {}}>
       <Text style={[styles.textView, { marginLeft: Size.FindSize(20) }]}>
-        {"Fruits"}
+        {item.name}
       </Text>
     </TouchableOpacity>
   );
   return (
     <View style={styles.container}>
+      <Loader2 modalVisible={isShowLoader} />
       <View style={styles.header}>
         <Text>Menu</Text>
         <TouchableOpacity
@@ -64,8 +97,8 @@ const MyComponent = (props) => {
         </TouchableOpacity>
         {listview ? (
           <FlatList
-            data={category}
-            renderItem={(item) => renderItem(item)}
+            data={data}
+            renderItem={renderItem}
             showsVerticalScrollIndicator={false}
             style={{ height: Size.FindSize(250) }}
             bounces={false}
@@ -102,8 +135,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   lineView: {
-    padding: 0.3,
-    backgroundColor: "grey",
+    padding: 0.5,
+    backgroundColor: Colors.headerline,
   },
   body: {
     padding: 20,
