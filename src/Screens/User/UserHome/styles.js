@@ -34,7 +34,7 @@ export default styles = StyleSheet.create({
     marginTop: Size.FindSize(10),
   },
   BrowseView: {
-    height: Size.FindSize(300),
+    height: Size.FindSize(315),
     marginBottom: Size.FindSize(30),
   },
   BrowseTextView: {
@@ -60,12 +60,14 @@ export default styles = StyleSheet.create({
     width: Size.FindSize(143),
   },
   browseCard: {
-    shadowColor: "#000029",
+    shadowColor: Colors.black,
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
     elevation: 3,
     marginLeft: Size.FindSize(15),
+    borderRadius: Size.FindSize(10),
+    marginBottom: Size.FindSize(20),
   },
   browseCategoryText: {
     color: Colors.headerText,
@@ -103,5 +105,49 @@ export default styles = StyleSheet.create({
     marginBottom: Size.FindSize(15),
     paddingHorizontal: Size.FindSize(15),
     alignSelf: "center",
+  },
+  cookView: {
+    height: Size.FindSize(400),
+    marginBottom: Size.FindSize(30),
+  },
+  cookImage: {
+    height: Size.FindSize(200),
+    width: Size.FindSize(360),
+    borderTopLeftRadius: Size.FindSize(10),
+    borderTopRightRadius: Size.FindSize(10),
+  },
+  timeImage: {
+    height: Size.FindSize(20),
+    width: Size.FindSize(20),
+  },
+  cookList: {
+    marginLeft: Size.FindSize(15),
+    width: Size.FindSize(360),
+    borderWidth: 1,
+    borderColor: Colors.cookBorder,
+    borderRadius: Size.FindSize(10),
+  },
+  cookTextView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: Size.FindSize(15),
+  },
+  cookText: {
+    color: Colors.Background,
+    fontFamily: Regular,
+    fontSize: Size.FindSize(16),
+  },
+  timeText: {
+    color: Colors.timeText,
+    fontFamily: Regular,
+    fontSize: Size.FindSize(14),
+    marginLeft: Size.FindSize(5),
+  },
+  shadow: {
+    shadowColor: Colors.black,
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 3,
   },
 });

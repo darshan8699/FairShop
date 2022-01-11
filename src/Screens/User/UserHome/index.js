@@ -16,6 +16,7 @@ import Colors from "../../../Utility/Colors";
 import styles from "./styles";
 import Strings from "../../../Utility/Strings";
 import { Size } from "../../../Utility/sizes";
+import CustomItemView from "../../../Components/CustomItemView";
 // create a component
 const MyComponent = (props) => {
   const images = [Images.test, Images.test, Images.test];
@@ -27,23 +28,66 @@ const MyComponent = (props) => {
     Images.test3,
     Images.test3,
   ];
-  const renderBestItem = (item) => (
+  const popularProduct = [
+    {
+      image: Images.test3,
+      name: "Apples",
+      price: "193",
+      veg: true,
+    },
+    {
+      image: Images.test3,
+      name: "Chicken Breast",
+      price: "358",
+      veg: false,
+    },
+    {
+      image: Images.test3,
+      name: "Apples",
+      price: "193",
+      veg: true,
+    },
+  ];
+  const renderBestItem = ({ item }) => (
     <Image source={Images.test2} style={styles.bestImage} />
   );
-  const renderBrowseCategory = (item) => (
+  const renderBrowseCategory = ({ item }) => (
     <View style={styles.browseCard}>
       <Image source={Images.test3} style={styles.browseImage} />
       <Text style={styles.browseCategoryText}>{"Fruits and Vegetables"}</Text>
     </View>
   );
-  const renderPopularCategory = (item) => (
+  const renderPopularCategory = ({ item }) => (
     <Image source={Images.catTest} style={styles.popularCatImage} />
+  );
+  const renderCookItem = ({ item }) => (
+    <TouchableOpacity style={styles.cookList}>
+      <Image source={Images.videoTest} style={styles.cookImage} />
+      <View style={styles.cookTextView}>
+        <View>
+          <Text style={styles.cookText}>{"Restaurant Style Bhajipau"}</Text>
+          <View style={{ flexDirection: "row" }}>
+            <Image
+              source={Images.time}
+              resizeMode="contain"
+              style={styles.timeImage}
+            />
+            <Text style={styles.timeText}>{"30 min"}</Text>
+          </View>
+        </View>
+        <Image
+          source={Images.veg}
+          resizeMode="contain"
+          style={styles.timeImage}
+        />
+      </View>
+    </TouchableOpacity>
   );
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} />
       <ScrollView
-        // overScrollMode="never"
+        overScrollMode="never"
         bounces={false}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
@@ -76,7 +120,7 @@ const MyComponent = (props) => {
           <FlatList
             data={bestValues}
             horizontal={true}
-            renderItem={(item) => renderBestItem(item)}
+            renderItem={renderBestItem}
             showsHorizontalScrollIndicator={false}
           />
         </ImageBackground>
@@ -95,7 +139,7 @@ const MyComponent = (props) => {
             data={BrowseCategory}
             horizontal={true}
             contentContainerStyle={{ paddingRight: 15 }}
-            renderItem={(item) => renderBrowseCategory(item)}
+            renderItem={renderBrowseCategory}
             showsHorizontalScrollIndicator={false}
           />
         </View>
@@ -114,8 +158,15 @@ const MyComponent = (props) => {
               />
             </TouchableOpacity>
           </View>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingRight: 15 }}
+            data={popularProduct}
+            renderItem={({ item }) => <CustomItemView item={item} />}
+          />
         </ImageBackground>
-        <View style={styles.BrowseView}>
+        <View style={styles.Popularback}>
           <View style={styles.BrowseTextView}>
             <Text style={styles.BrowseText}>{Strings.NewProduct}</Text>
             <TouchableOpacity>
@@ -126,6 +177,15 @@ const MyComponent = (props) => {
               />
             </TouchableOpacity>
           </View>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingRight: 15 }}
+            data={popularProduct}
+            renderItem={({ item }) => (
+              <CustomItemView item={item} listView={styles.shadow} />
+            )}
+          />
         </View>
         <ImageBackground
           source={Images.redBack}
@@ -145,9 +205,9 @@ const MyComponent = (props) => {
           <FlatList
             data={popularCategory}
             style={{ paddingTop: Size.FindSize(30) }}
-            renderItem={(item) => renderPopularCategory(item)}
+            renderItem={renderPopularCategory}
             showsVerticalScrollIndicator={false}
-            nestedScrollEnabled={true}
+            nestedScrollEnabled={false}
           />
         </ImageBackground>
         <View style={styles.fairshopView}>
@@ -167,7 +227,7 @@ const MyComponent = (props) => {
             />
           </View>
         </View>
-        <View style={styles.BrowseView}>
+        <View style={styles.cookView}>
           <View style={styles.BrowseTextView}>
             <Text style={styles.BrowseText}>{Strings.today_cook}</Text>
           </View>
@@ -175,7 +235,7 @@ const MyComponent = (props) => {
             data={BrowseCategory}
             horizontal={true}
             contentContainerStyle={{ paddingRight: 15 }}
-            renderItem={(item) => renderBrowseCategory(item)}
+            renderItem={renderCookItem}
             showsHorizontalScrollIndicator={false}
           />
         </View>

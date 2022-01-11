@@ -38,6 +38,7 @@ export const Strings = {
   Why_Fairshop: "Why Fairshop",
   today_cook: "What do you want to\ncook today ?",
   Select_Store: "Select Store",
+  Add: "Add",
   //Error
   error_email_phone: "Please enter your email or phone",
   error_email: "Please enter your email",

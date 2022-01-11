@@ -43,7 +43,7 @@ const MyComponent = (props) => {
           onPress={() => setlistview(!listview)}
           style={[
             styles.categoryButton,
-            { backgroundColor: listview ? "#fdecef" : Colors.white },
+            { backgroundColor: listview ? Colors.pinkBack : Colors.white },
           ]}
         >
           <Text

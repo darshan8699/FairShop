@@ -22,11 +22,12 @@ export const Images = {
   fav: require("./fav.png"),
   time: require("./time.png"),
   catTest: require("./catTest.png"),
-  videoTest: require("./videoTest.png"),
   flag: require("./flag.png"),
+  pincode: require("./pincode.png"),
 
   //test images
   test: require("./test.png"),
   test2: require("./test2.png"),
   test3: require("./test3.png"),
+  videoTest: require("./videoTest.png"),
 };

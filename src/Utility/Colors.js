@@ -14,4 +14,10 @@ export default Colors = {
   black: "#000",
   red: "#FF0000",
   green: "#008000",
+  pincodetext: "#666666",
+  storeBorderColor: "#E8E8E8",
+  storeColor: "#333333",
+  pinkBack: "#FFE8EC",
+  cookBorder: "#D9D9D9",
+  timeText: "#566F7B",
 };
