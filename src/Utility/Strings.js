@@ -2,6 +2,9 @@ export const Strings = {
   Login: "Login",
   Email_or_Phone: "Email or Phone",
   Password: "Password",
+  OldPassword: "Old Password",
+  NewPassword: "New Password",
+  ConfrimPassword: "Confirm Password",
   Forgot_Password: "Forgot Password ?",
   LoginWithOTP: "Login with OTP",
   ResendOTP: "Resend OTP",
@@ -13,6 +16,7 @@ export const Strings = {
   Last_Name: "Last Name",
   My_Profile: "My Profile",
   My_Order: "My Orders",
+  ChangePassoword: "Change Passoword",
   Logout: "Logout",
   Logout_Msg: "Are you sure you want to logout?",
   Select_store: "Select Store",
@@ -30,6 +34,7 @@ export const Strings = {
   No_Internet_Error: "No Internet Connection",
   Retry: "Retry",
   Forgot_password: "Forgot Password",
+  ResetPassword: "Reset Password",
   Send: "Send",
   Yes: "Yes",
   No: "No",
@@ -53,6 +58,17 @@ export const Strings = {
   error_valid_password:
     // "Password must be 8 characters long with at least one uppercase letter, one special character and one number",
     "Password must be at least 8 characters long",
+  error_password_match: "Password and Confirm Password do not match!",
+  error_old_password: "Please enter old password",
+  error_new_password: "Please enter new password",
+  error_confirm_password: "Please enter confirm password",
   error_otp: "Please enter OTP",
+
+  Menu: "Menu",
+  ShopbyCategories: "Shop by Categories",
+  Recipes: "Recipes",
+  Offers: "Offers",
+  AboutUs: "About Us",
+  StoreLocator: "Store Locator",
 };
 export default Strings;

@@ -63,11 +63,11 @@ export default styles = StyleSheet.create({
   underlineStyleBase: {
     width: (Size.width * 0.6) / 4,
     height: Size.FindSize(60),
-    borderWidth: 0,
+    borderWidth: 2,
     fontFamily: Bold,
     fontSize: Size.FindSize(24),
     lineHeight: Size.FindSize(33),
-    borderBottomWidth: 2,
+    // borderBottomWidth: 2,
     color: Colors.black,
   },
   underlineStyleHighLighted: {

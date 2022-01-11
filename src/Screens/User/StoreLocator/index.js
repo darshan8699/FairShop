@@ -53,7 +53,6 @@ const MyComponent = (props) => {
     },
   ];
   const renderStoreItem = ({ item, index }) => {
-    console.log("index", index);
     return (
       <TouchableOpacity
         style={[
@@ -77,33 +76,25 @@ const MyComponent = (props) => {
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} isBack isLocation />
-      <ScrollView
-        overScrollMode="never"
-        bounces={false}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-      >
-        <View style={styles.childContainer}>
-          <Text style={styles.headerText}>{Strings.Select_Store}</Text>
-          <View style={styles.pincodeView}>
-            <Image
-              source={Images.pincode}
-              resizeMode="contain"
-              style={styles.pincodeImage}
-            />
-            <Text style={styles.text}>{Strings.Enter_pincode}</Text>
-          </View>
-          <CustomInput input={styles.input} keyboardType={"numeric"} />
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={storeList}
-            renderItem={renderStoreItem}
-            style={styles.storeList}
-            nestedScrollEnabled={false}
+
+      <View style={styles.childContainer}>
+        <Text style={styles.headerText}>{Strings.Select_Store}</Text>
+        <View style={styles.pincodeView}>
+          <Image
+            source={Images.pincode}
+            resizeMode="contain"
+            style={styles.pincodeImage}
           />
+          <Text style={styles.text}>{Strings.Enter_pincode}</Text>
         </View>
-      </ScrollView>
+        <CustomInput input={styles.input} keyboardType={"numeric"} />
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={storeList}
+          renderItem={renderStoreItem}
+          style={styles.storeList}
+        />
+      </View>
     </View>
   );
 };

@@ -10,6 +10,7 @@ export default styles = StyleSheet.create({
   },
   childContainer: {
     paddingHorizontal: Size.FindSize(15),
+    flex: 1,
   },
   headerText: {
     fontSize: Size.FindSize(24),

@@ -148,17 +148,6 @@ function DrawerApp() {
       drawerContent={(props) => <CustomDrawerNavigator {...props} />}
     >
       <Drawer.Screen name={Route.BottomTabApp} component={BottomTabApp} />
-      <Drawer.Screen
-        name={Route.ShopCategoryWise}
-        component={screen.ShopCategoryWise}
-      />
-      <Drawer.Screen name={Route.Recipes} component={screen.Recipes} />
-      <Drawer.Screen name={Route.Offers} component={screen.Offers} />
-      <Drawer.Screen
-        name={Route.StoreLocator}
-        component={screen.StoreLocator}
-      />
-      <Drawer.Screen name={Route.AboutUs} component={screen.AboutUs} />
     </Drawer.Navigator>
   );
 }
@@ -174,13 +163,28 @@ function RootNavigation() {
         <Stack.Screen name={Route.Splash} component={screen.Splash} />
         <Stack.Screen name={Route.Login} component={screen.Login} />
         <Stack.Screen name={Route.SignUp} component={screen.SignUp} />
-        <Stack.Screen name={Route.DrawerApp} component={DrawerApp} />
-        <Stack.Screen name={Route.MyOrders} component={screen.MyOrders} />
-        <Stack.Screen name={Route.MyProfile} component={screen.MyProfile} />
         <Stack.Screen
           name={Route.ForgotPassword}
           component={screen.ForgotPassword}
         />
+        <Stack.Screen
+          name={Route.ResetPassword}
+          component={screen.ResetPassword}
+        />
+        <Stack.Screen name={Route.DrawerApp} component={DrawerApp} />
+        <Stack.Screen name={Route.MyOrders} component={screen.MyOrders} />
+        <Stack.Screen name={Route.MyProfile} component={screen.MyProfile} />
+        <Stack.Screen
+          name={Route.ShopCategoryWise}
+          component={screen.ShopCategoryWise}
+        />
+        <Stack.Screen name={Route.Recipes} component={screen.Recipes} />
+        <Stack.Screen name={Route.Offers} component={screen.Offers} />
+        <Stack.Screen
+          name={Route.StoreLocator}
+          component={screen.StoreLocator}
+        />
+        <Stack.Screen name={Route.AboutUs} component={screen.AboutUs} />
       </Stack.Navigator>
     </NavigationContainer>
   );

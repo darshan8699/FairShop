@@ -9,8 +9,12 @@ import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
 import Loader2 from "../../../Components/Loader2";
 import { Route } from "../../../Navigation/Routes";
-import { PREF_TOKEN, REGISTER } from "../../../Utility/Constants";
-import { showErrorMessage, showSuccessMessage } from "../../../Utility/Helper";
+import { LOGIN, PREF_TOKEN, REGISTER } from "../../../Utility/Constants";
+import {
+  showErrorMessage,
+  showSuccessMessage,
+  validateResponse,
+} from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import Navigator from "../../../Utility/Navigator";
 import Strings from "../../../Utility/Strings";
@@ -65,13 +69,14 @@ const Signup = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (res.item) {
-          showSuccessMessage(
-            "Register Successfully. re-login with username and password"
-          );
+          // showSuccessMessage(
+          //   "Register Successfully. re-login with username and password"
+          // );
           // const jsonValue = JSON.stringify(res);
           // await AsyncStorageLib.setItem(PREF_TOKEN, res.data?.token);
           // await AsyncStorageLib.setItem("loginInfo", jsonValue);
-          props.navigation.goBack();
+          //props.navigation.goBack();
+          APICallLogin();
         } else {
           showErrorMessage(res.message);
         }
@@ -84,7 +89,30 @@ const Signup = (props) => {
       })
       .catch((err) => {
         setLoader(false);
-        Logger.log("APICall==>", err);
+        showErrorMessage(err.message);
+      });
+  };
+
+  const APICallLogin = () => {
+    setLoader(true);
+    const apiClass = new APICallService(LOGIN, {
+      login: email,
+      password: password,
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          showSuccessMessage(res.message);
+          const jsonValue = JSON.stringify(res.data);
+          await AsyncStorageLib.setItem(PREF_TOKEN, res.data?.token);
+          await AsyncStorageLib.setItem("loginInfo", jsonValue);
+          Navigator.resetFrom(Route.DrawerApp);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
         showErrorMessage(err.message);
       });
   };
@@ -141,7 +169,7 @@ const Signup = (props) => {
           style={styles.button1}
           textStyle={styles.buttonText1}
           onPress={() => {
-            Navigator.navigate(Route.Login);
+            props.navigation.goBack();
           }}
         />
       </ScrollView>

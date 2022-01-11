@@ -92,6 +92,7 @@ const MyComponent = (props) => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
         showsHorizontalScrollIndicator={false}
+        nestedScrollEnabled={true}
       >
         <SliderBox
           images={images}

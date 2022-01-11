@@ -17,7 +17,7 @@ import CustomText from "../../../Components/CustomText";
 import Loader2 from "../../../Components/Loader2";
 import Colors from "../../../Utility/Colors";
 import {
-  FORGOT_PASSWORD,
+  SEND_OTP,
   VERIFY_FORGOT_PASSWORD_OTP,
 } from "../../../Utility/Constants";
 import {
@@ -25,15 +25,18 @@ import {
   showSuccessMessage,
   validateResponse,
 } from "../../../Utility/Helper";
+import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import { isTextNotEmpty } from "../../../Utility/Validation";
+import Navigator from "../../../Utility/Navigator";
 import styles from "./styles";
+import { Route } from "../../../Navigation/Routes";
 
 // create a component
 const MyComponent = (props) => {
   const [email, setEmail] = useState("");
-  const [otp, setOTP] = useState("");
+  const [otp, setOTP] = useState("8217");
   const [isShowLoader, setLoader] = useState(false);
   const [isOTPModelVisble, setOTPModalVisible] = useState(false);
 
@@ -51,20 +54,21 @@ const MyComponent = (props) => {
     if (!isTextNotEmpty(email)) {
       showErrorMessage(Strings.error_email_phone);
     } else {
-      APICallSentOTP();
+      APICall();
     }
   };
 
   const APICall = () => {
     setLoader(true);
-    const apiClass = new APICallService(FORGOT_PASSWORD, {
-      credential: email,
+    const apiClass = new APICallService(SEND_OTP, {
+      phone_or_email: email,
     });
     apiClass
       .callAPI()
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
+          setOTP("8217");
           showSuccessMessage("OTP code has been sent to " + email);
           setOTPModalVisible(true);
         }
@@ -91,9 +95,11 @@ const MyComponent = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           setOTPModalVisible(false);
-          // const jsonValue = JSON.stringify(res.data);
-          // await AsyncStorage.setItem("loginInfo", jsonValue);
-          // Navigator.resetFrom(Route.DrawerApp);
+          Logger.log(res?.data?.token);
+          Navigator.navigate(Route.ResetPassword, {
+            token: res?.data?.token,
+            phone_or_email: email,
+          });
         }
       })
       .catch((err) => {
@@ -124,7 +130,7 @@ const MyComponent = (props) => {
               borderRadius: Size.FindSize(20),
             }}
           >
-            <CustomText name={Strings.OTP} />
+            <CustomText name={Strings.OTP} style={{ marginLeft: 10 }} />
             <OTPInputView
               style={styles.OTPView}
               pinCount={4}
@@ -135,7 +141,9 @@ const MyComponent = (props) => {
               codeInputHighlightStyle={styles.underlineStyleHighLighted}
             />
             <TouchableOpacity onPress={() => onSubmitOTP()}>
-              <Text style={styles.forgotText}>{Strings.ResendOTP}</Text>
+              <Text style={[styles.forgotText, { marginEnd: 10 }]}>
+                {Strings.ResendOTP}
+              </Text>
             </TouchableOpacity>
             <View style={styles.buttonView}>
               <CustomButton
@@ -162,7 +170,10 @@ const MyComponent = (props) => {
     <View style={styles.container}>
       <Loader2 modalVisible={isShowLoader} />
       {renderOTPView()}
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="always"
+      >
         <AuthHeader isBack navigation={props.navigation} />
         <Text style={styles.loginText}>{Strings.Forgot_password}</Text>
         <CustomText name={Strings.Email_or_Phone} />

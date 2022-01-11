@@ -64,6 +64,11 @@ class APICallService {
         settings.method = "POST";
         settings.body = JSON.stringify(params);
         break;
+      case constants.PUT:
+        //settings.headers = myHeaders;
+        settings.method = "PUT";
+        settings.body = JSON.stringify(params);
+        break;
       case constants.MULTI_PART:
         settings.headers = myHeaders;
         settings.method = "POST";

@@ -77,6 +77,21 @@ const MyComponent = (props) => {
         </View>
       </TouchableOpacity>
       <View style={styles.line} />
+      <TouchableOpacity
+        onPress={() =>
+          Navigator.navigate(Route.ResetPassword, { isResetPassword: true })
+        }
+      >
+        <View style={styles.buttonView}>
+          <Image
+            source={Images.myorder}
+            resizeMode="contain"
+            style={styles.icon}
+          />
+          <Text style={styles.text}>{Strings.ChangePassoword}</Text>
+        </View>
+      </TouchableOpacity>
+      <View style={styles.line} />
       <TouchableOpacity onPress={() => onLogoutPress()}>
         <View style={styles.buttonView}>
           <Image

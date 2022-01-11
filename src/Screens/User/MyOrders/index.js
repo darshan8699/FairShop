@@ -1,18 +1,15 @@
 //import liraries
-import React, { useEffect, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
-import styles from "./styles";
-import { Route } from "../../../Navigation/Routes";
-import Navigator from "../../../Utility/Navigator";
+import React from "react";
+import { Text, View } from "react-native";
 import Header from "../../../Components/Header";
 import Strings from "../../../Utility/Strings";
-import { Images } from "../../../Assets/images";
+import styles from "./styles";
 
 // create a component
 const MyComponent = (props) => {
   return (
     <View style={styles.container}>
-      <Header navigation={props.navigation} isBack />
+      <Header navigation={props.navigation} isBack isRightIcon={false} />
       <Text style={styles.headerText}>{Strings.My_Order}</Text>
     </View>
   );

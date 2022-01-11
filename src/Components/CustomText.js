@@ -1,13 +1,13 @@
 //import liraries
-import React, {Component} from 'react';
-import {Text, StyleSheet} from 'react-native';
-import {Size} from '../Utility/sizes';
-import Colors from '../Utility/Colors';
-import {Regular} from '../Assets/fonts';
+import React, { Component } from "react";
+import { Text, StyleSheet } from "react-native";
+import { Size } from "../Utility/sizes";
+import Colors from "../Utility/Colors";
+import { Regular } from "../Assets/fonts";
 // create a component
-const CustomText = props => {
+const CustomText = (props) => {
   return (
-    <Text style={styles.text}>
+    <Text style={[props.style, styles.text]}>
       {props.name}
       <Text style={styles.innerText}> *</Text>
     </Text>

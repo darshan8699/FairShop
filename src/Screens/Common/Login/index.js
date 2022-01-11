@@ -18,12 +18,7 @@ import CustomText from "../../../Components/CustomText";
 import Loader2 from "../../../Components/Loader2";
 import { Route } from "../../../Navigation/Routes";
 import Colors from "../../../Utility/Colors";
-import {
-  LOGIN,
-  PREF_TOKEN,
-  SEND_OTP,
-  VERIFY_OTP,
-} from "../../../Utility/Constants";
+import { LOGIN, PREF_TOKEN, SEND_OTP } from "../../../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,
@@ -119,10 +114,10 @@ const Login = (props) => {
       return;
     }
     setLoader(true);
-    const apiClass = new APICallService(VERIFY_OTP, {
-      mobile_no: email,
-      otp: otp,
-      type: "1",
+    const apiClass = new APICallService(LOGIN, {
+      login: email,
+      password: otp,
+      login_with_otp: "Y",
     });
     apiClass
       .callAPI()
@@ -130,9 +125,11 @@ const Login = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           setOTPModalVisible(false);
-          // const jsonValue = JSON.stringify(res.data);
-          // await AsyncStorage.setItem("loginInfo", jsonValue);
-          // Navigator.resetFrom(Route.DrawerApp);
+          showSuccessMessage(res.message);
+          const jsonValue = JSON.stringify(res.data);
+          await AsyncStorage.setItem(PREF_TOKEN, res.data?.token);
+          await AsyncStorage.setItem("loginInfo", jsonValue);
+          Navigator.resetFrom(Route.DrawerApp);
         }
       })
       .catch((err) => {
@@ -163,18 +160,21 @@ const Login = (props) => {
               borderRadius: Size.FindSize(20),
             }}
           >
-            <CustomText name={Strings.OTP} />
+            <CustomText name={Strings.OTP} style={{ marginLeft: 10 }} />
             <OTPInputView
               style={styles.OTPView}
               pinCount={4}
               code={otp}
+              editable
               clearInputs={otp.length == 0 ? true : false}
               onCodeChanged={(otp) => setOTP(otp)}
               codeInputFieldStyle={styles.underlineStyleBase}
               codeInputHighlightStyle={styles.underlineStyleHighLighted}
             />
             <TouchableOpacity onPress={() => onSubmitOTP()}>
-              <Text style={styles.forgotText}>{Strings.ResendOTP}</Text>
+              <Text style={[styles.forgotText, { marginEnd: 10 }]}>
+                {Strings.ResendOTP}
+              </Text>
             </TouchableOpacity>
             <View style={styles.buttonView}>
               <CustomButton

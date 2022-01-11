@@ -3,6 +3,7 @@ export const Route = {
   Login: "Login",
   SignUp: "SignUp",
   ForgotPassword: "ForgotPassword",
+  ResetPassword: "ResetPassword",
   AboutUs: "AboutUs",
   Offers: "Offers",
   Recipes: "Recipes",

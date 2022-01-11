@@ -8,6 +8,7 @@ export const GET_ID_PARAMS = "GET_ID_PARAMS";
 export const POST = "POST";
 export const POST_RAW = "POST_RAW";
 export const POST_FORM = "POST_FORM";
+export const PUT = "PUT";
 export const POST_URL_PARAMS = "POST_URL_PARAMS";
 export const DELETE_ID_PARAMS = "DELETE_ID_PARAMS";
 export const MULTI_PART = "MULTI_PART";
@@ -22,4 +23,6 @@ export const FORGOT_PASSWORD = "/forgotpassword" + " " + POST_FORM;
 export const VERIFY_FORGOT_PASSWORD_OTP =
   "/verify-reset-password-token" + " " + POST_FORM;
 export const LOGOUT = "/logout" + " " + GET;
+export const RESET_PASSWORD = "/reset-password" + " " + POST_FORM;
+export const CHANGE_PASSWORD = "/change-password" + " " + PUT;
 export const CATEGORY_DROPDOWN = "/category-dropdown" + " " + GET;

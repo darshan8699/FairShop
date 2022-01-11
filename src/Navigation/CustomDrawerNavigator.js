@@ -22,6 +22,7 @@ import {
 } from "../Utility/Helper";
 import Logger from "../Utility/Logger";
 import Loader2 from "../Components/Loader2";
+import Strings from "../Utility/Strings";
 
 // create a component
 const MyComponent = (props) => {
@@ -61,7 +62,7 @@ const MyComponent = (props) => {
     <View style={styles.container}>
       <Loader2 modalVisible={isShowLoader} />
       <View style={styles.header}>
-        <Text>Menu</Text>
+        <Text>{Strings.Menu}</Text>
         <TouchableOpacity
           onPress={() => {
             props.navigation.closeDrawer();
@@ -85,7 +86,7 @@ const MyComponent = (props) => {
               { color: listview ? Colors.Background : Colors.forgotText },
             ]}
           >
-            Shop by Categories
+            {Strings.ShopbyCategories}
           </Text>
           <TouchableOpacity onPress={() => setlistview(!listview)}>
             <MaterialIcons
@@ -105,18 +106,18 @@ const MyComponent = (props) => {
           />
         ) : null}
         <TouchableOpacity onPress={() => Navigator.navigate(Route.Recipes)}>
-          <Text style={styles.textView}>Recipes</Text>
+          <Text style={styles.textView}>{Strings.Recipes}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => Navigator.navigate(Route.Offers)}>
-          <Text style={styles.textView}>Offers</Text>
+          <Text style={styles.textView}>{Strings.Offers}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => Navigator.navigate(Route.StoreLocator)}
         >
-          <Text style={styles.textView}>Store Locator</Text>
+          <Text style={styles.textView}>{Strings.StoreLocator}</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => Navigator.navigate(Route.AboutUs)}>
-          <Text style={styles.textView}>About Us</Text>
+          <Text style={styles.textView}>{Strings.AboutUs}</Text>
         </TouchableOpacity>
       </View>
     </View>
