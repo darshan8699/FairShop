@@ -17,4 +17,5 @@ export const Route = {
   BottomTabApp: "BottomTabApp",
   MyProfile: "MyProfile",
   MyOrders: "MyOrders",
+  Address: "Address",
 };

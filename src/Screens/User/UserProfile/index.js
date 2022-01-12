@@ -66,6 +66,17 @@ const MyComponent = (props) => {
         </View>
       </TouchableOpacity>
       <View style={styles.line} />
+      <TouchableOpacity onPress={() => Navigator.navigate(Route.Address)}>
+        <View style={styles.buttonView}>
+          <Image
+            source={Images.location}
+            resizeMode="contain"
+            style={styles.icon}
+          />
+          <Text style={styles.text}>{Strings.Addresses}</Text>
+        </View>
+      </TouchableOpacity>
+      <View style={styles.line} />
       <TouchableOpacity onPress={() => Navigator.navigate(Route.MyOrders)}>
         <View style={styles.buttonView}>
           <Image

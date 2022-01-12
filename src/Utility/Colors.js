@@ -20,4 +20,5 @@ export default Colors = {
   pinkBack: "#FFE8EC",
   cookBorder: "#D9D9D9",
   timeText: "#566F7B",
+  uploadText: "rgb(154 162 164)",
 };

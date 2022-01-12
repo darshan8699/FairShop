@@ -16,5 +16,6 @@ export { default as UserProfile } from "./User/UserProfile";
 export { default as UserSearch } from "./User/UserSearch";
 export { default as MyProfile } from "./User/MyProfile";
 export { default as MyOrders } from "./User/MyOrders";
+export { default as Address } from "./User/Address";
 
 LogBox.ignoreAllLogs();
