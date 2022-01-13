@@ -1,16 +1,26 @@
 //import liraries
-import React, { useEffect, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
-import styles from "./styles";
-import { Route } from "../../../Navigation/Routes";
-import Navigator from "../../../Utility/Navigator";
+import React from "react";
+import { Text, View, ScrollView } from "react-native";
 import Header from "../../../Components/Header";
 import Strings from "../../../Utility/Strings";
-import { Images } from "../../../Assets/images";
+import styles from "./styles";
+import CustomInput from "../../../Components/CustomInput";
+import { Size } from "../../../Utility/sizes";
 
 // create a component
 const MyComponent = (props) => {
-  return <View style={styles.container}></View>;
+  return (
+    <View style={styles.container}>
+      <Header navigation={props.navigation} isRightIcon={false} />
+      <ScrollView
+        style={{
+          padding: Size.FindSize(15),
+        }}
+      >
+        <CustomInput placeHolder="Search" RightIcon={"search"} />
+      </ScrollView>
+    </View>
+  );
 };
 
 //make this component available to the app

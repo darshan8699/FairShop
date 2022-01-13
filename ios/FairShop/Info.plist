@@ -35,9 +35,12 @@
 			</dict>
 		</dict>
 	</dict>
-	<Key>NSCameraUsageDescription</key>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<key>NSPhotoLibraryAddUsageDescription</key>
+	  <key>NSCameraUsageDescription</key>
+      <string>$(PRODUCT_NAME) is requesting permission to access photos</string>
+	  <key>NSPhotoLibraryUsageDescription</key>
+      <string>$(PRODUCT_NAME) is requesting permission to access photos</string>
+      <key>NSPhotoLibraryAddUsageDescription</key>
+      <string>$(PRODUCT_NAME) is requesting permission to access photos</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string/>
 	<key>UILaunchStoryboardName</key>

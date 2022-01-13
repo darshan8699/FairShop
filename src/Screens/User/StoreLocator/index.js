@@ -76,7 +76,6 @@ const MyComponent = (props) => {
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} isBack isLocation />
-
       <View style={styles.childContainer}>
         <Text style={styles.headerText}>{Strings.Select_Store}</Text>
         <View style={styles.pincodeView}>

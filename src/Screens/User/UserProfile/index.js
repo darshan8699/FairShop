@@ -66,7 +66,9 @@ const MyComponent = (props) => {
         </View>
       </TouchableOpacity>
       <View style={styles.line} />
-      <TouchableOpacity onPress={() => Navigator.navigate(Route.Address)}>
+      <TouchableOpacity
+        onPress={() => Navigator.navigate(Route.AddressListing)}
+      >
         <View style={styles.buttonView}>
           <Image
             source={Images.location}

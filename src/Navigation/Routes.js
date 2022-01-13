@@ -18,4 +18,5 @@ export const Route = {
   MyProfile: "MyProfile",
   MyOrders: "MyOrders",
   Address: "Address",
+  AddressListing: "AddressListing",
 };
