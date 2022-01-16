@@ -1,5 +1,5 @@
 //import liraries
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import Header from "../../../Components/Header";
 import { Route } from "../../../Navigation/Routes";
@@ -7,10 +7,19 @@ import Colors from "../../../Utility/Colors";
 import Navigator from "../../../Utility/Navigator";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
+import {
+  showErrorMessage,
+  showSuccessMessage,
+  validateResponse,
+} from "../../../Utility/Helper";
+import { MY_ADDRESS } from "../../../Utility/Constants";
+import Loader2 from "../../../Components/Loader2";
+import APICallService from "../../../API/APICallService";
 
 // create a component
 const AddressListing = (props) => {
   const [addressIndex, setaddressIndex] = useState(null);
+  const [isShowLoader, setLoader] = useState(false);
   const AddressList = [
     {
       Address_type: "Office",
@@ -68,6 +77,29 @@ const AddressListing = (props) => {
       pincode: "110014",
     },
   ];
+  const isFirstRun = useRef(true);
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      GetAddressData();
+    }
+  });
+  const GetAddressData = () => {
+    setLoader(true);
+    const apiClass = new APICallService(MY_ADDRESS, {});
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          Logger.log("data is ", res.data);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
   const renderAddressList = ({ item, index }) => {
     return (
       <TouchableOpacity
@@ -101,6 +133,7 @@ const AddressListing = (props) => {
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} isBack isRightIcon={false} />
+      <Loader2 modalVisible={isShowLoader} />
       <View style={styles.headerView}>
         <Text style={styles.headerText}>{Strings.Addresses}</Text>
         <TouchableOpacity

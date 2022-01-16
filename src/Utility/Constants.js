@@ -27,3 +27,6 @@ export const RESET_PASSWORD = "/reset-password" + " " + POST_FORM;
 export const CHANGE_PASSWORD = "/change-password" + " " + PUT;
 export const CATEGORY_DROPDOWN = "/category-dropdown" + " " + GET;
 export const PROFILE = "/users" + " " + PUT;
+export const GET_PROFILE = "/me" + " " + GET;
+export const MY_ADDRESS = "/address-my" + " " + GET;
+export const ADD_ADDRESS = "/address" + " " + POST_FORM;

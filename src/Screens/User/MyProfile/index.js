@@ -31,7 +31,7 @@ import {
   showSuccessMessage,
   validateResponse,
 } from "../../../Utility/Helper";
-import { PREF_TOKEN, PROFILE } from "../../../Utility/Constants";
+import { PREF_TOKEN, PROFILE, GET_PROFILE } from "../../../Utility/Constants";
 import Loader2 from "../../../Components/Loader2";
 import APICallService from "../../../API/APICallService";
 // create a component
@@ -46,23 +46,52 @@ const MyComponent = (props) => {
   const [date, setDate] = useState("");
   const [open, setOpen] = useState(false);
   const [isShowLoader, setLoader] = useState(false);
+  const [userId, setUserId] = useState(null);
   var radio_props = [
-    { label: "Male", value: "Male" },
-    { label: "Female", value: "Female" },
+    { label: "Male", value: "male" },
+    { label: "Female", value: "female" },
   ];
   const MaritalData = [
-    { label: "Married", value: "Married" },
-    { label: "Unmarried", value: "Unmarried" },
+    { label: "Married", value: "married" },
+    { label: "Unmarried", value: "unmarried" },
   ];
   const isFirstRun = useRef(true);
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
-
-      setLoginInfo();
+      // setLoginInfo();
+      GetProfileData();
     }
   });
 
+  const GetProfileData = () => {
+    setLoader(true);
+    const apiClass = new APICallService(GET_PROFILE, {});
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          Logger.log("GET profile data is ", res.data);
+          setFirstname(res.data?.item?.profile?.first_name);
+          setLastname(res.data?.item?.profile?.last_name);
+          setMarritalValue(res.data?.item?.profile?.marital_status);
+          setGenderValue(res.data?.item?.profile?.gender);
+          setDate(res.data?.item?.profile?.dob);
+          setEmail(res.data?.item?.email);
+          setPhone("" + res.data?.item?.phone);
+          setUserId(res.data?.item?.id);
+          Logger.log(
+            "res.data?.item?.profile?.gender",
+            res.data?.item?.profile?.gender
+          );
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
   const onSubmit = () => {
     Keyboard.dismiss();
     if (!isTextNotEmpty(firstname)) {
@@ -74,26 +103,26 @@ const MyComponent = (props) => {
     } else if (!isTextNotEmpty(genderValue)) {
       showErrorMessage(Strings.error_gender);
     } else {
-      Logger.log("API call");
+      APICallUpdateProfile();
     }
   };
 
   const APICallUpdateProfile = () => {
+    Logger.log("value", genderValue);
     setLoader(true);
-    const apiClass = new APICallService(PROFILE, {
-      // login: email,
-      // phone: phone,
+    const apiClass = new APICallService("/users/" + userId, {
       first_name: firstname,
       last_name: lastname,
       dob: date,
-      marital_status: marritalValue,
       gender: genderValue,
+      marital_status: marritalValue,
     });
     apiClass
       .callAPI()
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
+          Logger.log("data is ", res.data);
           showSuccessMessage(res.message);
           const jsonValue = JSON.stringify(res.data);
           // await AsyncStorage.setItem(PREF_TOKEN, res.data?.token);
@@ -131,19 +160,19 @@ const MyComponent = (props) => {
       setImageURL(response.assets[0].uri);
     });
   };
+  // async function setLoginInfo() {
+  //   const jsonValue = await AsyncStorage.getItem("loginInfo");
+  //   const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
+  //   Logger.log({ loginInfo });
 
-  async function setLoginInfo() {
-    const jsonValue = await AsyncStorage.getItem("loginInfo");
-    const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
-    Logger.log({ loginInfo });
-
-    if (loginInfo) {
-      setFirstname(loginInfo?.item?.profile?.first_name);
-      setLastname(loginInfo?.item?.profile?.last_name);
-      setEmail(loginInfo?.item?.email);
-      setPhone("" + loginInfo?.item?.phone);
-    }
-  }
+  //   if (loginInfo) {
+  //     setFirstname(loginInfo?.item?.profile?.first_name);
+  //     setLastname(loginInfo?.item?.profile?.last_name);
+  //     setEmail(loginInfo?.item?.email);
+  //     setPhone("" + loginInfo?.item?.phone);
+  //     setUserId(loginInfo?.item?.id);
+  //   }
+  // }
 
   return (
     <View style={styles.container}>
@@ -227,7 +256,7 @@ const MyComponent = (props) => {
         <CustomText name={Strings.Gender} />
         <RadioForm
           radio_props={radio_props}
-          initial={-1}
+          initial={genderValue == "male" ? 0 : genderValue == "female" ? 1 : -1}
           formHorizontal={true}
           labelHorizontal={true}
           buttonColor={Colors.borderColor}

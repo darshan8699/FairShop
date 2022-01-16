@@ -7,12 +7,19 @@ import CustomButton from "../../../Components/CustomButton";
 import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
 import Header from "../../../Components/Header";
-import { showErrorMessage } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import { isTextNotEmpty } from "../../../Utility/Validation";
 import styles from "./styles";
+import {
+  showErrorMessage,
+  showSuccessMessage,
+  validateResponse,
+} from "../../../Utility/Helper";
+import { ADD_ADDRESS } from "../../../Utility/Constants";
+import Loader2 from "../../../Components/Loader2";
+import APICallService from "../../../API/APICallService";
 
 // create a component
 const MyComponent = (props) => {
@@ -26,9 +33,11 @@ const MyComponent = (props) => {
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
+  const [isShowLoader, setLoader] = useState(false);
+
   const AddressData = [
-    { label: "Residential", value: "Residential" },
-    { label: "Office", value: "Office" },
+    { label: "Residential", value: "residential" },
+    { label: "Office", value: "office" },
   ];
   const isFirstRun = useRef(true);
 
@@ -74,12 +83,42 @@ const MyComponent = (props) => {
     } else if (!isTextNotEmpty(pincode)) {
       showErrorMessage(Strings.error_pincode);
     } else {
-      Logger.log("API call");
+      AddAddressAPI();
     }
+  };
+  const AddAddressAPI = () => {
+    setLoader(true);
+    const apiClass = new APICallService(ADD_ADDRESS, {
+      type: addressType,
+      name: addressLabel,
+      full_name: fullName,
+      phone: contact,
+      address_line_1: address1,
+      address_line_2: address2,
+      landmark: landmark,
+      pincode: pincode,
+      city: city,
+      state: state,
+      coords: [{ lat: "23546458", long: "236486" }],
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          Logger.log("data is ", res.data);
+          showSuccessMessage(res.message);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
   };
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} isBack isRightIcon={false} />
+      <Loader2 modalVisible={isShowLoader} />
       <ScrollView
         style={{
           padding: Size.FindSize(15),
