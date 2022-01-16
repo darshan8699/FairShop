@@ -31,17 +31,21 @@ import {
   showSuccessMessage,
   validateResponse,
 } from "../../../Utility/Helper";
+import { PREF_TOKEN, PROFILE } from "../../../Utility/Constants";
+import Loader2 from "../../../Components/Loader2";
+import APICallService from "../../../API/APICallService";
 // create a component
 const MyComponent = (props) => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
-  const [selectedValue, setSelectedValue] = useState("");
+  const [genderValue, setGenderValue] = useState("");
   const [imageURL, setImageURL] = useState("");
-  const [value, setValue] = useState(null);
+  const [marritalValue, setMarritalValue] = useState(null);
   const [date, setDate] = useState("");
   const [open, setOpen] = useState(false);
+  const [isShowLoader, setLoader] = useState(false);
   var radio_props = [
     { label: "Male", value: "Male" },
     { label: "Female", value: "Female" },
@@ -58,6 +62,7 @@ const MyComponent = (props) => {
       setLoginInfo();
     }
   });
+
   const onSubmit = () => {
     Keyboard.dismiss();
     if (!isTextNotEmpty(firstname)) {
@@ -66,12 +71,41 @@ const MyComponent = (props) => {
       showErrorMessage(Strings.error_lastname);
     } else if (!isTextNotEmpty(date)) {
       showErrorMessage(Strings.error_DOB);
-    } else if (!isTextNotEmpty(selectedValue)) {
+    } else if (!isTextNotEmpty(genderValue)) {
       showErrorMessage(Strings.error_gender);
     } else {
       Logger.log("API call");
     }
   };
+
+  const APICallUpdateProfile = () => {
+    setLoader(true);
+    const apiClass = new APICallService(PROFILE, {
+      // login: email,
+      // phone: phone,
+      first_name: firstname,
+      last_name: lastname,
+      dob: date,
+      marital_status: marritalValue,
+      gender: genderValue,
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          showSuccessMessage(res.message);
+          const jsonValue = JSON.stringify(res.data);
+          // await AsyncStorage.setItem(PREF_TOKEN, res.data?.token);
+          // await AsyncStorage.setItem("loginInfo", jsonValue);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+
   const chooseFile = () => {
     let options = {
       mediaType: "photo",
@@ -97,6 +131,7 @@ const MyComponent = (props) => {
       setImageURL(response.assets[0].uri);
     });
   };
+
   async function setLoginInfo() {
     const jsonValue = await AsyncStorage.getItem("loginInfo");
     const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
@@ -109,9 +144,11 @@ const MyComponent = (props) => {
       setPhone("" + loginInfo?.item?.phone);
     }
   }
+
   return (
     <View style={styles.container}>
       <Header isBack navigation={props.navigation} isRightIcon={false} />
+      <Loader2 modalVisible={isShowLoader} />
       <ScrollView
         style={{
           padding: Size.FindSize(15),
@@ -202,7 +239,7 @@ const MyComponent = (props) => {
           }}
           labelStyle={styles.radioText}
           onPress={(value) => {
-            setSelectedValue(value);
+            setGenderValue(value);
           }}
         />
         <Text style={styles.text}>{Strings.Marital_Status}</Text>
@@ -215,9 +252,9 @@ const MyComponent = (props) => {
           maxHeight={120}
           labelField="label"
           valueField="value"
-          value={value}
+          value={marritalValue}
           onChange={(item) => {
-            setValue(item.value);
+            setMarritalValue(item.value);
           }}
         />
         <CustomButton
@@ -230,6 +267,7 @@ const MyComponent = (props) => {
           modal
           mode="date"
           open={open}
+          maximumDate={new Date()}
           date={new Date()}
           onConfirm={(date) => {
             console.log("date", moment(date).format("YYYY-MM_DD"));

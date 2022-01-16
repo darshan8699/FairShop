@@ -1,22 +1,18 @@
 //import liraries
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
-import { Text, View, ScrollView, Keyboard } from "react-native";
-import Header from "../../../Components/Header";
-import Strings from "../../../Utility/Strings";
-import styles from "./styles";
+import { Keyboard, ScrollView, Text, View } from "react-native";
+import { Dropdown } from "react-native-element-dropdown";
+import CustomButton from "../../../Components/CustomButton";
 import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
-import CustomButton from "../../../Components/CustomButton";
+import Header from "../../../Components/Header";
+import { showErrorMessage } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
+import Strings from "../../../Utility/Strings";
 import { isTextNotEmpty } from "../../../Utility/Validation";
-import {
-  showErrorMessage,
-  showSuccessMessage,
-  validateResponse,
-} from "../../../Utility/Helper";
-import { Dropdown } from "react-native-element-dropdown";
+import styles from "./styles";
 
 // create a component
 const MyComponent = (props) => {

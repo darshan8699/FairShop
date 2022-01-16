@@ -1,19 +1,12 @@
 //import liraries
-import React, { useEffect, useRef, useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  FlatList,
-  ScrollView,
-} from "react-native";
-import styles from "./styles";
-import { Route } from "../../../Navigation/Routes";
-import Navigator from "../../../Utility/Navigator";
+import React, { useState } from "react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import Header from "../../../Components/Header";
-import Strings from "../../../Utility/Strings";
+import { Route } from "../../../Navigation/Routes";
 import Colors from "../../../Utility/Colors";
+import Navigator from "../../../Utility/Navigator";
+import Strings from "../../../Utility/Strings";
+import styles from "./styles";
 
 // create a component
 const AddressListing = (props) => {
