@@ -15,68 +15,70 @@ import {
 import { MY_ADDRESS } from "../../../Utility/Constants";
 import Loader2 from "../../../Components/Loader2";
 import APICallService from "../../../API/APICallService";
+import Logger from "../../../Utility/Logger";
 
 // create a component
 const AddressListing = (props) => {
   const [addressIndex, setaddressIndex] = useState(null);
   const [isShowLoader, setLoader] = useState(false);
-  const AddressList = [
-    {
-      Address_type: "Office",
-      Address_Label: "G-1Abc",
-      ReceiverName: "Test Test",
-      Contact: "9898989897",
-      Address: "G-1Abc Complex, Near New Sunlight Colony",
-      Landmark: "Sunlight Colony",
-      City: "Noida",
-      State: "New Delhi Delhi",
-      pincode: "110014",
-    },
-    {
-      Address_type: "Residential",
-      Address_Label: "G-1Abc",
-      ReceiverName: "Test Test",
-      Contact: "9898989897",
-      Address: "G-1Abc Complex, Near New Sunlight Colony",
-      Landmark: "Sunlight Colony",
-      City: "Noida",
-      State: "New Delhi Delhi",
-      pincode: "110014",
-    },
-    {
-      Address_type: "Residential",
-      Address_Label: "G-1Abc",
-      ReceiverName: "Test Test",
-      Contact: "9898989897",
-      Address: "G-1Abc Complex, Near New Sunlight Colony",
-      Landmark: "Sunlight Colony",
-      City: "Noida",
-      State: "New Delhi Delhi",
-      pincode: "110014",
-    },
-    {
-      Address_type: "Office",
-      Address_Label: "G-1Abc",
-      ReceiverName: "Test Test",
-      Contact: "9898989897",
-      Address: "G-1Abc Complex, Near New Sunlight Colony",
-      Landmark: "Sunlight Colony",
-      City: "Noida",
-      State: "New Delhi Delhi",
-      pincode: "110014",
-    },
-    {
-      Address_type: "Office",
-      Address_Label: "G-1Abc",
-      ReceiverName: "Test Test",
-      Contact: "9898989897",
-      Address: "G-1Abc Complex, Near New Sunlight Colony",
-      Landmark: "Sunlight Colony",
-      City: "Noida",
-      State: "New Delhi Delhi",
-      pincode: "110014",
-    },
-  ];
+  const [data, setData] = useState([]);
+  // const AddressList = [
+  //   {
+  //     Address_type: "Office",
+  //     Address_Label: "G-1Abc",
+  //     ReceiverName: "Test Test",
+  //     Contact: "9898989897",
+  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
+  //     Landmark: "Sunlight Colony",
+  //     City: "Noida",
+  //     State: "New Delhi Delhi",
+  //     pincode: "110014",
+  //   },
+  //   {
+  //     Address_type: "Residential",
+  //     Address_Label: "G-1Abc",
+  //     ReceiverName: "Test Test",
+  //     Contact: "9898989897",
+  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
+  //     Landmark: "Sunlight Colony",
+  //     City: "Noida",
+  //     State: "New Delhi Delhi",
+  //     pincode: "110014",
+  //   },
+  //   {
+  //     Address_type: "Residential",
+  //     Address_Label: "G-1Abc",
+  //     ReceiverName: "Test Test",
+  //     Contact: "9898989897",
+  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
+  //     Landmark: "Sunlight Colony",
+  //     City: "Noida",
+  //     State: "New Delhi Delhi",
+  //     pincode: "110014",
+  //   },
+  //   {
+  //     Address_type: "Office",
+  //     Address_Label: "G-1Abc",
+  //     ReceiverName: "Test Test",
+  //     Contact: "9898989897",
+  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
+  //     Landmark: "Sunlight Colony",
+  //     City: "Noida",
+  //     State: "New Delhi Delhi",
+  //     pincode: "110014",
+  //   },
+  //   {
+  //     Address_type: "Office",
+  //     Address_Label: "G-1Abc",
+  //     ReceiverName: "Test Test",
+  //     Contact: "9898989897",
+  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
+  //     Landmark: "Sunlight Colony",
+  //     City: "Noida",
+  //     State: "New Delhi Delhi",
+  //     pincode: "110014",
+  //   },
+  // ];
   const isFirstRun = useRef(true);
   useEffect(() => {
     if (isFirstRun.current) {
@@ -92,7 +94,8 @@ const AddressListing = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("data is ", res.data);
+          Logger.log("data is:", res.data.items);
+          setData(res.data.items);
         }
       })
       .catch((err) => {
@@ -116,16 +119,15 @@ const AddressListing = (props) => {
         ]}
         onPress={() => setaddressIndex(index)}
       >
-        <Text style={styles.addressameText}>{item.Address_type}</Text>
-        <Text style={styles.text1}>Address Label: {item.Address_Label}</Text>
-        <Text style={styles.text1}>
-          Receiver's Full Name: {item.ReceiverName}
-        </Text>
-        <Text style={styles.text1}>Contact No.: {item.Contact}</Text>
-        <Text style={styles.text1}>Address: {item.Address}</Text>
-        <Text style={styles.text1}>Landmark: {item.Landmark}</Text>
-        <Text style={styles.text1}>City: {item.City}</Text>
-        <Text style={styles.text1}>State: {item.State}</Text>
+        <Text style={styles.addressameText}>{item.type}</Text>
+        <Text style={styles.text1}>Address Label: {item.name}</Text>
+        <Text style={styles.text1}>Receiver's Full Name: {item.full_name}</Text>
+        <Text style={styles.text1}>Contact No.: {item.phone}</Text>
+        <Text style={styles.text1}>Address Line 1: {item.address_line_1}</Text>
+        <Text style={styles.text1}>Address Line 2: {item.address_line_2}</Text>
+        <Text style={styles.text1}>Landmark: {item.landmark}</Text>
+        <Text style={styles.text1}>City: {item.city}</Text>
+        <Text style={styles.text1}>State: {item.state}</Text>
         <Text style={styles.text1}>Pincode: {item.pincode}</Text>
       </TouchableOpacity>
     );
@@ -145,7 +147,7 @@ const AddressListing = (props) => {
       </View>
       <FlatList
         showsVerticalScrollIndicator={false}
-        data={AddressList}
+        data={data}
         renderItem={renderAddressList}
         style={styles.addressList}
       />
