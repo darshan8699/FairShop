@@ -143,7 +143,7 @@ const MyComponent = (props) => {
         dob: date,
         gender: genderValue,
         marital_status: marritalValue,
-        profile_pic: profile_pic,
+        profile_pic: [profile_pic],
       };
     } else {
       requestParam = {
