@@ -30,3 +30,5 @@ export const PROFILE = "/users" + " " + PUT;
 export const GET_PROFILE = "/me" + " " + GET;
 export const MY_ADDRESS = "/address-my" + " " + GET;
 export const ADD_ADDRESS = "/address" + " " + POST_FORM;
+export const ATTACHMENTS = "/attachments" + " " + MULTI_PART;
+export const SETTING_ABOUT = "/settings/pages/about" + " " + GET;

@@ -27,21 +27,25 @@ export function validateResponse(res) {
 
 export function showSuccessMessage(message, isMoreSpace) {
   Logger.log({ message });
-  let toast = Toast.show(message, {
-    duration: Toast.durations.SHORT,
-    position: Toast.positions.BOTTOM,
-    backgroundColor: Colors.green,
-    textColor: Colors.white,
-    shadow: true,
-    animation: true,
-    hideOnPress: true,
-    delay: 0,
-  });
+  try {
+    let toast = Toast.show(message, {
+      duration: Toast.durations.SHORT,
+      position: Toast.positions.BOTTOM,
+      backgroundColor: Colors.green,
+      textColor: Colors.white,
+      shadow: true,
+      animation: true,
+      hideOnPress: true,
+      delay: 0,
+    });
 
-  // You can manually hide the Toast, or it will automatically disappear after a `duration` ms timeout.
-  setTimeout(function () {
-    Toast.hide(toast);
-  }, 800);
+    // You can manually hide the Toast, or it will automatically disappear after a `duration` ms timeout.
+    setTimeout(function () {
+      Toast.hide(toast);
+    }, 800);
+  } catch (e) {
+    Logger.log(e);
+  }
 }
 
 export function showErrorMessage(message) {

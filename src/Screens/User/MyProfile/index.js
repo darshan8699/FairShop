@@ -1,39 +1,45 @@
 //import liraries
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Text,
-  View,
-  ScrollView,
-  TouchableOpacity,
   Image,
   Keyboard,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import CustomInput from "../../../Components/CustomInput";
-import CustomText from "../../../Components/CustomText";
-import CustomButton from "../../../Components/CustomButton";
-import Header from "../../../Components/Header";
-import Logger from "../../../Utility/Logger";
-import { Size } from "../../../Utility/sizes";
-import Strings from "../../../Utility/Strings";
-import styles from "./styles";
-import { launchCamera, launchImageLibrary } from "react-native-image-picker";
-import RadioForm from "react-native-simple-radio-button";
-import { Dropdown } from "react-native-element-dropdown";
 import DatePicker from "react-native-date-picker";
+import { Dropdown } from "react-native-element-dropdown";
+import { launchImageLibrary } from "react-native-image-picker";
+import RadioForm from "react-native-simple-radio-button";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import APICallService from "../../../API/APICallService";
+import { Images } from "../../../Assets/images";
+import CustomButton from "../../../Components/CustomButton";
+import CustomInput from "../../../Components/CustomInput";
+import CustomText from "../../../Components/CustomText";
+import Header from "../../../Components/Header";
+import Loader2 from "../../../Components/Loader2";
 import Colors from "../../../Utility/Colors";
-import moment from "moment";
-import { isTextNotEmpty } from "../../../Utility/Validation";
+import {
+  ATTACHMENTS,
+  GET_PROFILE,
+  POST_RAW,
+  PUT,
+} from "../../../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,
   validateResponse,
 } from "../../../Utility/Helper";
-import { PREF_TOKEN, PROFILE, GET_PROFILE } from "../../../Utility/Constants";
-import Loader2 from "../../../Components/Loader2";
-import APICallService from "../../../API/APICallService";
+import Logger from "../../../Utility/Logger";
+import { Size } from "../../../Utility/sizes";
+import Strings from "../../../Utility/Strings";
+import { isTextNotEmpty } from "../../../Utility/Validation";
+import styles from "./styles";
 // create a component
 const MyComponent = (props) => {
   const [email, setEmail] = useState("");
@@ -42,6 +48,7 @@ const MyComponent = (props) => {
   const [lastname, setLastname] = useState("");
   const [genderValue, setGenderValue] = useState("");
   const [imageURL, setImageURL] = useState("");
+  const [imageData, setImageData] = useState("");
   const [marritalValue, setMarritalValue] = useState(null);
   const [date, setDate] = useState("");
   const [open, setOpen] = useState(false);
@@ -72,7 +79,6 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("GET profile data is ", res.data);
           setFirstname(res.data?.item?.profile?.first_name);
           setLastname(res.data?.item?.profile?.last_name);
           setMarritalValue(res.data?.item?.profile?.marital_status);
@@ -81,10 +87,7 @@ const MyComponent = (props) => {
           setEmail(res.data?.item?.email);
           setPhone("" + res.data?.item?.phone);
           setUserId(res.data?.item?.id);
-          Logger.log(
-            "res.data?.item?.profile?.gender",
-            res.data?.item?.profile?.gender
-          );
+          setImageData(res.data?.item?.profile?.profile_pic);
         }
       })
       .catch((err) => {
@@ -92,6 +95,7 @@ const MyComponent = (props) => {
         showErrorMessage(err.message);
       });
   };
+
   const onSubmit = () => {
     Keyboard.dismiss();
     if (!isTextNotEmpty(firstname)) {
@@ -103,30 +107,65 @@ const MyComponent = (props) => {
     } else if (!isTextNotEmpty(genderValue)) {
       showErrorMessage(Strings.error_gender);
     } else {
-      APICallUpdateProfile();
+      if (imageURL) {
+        APICallUpdateProfilePic();
+      } else APICallUpdateProfile();
     }
   };
 
-  const APICallUpdateProfile = () => {
-    Logger.log("value", genderValue);
+  const APICallUpdateProfilePic = () => {
     setLoader(true);
-    const apiClass = new APICallService("/users/" + userId, {
-      first_name: firstname,
-      last_name: lastname,
-      dob: date,
-      gender: genderValue,
-      marital_status: marritalValue,
-    });
+    let form = new FormData();
+    form.append("attachment[]", imageURL);
+    const apiClass = new APICallService(ATTACHMENTS, form);
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        if (validateResponse(res)) {
+          APICallUpdateProfile(res.data.item[0]);
+        } else {
+          setLoader(false);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+
+  const APICallUpdateProfile = (profile_pic) => {
+    setLoader(true);
+    let requestParam;
+    if (profile_pic) {
+      requestParam = {
+        first_name: firstname,
+        last_name: lastname,
+        dob: date,
+        gender: genderValue,
+        marital_status: marritalValue,
+        profile_pic: profile_pic,
+      };
+    } else {
+      requestParam = {
+        first_name: firstname,
+        last_name: lastname,
+        dob: date,
+        gender: genderValue,
+        marital_status: marritalValue,
+      };
+    }
+    const apiClass = new APICallService(
+      "/users/" + userId + " " + PUT,
+      requestParam
+    );
     apiClass
       .callAPI()
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("data is ", res.data);
-          showSuccessMessage(res.message);
-          const jsonValue = JSON.stringify(res.data);
-          // await AsyncStorage.setItem(PREF_TOKEN, res.data?.token);
-          // await AsyncStorage.setItem("loginInfo", jsonValue);
+          setTimeout(() => {
+            showSuccessMessage("" + res.message);
+          }, 200);
         }
       })
       .catch((err) => {
@@ -145,7 +184,7 @@ const MyComponent = (props) => {
     launchImageLibrary(options, (response) => {
       console.log("Response = ", response);
       if (response.didCancel) {
-        alert("User cancelled camera picker");
+        // alert("User cancelled camera picker");
         return;
       } else if (response.errorCode == "camera_unavailable") {
         alert("Camera not available on device");
@@ -157,7 +196,17 @@ const MyComponent = (props) => {
         alert(response.errorMessage);
         return;
       }
-      setImageURL(response.assets[0].uri);
+
+      Logger.log(response);
+      let source = {
+        uri:
+          Platform.OS == "ios"
+            ? response.assets[0].uri.replace("file://", "")
+            : response.assets[0].uri,
+        name: String(Date.now()) + "." + response.assets[0].type.split("/")[1],
+        type: response.assets[0].type,
+      };
+      setImageURL(source);
     });
   };
   // async function setLoginInfo() {
@@ -189,7 +238,17 @@ const MyComponent = (props) => {
         <Text style={styles.headerText}>{Strings.My_Profile}</Text>
         <Text style={styles.text}>{Strings.Profile_Picture}</Text>
         <View style={styles.profileView}>
-          <Image source={imageURL} style={styles.profileImage} />
+          <Image
+            source={
+              imageURL
+                ? { uri: imageURL.uri }
+                : imageData
+                ? { uri: imageData.thumbnail }
+                : Images.profile
+            }
+            style={styles.profileImage}
+            // resizeMode={"contain"}
+          />
           <TouchableOpacity
             style={styles.uploadButton}
             onPress={() => chooseFile()}
@@ -254,23 +313,25 @@ const MyComponent = (props) => {
           )}
         </TouchableOpacity>
         <CustomText name={Strings.Gender} />
-        <RadioForm
-          radio_props={radio_props}
-          initial={genderValue == "male" ? 0 : genderValue == "female" ? 1 : -1}
-          formHorizontal={true}
-          labelHorizontal={true}
-          buttonColor={Colors.borderColor}
-          selectedButtonColor={Colors.Background}
-          buttonSize={Size.FindSize(10)}
-          buttonOuterSize={Size.FindSize(20)}
-          style={{
-            marginTop: Size.FindSize(10),
-          }}
-          labelStyle={styles.radioText}
-          onPress={(value) => {
-            setGenderValue(value);
-          }}
-        />
+        {genderValue != "" && (
+          <RadioForm
+            radio_props={radio_props}
+            initial={genderValue == "female" ? 1 : 0}
+            formHorizontal={true}
+            labelHorizontal={true}
+            buttonColor={Colors.borderColor}
+            selectedButtonColor={Colors.Background}
+            buttonSize={Size.FindSize(10)}
+            buttonOuterSize={Size.FindSize(20)}
+            style={{
+              marginTop: Size.FindSize(10),
+            }}
+            labelStyle={styles.radioText}
+            onPress={(value) => {
+              setGenderValue(value);
+            }}
+          />
+        )}
         <Text style={styles.text}>{Strings.Marital_Status}</Text>
         <Dropdown
           style={styles.dropdown}

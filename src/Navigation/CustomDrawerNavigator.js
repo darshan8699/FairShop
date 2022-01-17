@@ -23,6 +23,7 @@ import {
 import Logger from "../Utility/Logger";
 import Loader2 from "../Components/Loader2";
 import Strings from "../Utility/Strings";
+import { Regular } from "../Assets/fonts";
 
 // create a component
 const MyComponent = (props) => {
@@ -62,7 +63,9 @@ const MyComponent = (props) => {
     <View style={styles.container}>
       <Loader2 modalVisible={isShowLoader} />
       <View style={styles.header}>
-        <Text>{Strings.Menu}</Text>
+        <Text style={[styles.textToggleView, { color: Colors.text }]}>
+          {Strings.Menu}
+        </Text>
         <TouchableOpacity
           onPress={() => {
             props.navigation.closeDrawer();
@@ -152,8 +155,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     color: Colors.forgotText,
+    fontFamily: Regular,
   },
-  textToggleView: {},
+  textToggleView: {
+    fontFamily: Regular,
+    color: Colors.forgotText,
+  },
 });
 
 //make this component available to the app

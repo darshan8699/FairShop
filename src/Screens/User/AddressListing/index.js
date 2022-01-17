@@ -1,20 +1,17 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import APICallService from "../../../API/APICallService";
 import Header from "../../../Components/Header";
+import Loader2 from "../../../Components/Loader2";
 import { Route } from "../../../Navigation/Routes";
 import Colors from "../../../Utility/Colors";
+import { MY_ADDRESS } from "../../../Utility/Constants";
+import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import Logger from "../../../Utility/Logger";
 import Navigator from "../../../Utility/Navigator";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
-import {
-  showErrorMessage,
-  showSuccessMessage,
-  validateResponse,
-} from "../../../Utility/Helper";
-import { MY_ADDRESS } from "../../../Utility/Constants";
-import Loader2 from "../../../Components/Loader2";
-import APICallService from "../../../API/APICallService";
 
 // create a component
 const AddressListing = (props) => {

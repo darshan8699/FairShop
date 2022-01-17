@@ -10,6 +10,9 @@ import Colors from "../../../Utility/Colors";
 import Loader2 from "../../../Components/Loader2";
 import Logger from "../../../Utility/Logger";
 import { Regular } from "../../../Assets/fonts";
+import APICallService from "../../../API/APICallService";
+import { SETTING_ABOUT } from "../../../Utility/Constants";
+import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 // create a component
 
 const aboutUS = `<!DOCTYPE html><html> <head>
@@ -31,6 +34,7 @@ const aboutUS = `<!DOCTYPE html><html> <head>
 
 const AboutUs = (props) => {
   const [isShowLoader, setLoader] = useState(false);
+  const [aboutData, setAboutData] = useState(aboutUS);
 
   const webViewRef = useRef();
   const isFirstRun = useRef(true);
@@ -39,10 +43,44 @@ const AboutUs = (props) => {
       isFirstRun.current = false;
       //componentDidMount
       setLoader(true);
+      APICall();
     } else {
       //componentWillReceiveProps
     }
   }, []);
+
+  const APICall = () => {
+    setLoader(true);
+    const apiClass = new APICallService(SETTING_ABOUT);
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          var about = `<!DOCTYPE html><html> <head>
+    <title>Downloads</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <style type="text/css">
+      body {
+        margin: 0;
+        padding-left: 12px;
+        padding-right: 12px;
+         font-size: 14px;
+        font-family: ${Regular};
+        font-family:sans-serif;
+        background: #ffffff;
+      }
+    </style>
+  </head><body><p>${res.data?.item?.content}</p></body></html>`;
+          setAboutData(about);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
 
   return (
     <View style={styles.container}>
@@ -53,7 +91,7 @@ const AboutUs = (props) => {
         ref={webViewRef}
         cacheEnabled={false}
         scalesPageToFit={false}
-        source={{ html: aboutUS }}
+        source={{ html: aboutData }}
         style={{
           backgroundColor: Colors.white,
         }}
