@@ -140,7 +140,13 @@ const AddressListing = (props) => {
         <Text style={styles.headerText}>{Strings.Addresses}</Text>
         <TouchableOpacity
           style={styles.addbuttonView}
-          onPress={() => Navigator.navigate(Route.Address)}
+          onPress={() =>
+            Navigator.navigate(Route.Address, {
+              onRefresh: () => {
+                GetAddressData();
+              },
+            })
+          }
         >
           <Text style={styles.addbuttontext}>{"+ " + Strings.Add}</Text>
         </TouchableOpacity>

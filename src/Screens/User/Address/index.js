@@ -106,8 +106,9 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("data is ", res.data);
           showSuccessMessage(res.message);
+          props?.route?.params?.onRefresh();
+          props.navigation.goBack();
         }
       })
       .catch((err) => {
