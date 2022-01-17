@@ -32,3 +32,7 @@ export const MY_ADDRESS = "/address-my" + " " + GET;
 export const ADD_ADDRESS = "/address" + " " + POST_FORM;
 export const ATTACHMENTS = "/attachments" + " " + MULTI_PART;
 export const SETTING_ABOUT = "/settings/pages/about" + " " + GET;
+export const HOMEPAGE_NEW_PRODUCT = "/product-homepage-new" + " " + GET;
+export const HOMEPAGE_POPULAR_PRODUCT = "/product-homepage-popular" + " " + GET;
+export const CATEGORY = "/category" + " " + GET_URL_PARAMS;
+export const HOMEPAGE_TOP_PICK = "/product-homepage-top-pick" + " " + GET;

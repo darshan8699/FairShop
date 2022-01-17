@@ -1,5 +1,5 @@
 //import liraries
-import React, { Component } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -17,8 +17,27 @@ import styles from "./styles";
 import Strings from "../../../Utility/Strings";
 import { Size } from "../../../Utility/sizes";
 import CustomItemView from "../../../Components/CustomItemView";
+import {
+  showErrorMessage,
+  showSuccessMessage,
+  validateResponse,
+} from "../../../Utility/Helper";
+import {
+  HOMEPAGE_NEW_PRODUCT,
+  HOMEPAGE_POPULAR_PRODUCT,
+  HOMEPAGE_TOP_PICK,
+  CATEGORY,
+} from "../../../Utility/Constants";
+import Loader2 from "../../../Components/Loader2";
+import APICallService from "../../../API/APICallService";
+import Logger from "../../../Utility/Logger";
+
 // create a component
 const MyComponent = (props) => {
+  const [popularData, setPopularData] = useState([]);
+  const [newData, setNewData] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [isShowLoader, setLoader] = useState(false);
   const images = [Images.test, Images.test, Images.test];
   const bestValues = [Images.test2, Images.test2];
   const popularCategory = [Images.catTest, Images.catTest, Images.catTest];
@@ -28,33 +47,83 @@ const MyComponent = (props) => {
     Images.test3,
     Images.test3,
   ];
-  const popularProduct = [
-    {
-      image: Images.test3,
-      name: "Apples",
-      price: "193",
-      veg: true,
-    },
-    {
-      image: Images.test3,
-      name: "Chicken Breast",
-      price: "358",
-      veg: false,
-    },
-    {
-      image: Images.test3,
-      name: "Apples",
-      price: "193",
-      veg: true,
-    },
-  ];
+  const isFirstRun = useRef(true);
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      GetPopularProductData();
+      GetNewProductData();
+      GetBrowseCategory();
+    }
+  });
+
+  const GetPopularProductData = () => {
+    setLoader(true);
+    const apiClass = new APICallService(HOMEPAGE_POPULAR_PRODUCT);
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          Logger.log("data is---", res.data.items);
+          setPopularData(res.data.items);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+  const GetNewProductData = () => {
+    setLoader(true);
+    const apiClass = new APICallService(HOMEPAGE_NEW_PRODUCT);
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          Logger.log("data is---", res.data.items);
+          setNewData(res.data.items);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+  const GetBrowseCategory = () => {
+    setLoader(true);
+    const apiClass = new APICallService(CATEGORY, { limit: 10 });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          Logger.log("category data is---", res.data.data);
+          setCategory(res.data.data);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
   const renderBestItem = ({ item }) => (
     <Image source={Images.test2} style={styles.bestImage} />
   );
   const renderBrowseCategory = ({ item }) => (
     <View style={styles.browseCard}>
-      <Image source={Images.test3} style={styles.browseImage} />
-      <Text style={styles.browseCategoryText}>{"Fruits and Vegetables"}</Text>
+      <Image
+        source={item.image ? { uri: item.image } : Images.test3}
+        style={styles.browseImage}
+      />
+      <Text
+        style={styles.browseCategoryText}
+        numberOfLines={2}
+        ellipsizeMode={"tail"}
+      >
+        {item.name}
+      </Text>
     </View>
   );
   const renderPopularCategory = ({ item }) => (
@@ -86,6 +155,7 @@ const MyComponent = (props) => {
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} />
+      <Loader2 modalVisible={isShowLoader} />
       <ScrollView
         overScrollMode="never"
         bounces={false}
@@ -137,7 +207,7 @@ const MyComponent = (props) => {
             </TouchableOpacity>
           </View>
           <FlatList
-            data={BrowseCategory}
+            data={category}
             horizontal={true}
             contentContainerStyle={{ paddingRight: 15 }}
             renderItem={renderBrowseCategory}
@@ -163,7 +233,7 @@ const MyComponent = (props) => {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingRight: 15 }}
-            data={popularProduct}
+            data={popularData}
             renderItem={({ item }) => <CustomItemView item={item} />}
           />
         </ImageBackground>
@@ -182,7 +252,7 @@ const MyComponent = (props) => {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingRight: 15 }}
-            data={popularProduct}
+            data={newData}
             renderItem={({ item }) => (
               <CustomItemView item={item} listView={styles.shadow} />
             )}
