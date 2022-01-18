@@ -3,23 +3,23 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
 import { Keyboard, ScrollView, Text, View } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
+import APICallService from "../../../API/APICallService";
 import CustomButton from "../../../Components/CustomButton";
 import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
 import Header from "../../../Components/Header";
-import Logger from "../../../Utility/Logger";
-import { Size } from "../../../Utility/sizes";
-import Strings from "../../../Utility/Strings";
-import { isTextNotEmpty } from "../../../Utility/Validation";
-import styles from "./styles";
+import Loader2 from "../../../Components/Loader2";
+import { ADD_ADDRESS } from "../../../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,
   validateResponse,
 } from "../../../Utility/Helper";
-import { ADD_ADDRESS } from "../../../Utility/Constants";
-import Loader2 from "../../../Components/Loader2";
-import APICallService from "../../../API/APICallService";
+import Logger from "../../../Utility/Logger";
+import { Size } from "../../../Utility/sizes";
+import Strings from "../../../Utility/Strings";
+import { isTextNotEmpty } from "../../../Utility/Validation";
+import styles from "./styles";
 
 // create a component
 const MyComponent = (props) => {
@@ -106,8 +106,9 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("data is ", res.data);
           showSuccessMessage(res.message);
+          props?.route?.params?.onRefresh();
+          props.navigation.goBack();
         }
       })
       .catch((err) => {

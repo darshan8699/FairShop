@@ -59,6 +59,7 @@ export default styles = StyleSheet.create({
   uploadText: {
     color: Colors.uploadText,
     fontSize: Size.FindSize(16),
+    marginStart: Size.FindSize(10),
     fontFamily: Regular,
   },
   profileView: {

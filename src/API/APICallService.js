@@ -31,6 +31,8 @@ class APICallService {
       myHeaders.append("Content-Type", "application/json");
     }
     myHeaders.append("Accept", "application/json");
+    myHeaders.append("X-Requested-With", "XMLHttpRequest");
+
     var settings = {
       redirect: "follow",
       url: resourceURL,
@@ -67,10 +69,11 @@ class APICallService {
       case constants.PUT:
         //settings.headers = myHeaders;
         settings.method = "PUT";
-        settings.body = JSON.stringify(params);
+        // settings.body = JSON.stringify(params);
+        settings.body = params;
         break;
       case constants.MULTI_PART:
-        settings.headers = myHeaders;
+        // settings.headers = myHeaders;
         settings.method = "POST";
         settings.body = params;
         break;
@@ -137,6 +140,9 @@ class APICallService {
         this.apiType,
         this.params
       );
+      Logger.log("URL=> " + JSON.stringify(this.settings.url));
+      Logger.log("Params=> " + JSON.stringify(this.settings.body));
+
       return fetch(this.settings.url, this.settings)
         .then(async (res) => {
           const resSize = res._bodyInit._data.size;
