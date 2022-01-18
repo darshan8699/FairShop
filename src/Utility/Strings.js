@@ -99,5 +99,10 @@ export const Strings = {
   Offers: "Offers",
   AboutUs: "About Us",
   StoreLocator: "Store Locator",
+  AddToCart: "Add to Cart",
+  Description: "Description",
+  Share: "Share",
+  Tweet: "Tweet",
+  Email: "Email",
 };
 export default Strings;

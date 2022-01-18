@@ -18,5 +18,6 @@ export { default as MyProfile } from "./User/MyProfile";
 export { default as MyOrders } from "./User/MyOrders";
 export { default as Address } from "./User/Address";
 export { default as AddressListing } from "./User/AddressListing";
+export { default as ProductDetails } from "./User/ProductDetails";
 
 LogBox.ignoreAllLogs();

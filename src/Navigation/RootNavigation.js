@@ -190,6 +190,10 @@ function RootNavigation() {
           name={Route.AddressListing}
           component={screen.AddressListing}
         />
+        <Stack.Screen
+          name={Route.ProductDetails}
+          component={screen.ProductDetails}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -24,7 +24,15 @@ export const Images = {
   catTest: require("./catTest.png"),
   flag: require("./flag.png"),
   pincode: require("./pincode.png"),
-
+  leftSlider: require("./leftSlider.png"),
+  rightSlider: require("./rightSlider.png"),
+  circleVeg: require("./circleVeg.png"),
+  circleFlag: require("./circleFlag.png"),
+  Point: require("./point.png"),
+  facebook: require("./facebook.png"),
+  wt: require("./wt.png"),
+  mail: require("./mail.png"),
+  tweet: require("./tweet.png"),
   //test images
   test: require("./test.png"),
   test2: require("./test2.png"),

@@ -6,11 +6,17 @@ import { Regular } from "../Assets/fonts";
 import Colors from "../Utility/Colors";
 import { Images } from "../Assets/images";
 import Strings from "../Utility/Strings";
+import Navigator from "../Utility/Navigator";
+import { Route } from "../Navigation/Routes";
 
 // create a component
 const CustomItemView = (props) => {
   return (
-    <TouchableOpacity style={[styles.list, props.listView]} activeOpacity={1}>
+    <TouchableOpacity
+      style={[styles.list, props.listView]}
+      activeOpacity={1}
+      onPress={() => Navigator.navigate(Route.ProductDetails)}
+    >
       <Image
         source={{
           // uri:props?.item?.images[0].url
