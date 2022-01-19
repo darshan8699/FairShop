@@ -31,7 +31,8 @@ import {
 import Loader2 from "../../../Components/Loader2";
 import APICallService from "../../../API/APICallService";
 import Logger from "../../../Utility/Logger";
-
+import { Route } from "../../../Navigation/Routes";
+import Navigator from "../../../Utility/Navigator";
 // create a component
 const MyComponent = (props) => {
   const [popularData, setPopularData] = useState([]);
@@ -112,7 +113,10 @@ const MyComponent = (props) => {
     <Image source={Images.test2} style={styles.bestImage} />
   );
   const renderBrowseCategory = ({ item }) => (
-    <View style={styles.browseCard}>
+    <TouchableOpacity
+      style={styles.browseCard}
+      onPress={() => Navigator.navigate(Route.ShopCategoryWise)}
+    >
       <Image
         source={item.image ? { uri: item.image } : Images.test3}
         style={styles.browseImage}
@@ -124,7 +128,7 @@ const MyComponent = (props) => {
       >
         {item.name}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
   const renderPopularCategory = ({ item }) => (
     <Image source={Images.catTest} style={styles.popularCatImage} />

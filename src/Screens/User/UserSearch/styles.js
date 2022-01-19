@@ -9,4 +9,11 @@ export default styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
   },
+  childContainer: {
+    padding: Size.FindSize(15),
+  },
+  list: {
+    marginHorizontal: Size.FindSize(5),
+  },
+  listView: {},
 });
