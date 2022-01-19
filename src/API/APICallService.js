@@ -69,8 +69,7 @@ class APICallService {
       case constants.PUT:
         //settings.headers = myHeaders;
         settings.method = "PUT";
-        // settings.body = JSON.stringify(params);
-        settings.body = params;
+        settings.body = JSON.stringify(params);
         break;
       case constants.MULTI_PART:
         // settings.headers = myHeaders;
@@ -140,8 +139,6 @@ class APICallService {
         this.apiType,
         this.params
       );
-      Logger.log("URL=> " + JSON.stringify(this.settings.url));
-      Logger.log("Params=> " + JSON.stringify(this.settings.body));
 
       return fetch(this.settings.url, this.settings)
         .then(async (res) => {

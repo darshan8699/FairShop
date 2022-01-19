@@ -1,18 +1,19 @@
 //import liraries
+import { decode } from "html-entities";
 import React, { useEffect, useRef, useState } from "react";
 import { Text, View } from "react-native";
-import Header from "../../../Components/Header";
-import Strings from "../../../Utility/Strings";
-import styles from "./styles";
 import { WebView } from "react-native-webview";
-import { Size } from "../../../Utility/sizes";
-import Colors from "../../../Utility/Colors";
-import Loader2 from "../../../Components/Loader2";
-import Logger from "../../../Utility/Logger";
-import { Regular } from "../../../Assets/fonts";
 import APICallService from "../../../API/APICallService";
+import { Regular } from "../../../Assets/fonts";
+import Header from "../../../Components/Header";
+import Loader2 from "../../../Components/Loader2";
+import Colors from "../../../Utility/Colors";
 import { SETTING_ABOUT } from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import Logger from "../../../Utility/Logger";
+import Strings from "../../../Utility/Strings";
+import styles from "./styles";
+
 // create a component
 
 const aboutUS = `<!DOCTYPE html><html> <head>
@@ -68,12 +69,14 @@ const AboutUs = (props) => {
         padding-right: 12px;
          font-size: 14px;
         font-family: ${Regular};
-        font-family:sans-serif;
+        // font-family:sans-serif;
         background: #ffffff;
       }
     </style>
-  </head><body><p>${res.data?.item?.content}</p></body></html>`;
-          setAboutData(about);
+  </head><body>${res.data?.item?.content}</body></html>`;
+          setAboutData(decode(about));
+        } else {
+          setLoader(false);
         }
       })
       .catch((err) => {

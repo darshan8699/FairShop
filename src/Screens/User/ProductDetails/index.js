@@ -49,7 +49,7 @@ const MyComponent = (props) => {
   );
   return (
     <View style={styles.container}>
-      <Header navigation={props.navigation} isRightIcon={true} isBack />
+      <Header navigation={props.navigation} isRightIcon={false} isBack />
       <ScrollView
         style={{
           padding: Size.FindSize(15),
