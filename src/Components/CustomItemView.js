@@ -15,13 +15,19 @@ const CustomItemView = (props) => {
     <TouchableOpacity
       style={[styles.list, props.listView]}
       activeOpacity={1}
-      onPress={() => Navigator.navigate(Route.ProductDetails)}
+      onPress={() => {
+        Navigator.navigate(Route.ProductDetails, { id: props.item.item_code });
+        console.log("item is :", props.item);
+      }}
     >
       <Image
-        source={{
-          // uri:props?.item?.images[0].url
-          uri: "https://d1j99e0b4sw4ql.cloudfront.net/119/_-STIRRED-BLOODY-MARY125ml-POUCH-(1)-copy.png",
-        }}
+        source={
+          props?.item?.images != null
+            ? {
+                uri: props?.item?.images[0].url,
+              }
+            : Images.placeholder
+        }
         resizeMode="contain"
         style={styles.item}
       />

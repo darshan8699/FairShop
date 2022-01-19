@@ -33,6 +33,8 @@ export const Images = {
   wt: require("./wt.png"),
   mail: require("./mail.png"),
   tweet: require("./tweet.png"),
+  placeholder: require("./attachment_placeholder.png"),
+  circleNonVeg: require("./circleNonVeg.png"),
   //test images
   test: require("./test.png"),
   test2: require("./test2.png"),
