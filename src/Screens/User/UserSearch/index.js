@@ -20,6 +20,7 @@ import Logger from "../../../Utility/Logger";
 // create a component
 const MyComponent = (props) => {
   const [newData, setNewData] = useState([]);
+  const [searchData, setSearchData] = useState([]);
   const [isShowLoader, setLoader] = useState(false);
   const isFirstRun = useRef(true);
 
@@ -39,6 +40,7 @@ const MyComponent = (props) => {
         if (validateResponse(res)) {
           Logger.log("data is---", res.data.items);
           setNewData(res.data.items);
+          setSearchData(res.data.items);
         }
       })
       .catch((err) => {
@@ -46,18 +48,32 @@ const MyComponent = (props) => {
         showErrorMessage(err.message);
       });
   };
+  const searchFilter = (text) => {
+    let filteredList = searchData.filter(function (item) {
+      return item.item_name.toLowerCase().includes(text.toLowerCase());
+    });
+    if (text.length == 0) {
+      setSearchData(newData);
+    } else {
+      setSearchData(filteredList);
+    }
+  };
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} isRightIcon={false} />
       <Loader2 modalVisible={isShowLoader} />
       <View style={styles.childContainer}>
-        <CustomInput placeHolder="Search" RightIcon={"search"} />
+        <CustomInput
+          placeHolder="Search"
+          RightIcon={"search"}
+          onChangeText={(text) => searchFilter(text)}
+        />
       </View>
       <FlatList
         numColumns={2}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingRight: 15 }}
-        data={newData}
+        data={searchData}
         style={styles.list}
         renderItem={({ item }) => (
           <CustomItemView item={item} listView={styles.listView} />

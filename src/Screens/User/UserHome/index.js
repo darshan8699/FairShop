@@ -115,7 +115,9 @@ const MyComponent = (props) => {
   const renderBrowseCategory = ({ item }) => (
     <TouchableOpacity
       style={styles.browseCard}
-      onPress={() => Navigator.navigate(Route.ShopCategoryWise)}
+      onPress={() =>
+        Navigator.navigate(Route.ShopCategoryWise, { categoryDetail: item })
+      }
     >
       <Image
         source={item.image ? { uri: item.image } : Images.test3}
