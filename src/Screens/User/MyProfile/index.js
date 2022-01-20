@@ -122,6 +122,7 @@ const MyComponent = (props) => {
       .callAPI()
       .then(async function (res) {
         if (validateResponse(res)) {
+          //setLoader(false);
           APICallUpdateProfile(res.data.item[0]);
         } else {
           setLoader(false);
@@ -141,6 +142,7 @@ const MyComponent = (props) => {
         first_name: firstname,
         last_name: lastname,
         dob: date,
+        doa: date,
         gender: genderValue,
         marital_status: marritalValue,
         profile_pic: [profile_pic],
@@ -150,6 +152,7 @@ const MyComponent = (props) => {
         first_name: firstname,
         last_name: lastname,
         dob: date,
+        doa: date,
         gender: genderValue,
         marital_status: marritalValue,
       };
@@ -243,7 +246,7 @@ const MyComponent = (props) => {
               imageURL
                 ? { uri: imageURL.uri }
                 : imageData
-                ? { uri: imageData.thumbnail }
+                ? { uri: imageData[0].thumbnail }
                 : Images.profile
             }
             style={styles.profileImage}
