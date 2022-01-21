@@ -8,7 +8,6 @@ import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
 import { HOMEPAGE_NEW_PRODUCT } from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
-import Logger from "../../../Utility/Logger";
 import styles from "./styles";
 
 // create a component
@@ -32,7 +31,6 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("data is---", res.data.items);
           setNewData(res.data.items);
           setSearchData(res.data.items);
         }

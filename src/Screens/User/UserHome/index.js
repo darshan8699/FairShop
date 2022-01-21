@@ -1,47 +1,46 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
 import {
-  View,
-  Text,
+  FlatList,
+  Image,
   ImageBackground,
   ScrollView,
-  Image,
-  FlatList,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
-import Header from "../../../Components/Header";
 import { SliderBox } from "react-native-image-slider-box";
+import APICallService from "../../../API/APICallService";
 import { Images } from "../../../Assets/images";
-import Colors from "../../../Utility/Colors";
-import styles from "./styles";
-import Strings from "../../../Utility/Strings";
-import { Size } from "../../../Utility/sizes";
 import CustomItemView from "../../../Components/CustomItemView";
+import Header from "../../../Components/Header";
+import Loader2 from "../../../Components/Loader2";
+import { Route } from "../../../Navigation/Routes";
+import Colors from "../../../Utility/Colors";
 import {
-  showErrorMessage,
-  showSuccessMessage,
-  validateResponse,
-} from "../../../Utility/Helper";
-import {
+  CATEGORY,
   HOMEPAGE_NEW_PRODUCT,
   HOMEPAGE_POPULAR_PRODUCT,
-  HOMEPAGE_TOP_PICK,
-  CATEGORY,
+  HOME_BANNER,
+  OFFERS,
 } from "../../../Utility/Constants";
-import Loader2 from "../../../Components/Loader2";
-import APICallService from "../../../API/APICallService";
+import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
-import { Route } from "../../../Navigation/Routes";
 import Navigator from "../../../Utility/Navigator";
+import { Size } from "../../../Utility/sizes";
+import Strings from "../../../Utility/Strings";
+import styles from "./styles";
 // create a component
 const MyComponent = (props) => {
   const [popularData, setPopularData] = useState([]);
   const [newData, setNewData] = useState([]);
   const [category, setCategory] = useState([]);
+  const [bestValueOffers, setBestValueOffers] = useState([]);
+  const [bannerImages, setBannerImages] = useState([]);
+  const [popularCategory, setPopularCategory] = useState([]);
+  const [whyFairshop, setWhyFairshop] = useState([]);
   const [isShowLoader, setLoader] = useState(false);
-  const images = [Images.test, Images.test, Images.test];
-  const bestValues = [Images.test2, Images.test2];
-  const popularCategory = [Images.catTest, Images.catTest, Images.catTest];
+
   const BrowseCategory = [
     Images.test3,
     Images.test3,
@@ -55,6 +54,8 @@ const MyComponent = (props) => {
       GetPopularProductData();
       GetNewProductData();
       GetBrowseCategory();
+      APICallOffers();
+      APICallBanner();
     }
   });
 
@@ -66,7 +67,6 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("data is---", res.data.items);
           setPopularData(res.data.items);
         }
       })
@@ -83,7 +83,6 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("data is---", res.data.items);
           setNewData(res.data.items);
         }
       })
@@ -109,8 +108,59 @@ const MyComponent = (props) => {
         showErrorMessage(err.message);
       });
   };
+  const APICallOffers = () => {
+    setLoader(true);
+    const apiClass = new APICallService(OFFERS, {});
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          setBestValueOffers(res.data?.values[0]?.couponsNew);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+  const APICallBanner = () => {
+    setLoader(true);
+    const apiClass = new APICallService(HOME_BANNER, {});
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          const bannerImage = [];
+          const whyShop = [];
+          Logger.log(res.data?.item?.content);
+          for (const key in res.data?.item?.content?.banner) {
+            if (res.data?.item?.content?.banner.hasOwnProperty(key)) {
+              const element = res.data?.item?.content?.banner[key];
+              bannerImage.push(element?.mobile[0]?.url);
+            }
+          }
+          for (const key in res.data?.item?.content?.why_fairshop) {
+            if (res.data?.item?.content?.why_fairshop.hasOwnProperty(key)) {
+              const element = res.data?.item?.content?.why_fairshop[key];
+              whyShop.push(element[0]);
+            }
+          }
+          setBannerImages(bannerImage);
+          setPopularCategory(res.data?.item?.content?.popular_category);
+          setWhyFairshop(whyShop);
+          Logger.log(whyShop);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+
   const renderBestItem = ({ item }) => (
-    <Image source={Images.test2} style={styles.bestImage} />
+    <Image source={{ uri: item?.bannerImage }} style={styles.bestImage} />
   );
   const renderBrowseCategory = ({ item }) => (
     <TouchableOpacity
@@ -135,7 +185,17 @@ const MyComponent = (props) => {
     </TouchableOpacity>
   );
   const renderPopularCategory = ({ item }) => (
-    <Image source={Images.catTest} style={styles.popularCatImage} />
+    <Image
+      source={{ uri: item?.image[0]?.url }}
+      style={styles.popularCatImage}
+    />
+  );
+  const renderWhereShop = ({ item }) => (
+    <Image
+      source={{ uri: item?.url }}
+      style={styles.WhyFairshopImage}
+      // resizeMode={"cover"}
+    />
   );
   const renderCookItem = ({ item }) => (
     <TouchableOpacity style={styles.cookList}>
@@ -173,7 +233,7 @@ const MyComponent = (props) => {
         nestedScrollEnabled={true}
       >
         <SliderBox
-          images={images}
+          images={bannerImages}
           resizeMode="cover"
           onCurrentImagePressed={(index) =>
             console.warn(`image ${index} pressed`)
@@ -197,7 +257,7 @@ const MyComponent = (props) => {
             </TouchableOpacity>
           </View>
           <FlatList
-            data={bestValues}
+            data={bestValueOffers}
             horizontal={true}
             renderItem={renderBestItem}
             showsHorizontalScrollIndicator={false}
@@ -287,13 +347,24 @@ const MyComponent = (props) => {
             renderItem={renderPopularCategory}
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled={false}
+            bounces={false}
           />
         </ImageBackground>
         <View style={styles.fairshopView}>
           <View style={styles.BrowseTextView}>
             <Text style={styles.BrowseText}>{Strings.Why_Fairshop}</Text>
           </View>
-          <View style={styles.whyFairShopView}>
+          <FlatList
+            data={whyFairshop}
+            style={{ paddingTop: Size.FindSize(10) }}
+            renderItem={renderWhereShop}
+            showsVerticalScrollIndicator={false}
+            nestedScrollEnabled={false}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            bounces={false}
+          />
+          {/* <View style={styles.whyFairShopView}>
             <Image
               source={Images.whyFairShop}
               resizeMode={"contain"}
@@ -304,7 +375,7 @@ const MyComponent = (props) => {
               resizeMode={"contain"}
               style={styles.whyFairshopImage}
             />
-          </View>
+          </View> */}
         </View>
         <View style={styles.cookView}>
           <View style={styles.BrowseTextView}>

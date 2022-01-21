@@ -41,3 +41,5 @@ export const STORE_LOCATOR = "/store" + " " + GET_URL_PARAMS;
 export const WHISHLIST = "/wishlist" + " " + GET_URL_PARAMS;
 export const DELETE_ADDRESS = "/address" + " " + DELETE_ID_PARAMS;
 export const ADDRESS_IDWISE = "/address" + " " + GET_ID_PARAMS;
+export const OFFERS = "/discount/offers-list-optculture" + " " + GET;
+export const HOME_BANNER = "/settings/pages/home" + " " + GET;

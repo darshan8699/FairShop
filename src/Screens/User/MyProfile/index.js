@@ -24,12 +24,7 @@ import CustomText from "../../../Components/CustomText";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
 import Colors from "../../../Utility/Colors";
-import {
-  ATTACHMENTS,
-  GET_PROFILE,
-  POST_RAW,
-  PUT,
-} from "../../../Utility/Constants";
+import { ATTACHMENTS, GET_PROFILE, PUT } from "../../../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,

@@ -31,7 +31,9 @@ export default styles = StyleSheet.create({
   bestImage: {
     height: Size.FindSize(181),
     width: Size.FindSize(275),
-    marginTop: Size.FindSize(10),
+    marginLeft: Size.FindSize(15),
+    marginTop: Size.FindSize(15),
+    borderRadius: Size.FindSize(10),
   },
   BrowseView: {
     height: Size.FindSize(315),
@@ -81,7 +83,7 @@ export default styles = StyleSheet.create({
     height: Size.FindSize(300),
   },
   back2: {
-    height: Size.FindSize(800),
+    //height: Size.FindSize(800),
   },
   whyFairshopImage: {
     height: Size.FindSize(250),
@@ -94,7 +96,8 @@ export default styles = StyleSheet.create({
     alignItems: "center",
   },
   fairshopView: {
-    height: Size.FindSize(330),
+    //height: Size.FindSize(150),
+    flex: 1,
   },
   Popularback: {
     height: Size.FindSize(400),
@@ -105,6 +108,14 @@ export default styles = StyleSheet.create({
     marginBottom: Size.FindSize(15),
     paddingHorizontal: Size.FindSize(15),
     alignSelf: "center",
+  },
+  WhyFairshopImage: {
+    height: Size.width * 0.6,
+    width: Size.width / 2 - Size.FindSize(20),
+    marginBottom: Size.FindSize(15),
+    marginLeft: Size.FindSize(15),
+    alignSelf: "center",
+    borderRadius: Size.FindSize(10),
   },
   cookView: {
     height: Size.FindSize(400),
