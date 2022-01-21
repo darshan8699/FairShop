@@ -1,6 +1,6 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Text, TouchableOpacity, View, Image } from "react-native";
 import Header from "../../../Components/Header";
 import { Route } from "../../../Navigation/Routes";
 import Colors from "../../../Utility/Colors";
@@ -12,73 +12,17 @@ import {
   showSuccessMessage,
   validateResponse,
 } from "../../../Utility/Helper";
-import { MY_ADDRESS } from "../../../Utility/Constants";
+import { MY_ADDRESS, DELETE_ADDRESS } from "../../../Utility/Constants";
 import Loader2 from "../../../Components/Loader2";
 import APICallService from "../../../API/APICallService";
 import Logger from "../../../Utility/Logger";
+import { Images } from "../../../Assets/images";
 
 // create a component
 const AddressListing = (props) => {
   const [addressIndex, setaddressIndex] = useState(null);
   const [isShowLoader, setLoader] = useState(false);
   const [data, setData] = useState([]);
-  // const AddressList = [
-  //   {
-  //     Address_type: "Office",
-  //     Address_Label: "G-1Abc",
-  //     ReceiverName: "Test Test",
-  //     Contact: "9898989897",
-  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
-  //     Landmark: "Sunlight Colony",
-  //     City: "Noida",
-  //     State: "New Delhi Delhi",
-  //     pincode: "110014",
-  //   },
-  //   {
-  //     Address_type: "Residential",
-  //     Address_Label: "G-1Abc",
-  //     ReceiverName: "Test Test",
-  //     Contact: "9898989897",
-  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
-  //     Landmark: "Sunlight Colony",
-  //     City: "Noida",
-  //     State: "New Delhi Delhi",
-  //     pincode: "110014",
-  //   },
-  //   {
-  //     Address_type: "Residential",
-  //     Address_Label: "G-1Abc",
-  //     ReceiverName: "Test Test",
-  //     Contact: "9898989897",
-  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
-  //     Landmark: "Sunlight Colony",
-  //     City: "Noida",
-  //     State: "New Delhi Delhi",
-  //     pincode: "110014",
-  //   },
-  //   {
-  //     Address_type: "Office",
-  //     Address_Label: "G-1Abc",
-  //     ReceiverName: "Test Test",
-  //     Contact: "9898989897",
-  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
-  //     Landmark: "Sunlight Colony",
-  //     City: "Noida",
-  //     State: "New Delhi Delhi",
-  //     pincode: "110014",
-  //   },
-  //   {
-  //     Address_type: "Office",
-  //     Address_Label: "G-1Abc",
-  //     ReceiverName: "Test Test",
-  //     Contact: "9898989897",
-  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
-  //     Landmark: "Sunlight Colony",
-  //     City: "Noida",
-  //     State: "New Delhi Delhi",
-  //     pincode: "110014",
-  //   },
-  // ];
   const isFirstRun = useRef(true);
   useEffect(() => {
     if (isFirstRun.current) {
@@ -86,6 +30,26 @@ const AddressListing = (props) => {
       GetAddressData();
     }
   });
+  const deleteAddress = (id) => {
+    setLoader(true);
+    const apiClass = new APICallService(DELETE_ADDRESS, id);
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          Logger.log("delete res", res.data);
+          GetAddressData();
+          setTimeout(() => {
+            showSuccessMessage("" + res.message);
+          }, 200);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
   const GetAddressData = () => {
     setLoader(true);
     const apiClass = new APICallService(MY_ADDRESS, {});
@@ -110,25 +74,69 @@ const AddressListing = (props) => {
           styles.listView,
           {
             borderColor:
-              addressIndex == index
-                ? Colors.Background
-                : Colors.storeBorderColor,
+              addressIndex == index ? Colors.Background : Colors.button,
             backgroundColor:
-              addressIndex == index ? Colors.pinkBack : Colors.white,
+              addressIndex == index ? Colors.pinkBack : Colors.addressBack,
           },
         ]}
         onPress={() => setaddressIndex(index)}
       >
-        <Text style={styles.addressameText}>{item.type}</Text>
-        <Text style={styles.text1}>Address Label: {item.name}</Text>
-        <Text style={styles.text1}>Receiver's Full Name: {item.full_name}</Text>
-        <Text style={styles.text1}>Contact No.: {item.phone}</Text>
-        <Text style={styles.text1}>Address Line 1: {item.address_line_1}</Text>
-        <Text style={styles.text1}>Address Line 2: {item.address_line_2}</Text>
-        <Text style={styles.text1}>Landmark: {item.landmark}</Text>
-        <Text style={styles.text1}>City: {item.city}</Text>
-        <Text style={styles.text1}>State: {item.state}</Text>
-        <Text style={styles.text1}>Pincode: {item.pincode}</Text>
+        <View style={styles.nameView}>
+          <Text
+            style={styles.addressameText}
+            numberOfLines={1}
+            ellipsizeMode={"tail"}
+          >
+            {item.name}
+          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <TouchableOpacity
+              onPress={() =>
+                Navigator.navigate(Route.Address, { updateDetails: item.id })
+              }
+            >
+              <Image
+                source={Images.pencil}
+                resizeMode={"contain"}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => deleteAddress(item.id)}>
+              <Image
+                source={Images.delete}
+                resizeMode={"contain"}
+                style={styles.icon}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.infoView}>
+          <View style={styles.backView}>
+            <Text style={styles.typeText}>{item.type}</Text>
+          </View>
+          <View style={styles.userView}>
+            <Image
+              source={Images.profile}
+              resizeMode={"contain"}
+              style={styles.usericon}
+            />
+            <Text style={styles.text1}>{item.full_name}</Text>
+          </View>
+          <View style={styles.userView}>
+            <Image
+              source={Images.call}
+              resizeMode={"contain"}
+              style={styles.usericon}
+            />
+            <Text style={styles.text1}>{item.phone}</Text>
+          </View>
+        </View>
+        <Text style={styles.text1}>{item.address_line_1}</Text>
+        <Text style={styles.text1}>{item.address_line_2}</Text>
+        <Text style={styles.text1}>{item.landmark}</Text>
+        <Text style={styles.text1}>
+          {item.city + "," + item.state + "-" + item.pincode}
+        </Text>
       </TouchableOpacity>
     );
   };

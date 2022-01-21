@@ -104,5 +104,7 @@ export const Strings = {
   Share: "Share",
   Tweet: "Tweet",
   Email: "Email",
+  Date_of_Anniversary: "Date of Anniversary",
+  Update: "Update",
 };
 export default Strings;

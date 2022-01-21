@@ -54,6 +54,9 @@ const MyComponent = (props) => {
   const [open, setOpen] = useState(false);
   const [isShowLoader, setLoader] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [doa, setdoa] = useState("");
+  const [opendoa, setOpendoa] = useState(false);
+
   var radio_props = [
     { label: "Male", value: "male" },
     { label: "Female", value: "female" },
@@ -88,6 +91,7 @@ const MyComponent = (props) => {
           setPhone("" + res.data?.item?.phone);
           setUserId(res.data?.item?.id);
           setImageData(res.data?.item?.profile?.profile_pic);
+          setdoa(res.data?.item?.profile?.doa);
         }
       })
       .catch((err) => {
@@ -142,7 +146,7 @@ const MyComponent = (props) => {
         first_name: firstname,
         last_name: lastname,
         dob: date,
-        doa: date,
+        doa: doa,
         gender: genderValue,
         marital_status: marritalValue,
         profile_pic: [profile_pic],
@@ -152,7 +156,7 @@ const MyComponent = (props) => {
         first_name: firstname,
         last_name: lastname,
         dob: date,
-        doa: date,
+        doa: doa,
         gender: genderValue,
         marital_status: marritalValue,
       };
@@ -350,6 +354,30 @@ const MyComponent = (props) => {
             setMarritalValue(item.value);
           }}
         />
+        <Text style={styles.text}>{Strings.Date_of_Anniversary}</Text>
+        <TouchableOpacity
+          style={styles.dateView}
+          onPress={() => setOpendoa(true)}
+        >
+          <Text style={styles.dateText}>{doa}</Text>
+          {doa == null || doa == "" ? (
+            <MaterialIcons
+              onPress={() => setOpendoa(true)}
+              name="date-range"
+              color={Colors.borderColor}
+              size={20}
+              style={styles.dateIcon}
+            />
+          ) : (
+            <AntDesign
+              onPress={() => setdoa("")}
+              name="closecircle"
+              color={Colors.borderColor}
+              size={20}
+              style={styles.dateIcon}
+            />
+          )}
+        </TouchableOpacity>
         <CustomButton
           text={Strings.Submit}
           style={styles.button}
@@ -369,6 +397,21 @@ const MyComponent = (props) => {
           }}
           onCancel={() => {
             setOpen(false);
+          }}
+        />
+        <DatePicker
+          modal
+          mode="date"
+          open={opendoa}
+          maximumDate={new Date()}
+          date={new Date()}
+          onConfirm={(date) => {
+            console.log("date", moment(date).format("YYYY-MM_DD"));
+            setOpendoa(false);
+            setdoa(moment(date).format("YYYY-MM-DD"));
+          }}
+          onCancel={() => {
+            setOpendoa(false);
           }}
         />
       </ScrollView>

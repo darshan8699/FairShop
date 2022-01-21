@@ -35,6 +35,9 @@ export const Images = {
   tweet: require("./tweet.png"),
   placeholder: require("./attachment_placeholder.png"),
   circleNonVeg: require("./circleNonVeg.png"),
+  call: require("./call.png"),
+  delete: require("./delete.png"),
+  pencil: require("./pencil.png"),
   //test images
   test: require("./test.png"),
   test2: require("./test2.png"),
