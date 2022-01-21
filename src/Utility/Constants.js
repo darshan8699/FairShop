@@ -39,3 +39,5 @@ export const HOMEPAGE_TOP_PICK = "/product-homepage-top-pick" + " " + GET;
 export const PRODUCT_DETAILS = "/product" + " " + GET_ID_PARAMS;
 export const STORE_LOCATOR = "/store" + " " + GET_URL_PARAMS;
 export const WHISHLIST = "/wishlist" + " " + GET_URL_PARAMS;
+export const DELETE_ADDRESS = "/address" + " " + DELETE_ID_PARAMS;
+export const ADDRESS_IDWISE = "/address" + " " + GET_ID_PARAMS;

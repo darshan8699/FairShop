@@ -27,4 +27,5 @@ export default Colors = {
   mail: "#6A6A6A",
   wt: "#28CE53",
   tweet: "#469AE9",
+  addressBack: "#F0F4F7",
 };

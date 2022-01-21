@@ -105,6 +105,8 @@ export const Strings = {
   Share: "Share",
   Tweet: "Tweet",
   Email: "Email",
+  Date_of_Anniversary: "Date of Anniversary",
+  Update: "Update",
 
   No_Stores_Suggestion:
     "No store serves to your location\nOur Services are available for areas under these pincodes:",

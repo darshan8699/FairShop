@@ -120,7 +120,9 @@ const MyComponent = (props) => {
       }
     >
       <Image
-        source={item.image ? { uri: item.image } : Images.test3}
+        source={
+          item?.icon != null ? { uri: item.icon[0].url } : Images.placeholder
+        }
         style={styles.browseImage}
       />
       <Text

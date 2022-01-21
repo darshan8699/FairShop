@@ -9,7 +9,7 @@ import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
-import { ADD_ADDRESS } from "../../../Utility/Constants";
+import { ADD_ADDRESS, ADDRESS_IDWISE } from "../../../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,
@@ -45,9 +45,32 @@ const MyComponent = (props) => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
 
-      setLoginInfo();
+      if (props?.route?.params?.updateDetails) {
+        GetAddressData();
+      } else {
+        setLoginInfo();
+      }
     }
   });
+  function GetAddressData() {
+    setLoader(true);
+    const apiClass = new APICallService(
+      ADDRESS_IDWISE,
+      props?.route?.params?.updateDetails
+    );
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          Logger.log("address ID wise res", res.data);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  }
   async function setLoginInfo() {
     const jsonValue = await AsyncStorage.getItem("loginInfo");
     const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
@@ -186,7 +209,11 @@ const MyComponent = (props) => {
           keyboardType="numeric"
         />
         <CustomButton
-          text={Strings.Submit}
+          text={
+            props?.route?.params?.updateDetails
+              ? Strings.Update
+              : Strings.Submit
+          }
           style={styles.button}
           textStyle={styles.buttonText}
           onPress={() => onSubmit()}
