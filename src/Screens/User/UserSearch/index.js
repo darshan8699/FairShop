@@ -1,21 +1,15 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import { Text, View, ScrollView, FlatList } from "react-native";
-import Header from "../../../Components/Header";
-import Strings from "../../../Utility/Strings";
-import styles from "./styles";
-import CustomInput from "../../../Components/CustomInput";
-import { Size } from "../../../Utility/sizes";
-import CustomItemView from "../../../Components/CustomItemView";
-import {
-  showErrorMessage,
-  showSuccessMessage,
-  validateResponse,
-} from "../../../Utility/Helper";
-import { HOMEPAGE_NEW_PRODUCT } from "../../../Utility/Constants";
-import Loader2 from "../../../Components/Loader2";
+import { FlatList, View } from "react-native";
 import APICallService from "../../../API/APICallService";
+import CustomInput from "../../../Components/CustomInput";
+import CustomItemView from "../../../Components/CustomItemView";
+import Header from "../../../Components/Header";
+import Loader2 from "../../../Components/Loader2";
+import { HOMEPAGE_NEW_PRODUCT } from "../../../Utility/Constants";
+import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
+import styles from "./styles";
 
 // create a component
 const MyComponent = (props) => {

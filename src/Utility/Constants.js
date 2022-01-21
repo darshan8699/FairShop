@@ -1,6 +1,6 @@
 export const PREF_TOKEN = "Token";
 export const PREF_USER_ID = "PREF_USER_ID";
-export const PREF_LOGIN_STATUS = "loginStatus";
+export const PREF_STORE_ID = "PREF_STORE_ID";
 export const BASE_URL = "https://dev.fairshop.co.in/backend/public/api";
 export const GET = "GET";
 export const GET_URL_PARAMS = "GET_URL_PARAMS";
@@ -37,3 +37,5 @@ export const HOMEPAGE_POPULAR_PRODUCT = "/product-homepage-popular" + " " + GET;
 export const CATEGORY = "/category" + " " + GET_URL_PARAMS;
 export const HOMEPAGE_TOP_PICK = "/product-homepage-top-pick" + " " + GET;
 export const PRODUCT_DETAILS = "/product" + " " + GET_ID_PARAMS;
+export const STORE_LOCATOR = "/store" + " " + GET_URL_PARAMS;
+export const WHISHLIST = "/wishlist" + " " + GET_URL_PARAMS;

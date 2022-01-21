@@ -190,6 +190,7 @@ function RootNavigation() {
           name={Route.AddressListing}
           component={screen.AddressListing}
         />
+        <Stack.Screen name={Route.Wishlist} component={screen.Wishlist} />
         <Stack.Screen
           name={Route.ProductDetails}
           component={screen.ProductDetails}

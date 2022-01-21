@@ -42,7 +42,7 @@ const MyComponent = (props) => {
       .then(async function (res) {
         if (validateResponse(res)) {
           showSuccessMessage(res.message);
-          await AsyncStorageLib.setItem("loginInfo", "");
+          await AsyncStorageLib.clear();
           Navigator.resetFrom(Route.Login);
         }
       })
@@ -63,6 +63,13 @@ const MyComponent = (props) => {
             style={styles.icon}
           />
           <Text style={styles.text}>{Strings.My_Profile}</Text>
+        </View>
+      </TouchableOpacity>
+      <View style={styles.line} />
+      <TouchableOpacity onPress={() => Navigator.navigate(Route.Wishlist)}>
+        <View style={styles.buttonView}>
+          <Image source={Images.fav} resizeMode="contain" style={styles.icon} />
+          <Text style={styles.text}>{Strings.Wishlist}</Text>
         </View>
       </TouchableOpacity>
       <View style={styles.line} />

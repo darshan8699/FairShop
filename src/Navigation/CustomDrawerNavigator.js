@@ -1,40 +1,46 @@
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  FlatList,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  FlatList,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import APICallService from "../API/APICallService";
+import { Regular } from "../Assets/fonts";
+import Loader2 from "../Components/Loader2";
 import { Route } from "../Navigation/Routes";
 import Colors from "../Utility/Colors";
+import { CATEGORY_DROPDOWN, PREF_STORE_ID } from "../Utility/Constants";
+import { showErrorMessage, validateResponse } from "../Utility/Helper";
+import Logger from "../Utility/Logger";
 import Navigator from "../Utility/Navigator";
 import { Size } from "../Utility/sizes";
-import APICallService from "../API/APICallService";
-import { CATEGORY_DROPDOWN } from "../Utility/Constants";
-import {
-  showErrorMessage,
-  showSuccessMessage,
-  validateResponse,
-} from "../Utility/Helper";
-import Logger from "../Utility/Logger";
-import Loader2 from "../Components/Loader2";
 import Strings from "../Utility/Strings";
-import { Regular } from "../Assets/fonts";
 
 // create a component
 const MyComponent = (props) => {
   const [listview, setlistview] = useState(false);
-  const category = ["Fruits", "Slug", "Fruits", "Slug", "Fruits", "Slug"];
   const [isShowLoader, setLoader] = useState(false);
   const [data, setData] = useState([]);
 
   useEffect(() => {
     APICall();
+    getSelectedStore();
   }, []);
+
+  async function getSelectedStore() {
+    const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    Logger.log({ store_id });
+    if (store_id == null) {
+      Navigator.navigate(Route.StoreLocator);
+    }
+  }
+
   const APICall = () => {
     setLoader(true);
     const apiClass = new APICallService(CATEGORY_DROPDOWN);
@@ -43,7 +49,6 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("res.data", res.data.items);
           setData(res.data.items);
         }
       })

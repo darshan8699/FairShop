@@ -15,6 +15,7 @@ export const Strings = {
   First_Name: "First Name",
   Last_Name: "Last Name",
   My_Profile: "My Profile",
+  Wishlist: "Wishlist",
   My_Order: "My Orders",
   ChangePassoword: "Change Passoword",
   Logout: "Logout",
@@ -104,5 +105,8 @@ export const Strings = {
   Share: "Share",
   Tweet: "Tweet",
   Email: "Email",
+
+  No_Stores_Suggestion:
+    "No store serves to your location\nOur Services are available for areas under these pincodes:",
 };
 export default Strings;

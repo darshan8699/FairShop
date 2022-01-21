@@ -22,63 +22,7 @@ const AddressListing = (props) => {
   const [addressIndex, setaddressIndex] = useState(null);
   const [isShowLoader, setLoader] = useState(false);
   const [data, setData] = useState([]);
-  // const AddressList = [
-  //   {
-  //     Address_type: "Office",
-  //     Address_Label: "G-1Abc",
-  //     ReceiverName: "Test Test",
-  //     Contact: "9898989897",
-  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
-  //     Landmark: "Sunlight Colony",
-  //     City: "Noida",
-  //     State: "New Delhi Delhi",
-  //     pincode: "110014",
-  //   },
-  //   {
-  //     Address_type: "Residential",
-  //     Address_Label: "G-1Abc",
-  //     ReceiverName: "Test Test",
-  //     Contact: "9898989897",
-  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
-  //     Landmark: "Sunlight Colony",
-  //     City: "Noida",
-  //     State: "New Delhi Delhi",
-  //     pincode: "110014",
-  //   },
-  //   {
-  //     Address_type: "Residential",
-  //     Address_Label: "G-1Abc",
-  //     ReceiverName: "Test Test",
-  //     Contact: "9898989897",
-  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
-  //     Landmark: "Sunlight Colony",
-  //     City: "Noida",
-  //     State: "New Delhi Delhi",
-  //     pincode: "110014",
-  //   },
-  //   {
-  //     Address_type: "Office",
-  //     Address_Label: "G-1Abc",
-  //     ReceiverName: "Test Test",
-  //     Contact: "9898989897",
-  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
-  //     Landmark: "Sunlight Colony",
-  //     City: "Noida",
-  //     State: "New Delhi Delhi",
-  //     pincode: "110014",
-  //   },
-  //   {
-  //     Address_type: "Office",
-  //     Address_Label: "G-1Abc",
-  //     ReceiverName: "Test Test",
-  //     Contact: "9898989897",
-  //     Address: "G-1Abc Complex, Near New Sunlight Colony",
-  //     Landmark: "Sunlight Colony",
-  //     City: "Noida",
-  //     State: "New Delhi Delhi",
-  //     pincode: "110014",
-  //   },
-  // ];
+
   const isFirstRun = useRef(true);
   useEffect(() => {
     if (isFirstRun.current) {

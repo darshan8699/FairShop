@@ -14,7 +14,9 @@ const Header = (props) => {
     navigation,
     isRightIcon = true,
     isLocation = false,
+    isBackVisible = true,
   } = props;
+
   return (
     <View style={styles.container}>
       <Image
@@ -22,10 +24,13 @@ const Header = (props) => {
         resizeMode={"contain"}
         style={styles.logo}
       />
+
       <TouchableOpacity
         style={styles.iconView}
         onPress={() => {
-          Logger.log("ISBack", navigation);
+          if (!isBackVisible) {
+            return;
+          }
           if (isBack) {
             navigation.goBack();
           } else {

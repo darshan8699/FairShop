@@ -20,4 +20,5 @@ export const Route = {
   Address: "Address",
   AddressListing: "AddressListing",
   ProductDetails: "ProductDetails",
+  Wishlist: "Wishlist",
 };
