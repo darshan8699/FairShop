@@ -58,7 +58,11 @@ const MyComponent = (props) => {
       });
   };
   const renderItem = ({ item }) => (
-    <TouchableOpacity onPress={() => {}}>
+    <TouchableOpacity
+      onPress={() => {
+        Navigator.navigate(Route.ShopCategoryWise, { categoryDetail: item });
+      }}
+    >
       <Text style={[styles.textView, { marginLeft: Size.FindSize(20) }]}>
         {item.name}
       </Text>

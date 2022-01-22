@@ -9,7 +9,7 @@ import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
-import { ADD_ADDRESS, ADDRESS_IDWISE } from "../../../Utility/Constants";
+import { ADD_ADDRESS, ADDRESS_IDWISE, PUT } from "../../../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,
@@ -64,6 +64,16 @@ const MyComponent = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           Logger.log("address ID wise res", res.data);
+          setAddressType(res.data?.item?.type);
+          setAddressLabel(res.data?.item?.name);
+          setFullName(res.data?.item?.full_name);
+          setContact(res.data?.item?.phone.toString());
+          setAddress1(res.data?.item?.address_line_1);
+          setAddress2(res.data?.item?.address_line_2);
+          setLandmark(res.data?.item?.landmark);
+          setCity(res.data?.item?.city);
+          setState(res.data?.item?.state);
+          setPincode(res.data?.item?.pincode.toString());
         }
       })
       .catch((err) => {
@@ -106,8 +116,46 @@ const MyComponent = (props) => {
     } else if (!isTextNotEmpty(pincode)) {
       showErrorMessage(Strings.error_pincode);
     } else {
-      AddAddressAPI();
+      if (props?.route?.params?.updateDetails) {
+        UpdateAddressAPI();
+      } else {
+        AddAddressAPI();
+      }
     }
+  };
+
+  const UpdateAddressAPI = () => {
+    setLoader(true);
+    const apiClass = new APICallService(
+      "/address/" + props?.route?.params?.updateDetails + " " + PUT,
+      {
+        type: addressType,
+        name: addressLabel,
+        full_name: fullName,
+        phone: contact,
+        address_line_1: address1,
+        address_line_2: address2,
+        landmark: landmark,
+        pincode: pincode,
+        city: city,
+        state: state,
+        // coords: [{ lat: "23546458", long: "236486" }],
+      }
+    );
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          showSuccessMessage(res.message);
+          props?.route?.params?.onRefresh();
+          props.navigation.goBack();
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
   };
   const AddAddressAPI = () => {
     setLoader(true);
@@ -122,7 +170,7 @@ const MyComponent = (props) => {
       pincode: pincode,
       city: city,
       state: state,
-      coords: [{ lat: "23546458", long: "236486" }],
+      // coords: [{ lat: "23546458", long: "236486" }],
     });
     apiClass
       .callAPI()

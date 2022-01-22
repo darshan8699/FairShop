@@ -9,6 +9,9 @@ import Loader2 from "../../../Components/Loader2";
 import { HOMEPAGE_NEW_PRODUCT } from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import styles from "./styles";
+import NoDataView from "../../../Components/NoDataView";
+import { Size } from "../../../Utility/sizes";
+import Strings from "../../../Utility/Strings";
 
 // create a component
 const MyComponent = (props) => {
@@ -71,6 +74,12 @@ const MyComponent = (props) => {
           <CustomItemView item={item} listView={styles.listView} />
         )}
         nestedScrollEnabled={false}
+      />
+      <NoDataView
+        isVisible={searchData.length == 0}
+        title={Strings.No_data_found}
+        containerStyle={{ height: Size.height / 2.5 }}
+        isLoader={isShowLoader}
       />
     </View>
   );
