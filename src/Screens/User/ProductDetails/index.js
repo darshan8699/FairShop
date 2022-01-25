@@ -1,28 +1,26 @@
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
 import {
-  Text,
-  View,
-  ScrollView,
-  Image,
   FlatList,
+  Image,
+  ScrollView,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
+import RazorpayCheckout from "react-native-razorpay";
+import APICallService from "../../../API/APICallService";
+import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
+import Loader2 from "../../../Components/Loader2";
+import Colors from "../../../Utility/Colors";
+import { PREF_LOGIN_INFO, PRODUCT_DETAILS } from "../../../Utility/Constants";
+import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import Logger from "../../../Utility/Logger";
+import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
-import { Size } from "../../../Utility/sizes";
-import { Images } from "../../../Assets/images";
-import Colors from "../../../Utility/Colors";
-import { PRODUCT_DETAILS } from "../../../Utility/Constants";
-import {
-  showErrorMessage,
-  showSuccessMessage,
-  validateResponse,
-} from "../../../Utility/Helper";
-import APICallService from "../../../API/APICallService";
-import Logger from "../../../Utility/Logger";
-import Loader2 from "../../../Components/Loader2";
 
 // create a component
 const MyComponent = (props) => {
@@ -30,6 +28,7 @@ const MyComponent = (props) => {
   const [currentImage, setcurrentImage] = useState("");
   const [isShowLoader, setLoader] = useState(false);
   const [data, setData] = useState("");
+  const [loginData, setLoginData] = useState("");
   const [imageArr, setImageArr] = useState([]);
   const flatListRef = useRef();
   const isFirstRun = useRef(true);
@@ -37,8 +36,18 @@ const MyComponent = (props) => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       GetItemData();
+      setLoginInfo();
     }
   });
+  async function setLoginInfo() {
+    const jsonValue = await AsyncStorageLib.getItem(PREF_LOGIN_INFO);
+    const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
+    Logger.log({ loginInfo });
+
+    if (loginInfo) {
+      setLoginData(loginInfo?.item);
+    }
+  }
   const GetItemData = () => {
     setLoader(true);
     const apiClass = new APICallService(PRODUCT_DETAILS, props.route.params.id);
@@ -47,8 +56,6 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("response data:--", res.data);
-          Logger.log("response Images data:--", res.data.item.images);
           setData(res.data.item);
           setImageArr(res.data.item.images);
           if (res.data.item.images) {
@@ -85,6 +92,35 @@ const MyComponent = (props) => {
       />
     </TouchableOpacity>
   );
+
+  const addToCart = () => {
+    var options = {
+      description: "Credits towards consultation",
+      image: "https://i.imgur.com/3g7nmJC.png",
+      currency: "INR",
+      key: "rzp_test_KcH2iILATfSbfc",
+      amount: "5000",
+      name: "Acme Corp",
+      order_id: "order_IkxYYyOdV15hEp", //Replace this with an order_id created using Orders API.
+      prefill: {
+        email: loginData?.email,
+        contact: "91" + loginData?.phone,
+        name:
+          loginData?.profile?.first_name + " " + loginData?.profile?.last_name,
+      },
+      theme: { color: Colors.red },
+    };
+    RazorpayCheckout.open(options)
+      .then((data) => {
+        // handle success
+        alert(`Success: ${data.razorpay_payment_id}`);
+      })
+      .catch((error) => {
+        // handle failure
+        alert(`Error: ${error.code} | ${error.description}`);
+      });
+  };
+
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} isRightIcon={false} isBack />
@@ -111,51 +147,54 @@ const MyComponent = (props) => {
             ]}
           />
         </View>
-        <View>
-          <FlatList
-            ref={flatListRef}
-            horizontal
-            data={imageArr}
-            contentContainerStyle={styles.list}
-            renderItem={renderImages}
-            style={{ marginHorizontal: 13 }}
-            nestedScrollEnabled={false}
-            showsHorizontalScrollIndicator={false}
-          />
-          <TouchableOpacity
-            style={styles.leftSlider}
-            onPress={() => {
-              if (currentindex != 0) {
-                flatListRef?.current?.scrollToIndex({
-                  index: currentindex - 1,
-                });
-              }
-            }}
-          >
-            <Image
-              source={Images.leftSlider}
-              resizeMode={"contain"}
-              style={styles.leftSliderIcon}
+        {imageArr && imageArr.length > 0 && (
+          <View>
+            <FlatList
+              ref={flatListRef}
+              horizontal
+              data={imageArr}
+              contentContainerStyle={styles.list}
+              renderItem={renderImages}
+              style={{ marginHorizontal: 13 }}
+              nestedScrollEnabled={false}
+              showsHorizontalScrollIndicator={false}
             />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.rightSlider}
-            onPress={() => {
-              if (currentindex != imageArr.length - 1) {
-                flatListRef?.current?.scrollToIndex({
-                  index: currentindex + 1,
-                });
-              }
-            }}
-          >
-            <Image
-              source={Images.rightSlider}
-              resizeMode={"contain"}
-              style={styles.rightSliderIcon}
-            />
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.title} numberOfLines={2} ellipsizeMode={"tail"}>
+
+            <TouchableOpacity
+              style={styles.leftSlider}
+              onPress={() => {
+                if (currentindex != 0) {
+                  flatListRef?.current?.scrollToIndex({
+                    index: currentindex - 1,
+                  });
+                }
+              }}
+            >
+              <Image
+                source={Images.leftSlider}
+                resizeMode={"contain"}
+                style={styles.leftSliderIcon}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.rightSlider}
+              onPress={() => {
+                if (currentindex != imageArr.length - 1) {
+                  flatListRef?.current?.scrollToIndex({
+                    index: currentindex + 1,
+                  });
+                }
+              }}
+            >
+              <Image
+                source={Images.rightSlider}
+                resizeMode={"contain"}
+                style={styles.rightSliderIcon}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
+        <Text style={styles.title} ellipsizeMode={"tail"}>
           {data.item_name}
         </Text>
         <Text style={styles.brand}>Brand : {data.brand}</Text>
@@ -197,7 +236,7 @@ const MyComponent = (props) => {
           </Text>
         </View>
         <View style={styles.buttonView}>
-          <TouchableOpacity style={styles.cartView} onPress={() => {}}>
+          <TouchableOpacity style={styles.cartView} onPress={() => addToCart()}>
             <Image
               source={Images.cart}
               resizeMode="contain"
@@ -255,7 +294,10 @@ const MyComponent = (props) => {
             <Text style={styles.fbText}>{Strings.Email}</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.Description}>{Strings.Description}</Text>
+
+        <Text style={styles.Description}>
+          {data.description ? Strings.Description : ""}
+        </Text>
         <View style={styles.line} />
         <Text style={styles.text}>{data.description}</Text>
       </ScrollView>

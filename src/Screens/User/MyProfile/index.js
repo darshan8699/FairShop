@@ -13,6 +13,7 @@ import {
 import DatePicker from "react-native-date-picker";
 import { Dropdown } from "react-native-element-dropdown";
 import { launchImageLibrary } from "react-native-image-picker";
+import ImagePicker from "react-native-image-crop-picker";
 import RadioForm from "react-native-simple-radio-button";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -24,7 +25,13 @@ import CustomText from "../../../Components/CustomText";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
 import Colors from "../../../Utility/Colors";
-import { ATTACHMENTS, GET_PROFILE, PUT } from "../../../Utility/Constants";
+import {
+  ATTACHMENTS,
+  GET_PROFILE,
+  PREF_LOGIN_INFO,
+  PREF_TOKEN,
+  PUT,
+} from "../../../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,
@@ -35,6 +42,7 @@ import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import { isTextNotEmpty } from "../../../Utility/Validation";
 import styles from "./styles";
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
 // create a component
 const MyComponent = (props) => {
   const [email, setEmail] = useState("");
@@ -77,13 +85,15 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
+          const jsonValue = JSON.stringify(res.data);
+          await AsyncStorageLib.setItem(PREF_LOGIN_INFO, jsonValue);
           setFirstname(res.data?.item?.profile?.first_name);
           setLastname(res.data?.item?.profile?.last_name);
           setMarritalValue(res.data?.item?.profile?.marital_status);
           setGenderValue(res.data?.item?.profile?.gender);
           setDate(res.data?.item?.profile?.dob);
           setEmail(res.data?.item?.email);
-          setPhone("" + res.data?.item?.phone);
+          setPhone("+91 " + res.data?.item?.phone);
           setUserId(res.data?.item?.id);
           setImageData(res.data?.item?.profile?.profile_pic);
           setdoa(res.data?.item?.profile?.doa);
@@ -97,6 +107,7 @@ const MyComponent = (props) => {
 
   const onSubmit = () => {
     Keyboard.dismiss();
+
     if (!isTextNotEmpty(firstname)) {
       showErrorMessage(Strings.error_firstname);
     } else if (!isTextNotEmpty(lastname)) {
@@ -116,6 +127,8 @@ const MyComponent = (props) => {
     setLoader(true);
     let form = new FormData();
     form.append("attachment[]", imageURL);
+    form.append("Content-Type", "image/png");
+    Logger.log({ form });
     const apiClass = new APICallService(ATTACHMENTS, form);
     apiClass
       .callAPI()
@@ -156,6 +169,7 @@ const MyComponent = (props) => {
         marital_status: marritalValue,
       };
     }
+    Logger.log({ requestParam });
     const apiClass = new APICallService(
       "/users/" + userId + " " + PUT,
       requestParam
@@ -179,34 +193,18 @@ const MyComponent = (props) => {
   const chooseFile = () => {
     let options = {
       mediaType: "photo",
-      maxWidth: 300,
-      maxHeight: 550,
-      quality: 1,
+      width: 300,
+      height: 300,
+      cropping: true,
     };
-    launchImageLibrary(options, (response) => {
-      console.log("Response = ", response);
-      if (response.didCancel) {
-        // alert("User cancelled camera picker");
-        return;
-      } else if (response.errorCode == "camera_unavailable") {
-        alert("Camera not available on device");
-        return;
-      } else if (response.errorCode == "permission") {
-        alert("Permission not satisfied");
-        return;
-      } else if (response.errorCode == "others") {
-        alert(response.errorMessage);
-        return;
-      }
+    ImagePicker.openPicker(options).then((image) => {
+      Logger.log(image);
 
-      Logger.log(response);
       let source = {
         uri:
-          Platform.OS == "ios"
-            ? response.assets[0].uri.replace("file://", "")
-            : response.assets[0].uri,
-        name: String(Date.now()) + "." + response.assets[0].type.split("/")[1],
-        type: response.assets[0].type,
+          Platform.OS == "ios" ? image.path.replace("file://", "") : image.path,
+        name: String(Date.now()) + "." + image.mime.split("/")[1],
+        type: image.mime,
       };
       setImageURL(source);
     });
@@ -240,17 +238,19 @@ const MyComponent = (props) => {
         <Text style={styles.headerText}>{Strings.My_Profile}</Text>
         <Text style={styles.text}>{Strings.Profile_Picture}</Text>
         <View style={styles.profileView}>
-          <Image
-            source={
-              imageURL
-                ? { uri: imageURL.uri }
-                : imageData
-                ? { uri: imageData[0].thumbnail }
-                : Images.profile
-            }
-            style={styles.profileImage}
-            // resizeMode={"contain"}
-          />
+          <View style={styles.profileImageView}>
+            <Image
+              source={
+                imageURL
+                  ? { uri: imageURL.uri }
+                  : imageData
+                  ? { uri: imageData[0].thumbnail }
+                  : Images.profile
+              }
+              style={styles.profileImage}
+              // resizeMode={"contain"}
+            />
+          </View>
           <TouchableOpacity
             style={styles.uploadButton}
             onPress={() => chooseFile()}
@@ -318,7 +318,9 @@ const MyComponent = (props) => {
         {genderValue != "" && (
           <RadioForm
             radio_props={radio_props}
-            initial={genderValue == "female" ? 1 : 0}
+            initial={
+              genderValue == "female" ? 1 : genderValue == "male" ? 0 : -1
+            }
             formHorizontal={true}
             labelHorizontal={true}
             buttonColor={Colors.borderColor}

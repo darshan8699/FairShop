@@ -9,7 +9,12 @@ import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
-import { ADD_ADDRESS, ADDRESS_IDWISE, PUT } from "../../../Utility/Constants";
+import {
+  ADD_ADDRESS,
+  ADDRESS_IDWISE,
+  PUT,
+  PREF_LOGIN_INFO,
+} from "../../../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,
@@ -82,7 +87,7 @@ const MyComponent = (props) => {
       });
   }
   async function setLoginInfo() {
-    const jsonValue = await AsyncStorage.getItem("loginInfo");
+    const jsonValue = await AsyncStorage.getItem(PREF_LOGIN_INFO);
     const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
     Logger.log({ loginInfo });
 

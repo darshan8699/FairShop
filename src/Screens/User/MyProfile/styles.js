@@ -67,11 +67,20 @@ export default styles = StyleSheet.create({
     marginTop: Size.FindSize(10),
   },
   profileImage: {
+    height: Size.FindSize(90),
+    width: Size.FindSize(90),
+    borderRadius: Size.FindSize(5),
+  },
+  profileImageView: {
     height: Size.FindSize(100),
     width: Size.FindSize(100),
-    borderWidth: Size.FindSize(1),
+    borderWidth: Size.FindSize(2),
     borderColor: Colors.borderColor,
     borderRadius: Size.FindSize(5),
+    padding: Size.FindSize(10),
+    alignItems: "center",
+    alignContent: "center",
+    justifyContent: "center",
   },
   dateView: {
     flexDirection: "row",

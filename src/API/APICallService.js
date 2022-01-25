@@ -24,8 +24,8 @@ class APICallService {
     } catch (error) {
       Logger.log(error, "PREF_TOKEN error");
     }
-    Logger.log("apiType=> ", apiType);
-    if (apiName == constants.ADD_POST) {
+    Logger.log("apiType=> ", apiName);
+    if (apiName == "/attachments") {
       myHeaders.append("Content-Type", "multipart/form-data");
     } else {
       myHeaders.append("Content-Type", "application/json");
