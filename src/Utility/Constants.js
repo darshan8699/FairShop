@@ -45,3 +45,4 @@ export const ADDRESS_IDWISE = "/address" + " " + GET_ID_PARAMS;
 export const ORDERS = "/order" + " " + GET_URL_PARAMS;
 export const OFFERS = "/discount/offers-list-optculture" + " " + GET;
 export const HOME_BANNER = "/settings/pages/home" + " " + GET;
+export const ADD_TO_CART = "/cart" + " " + POST_FORM;

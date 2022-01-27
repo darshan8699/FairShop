@@ -15,8 +15,16 @@ import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
 import Colors from "../../../Utility/Colors";
-import { PREF_LOGIN_INFO, PRODUCT_DETAILS } from "../../../Utility/Constants";
-import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import {
+  ADD_TO_CART,
+  PREF_LOGIN_INFO,
+  PRODUCT_DETAILS,
+} from "../../../Utility/Constants";
+import {
+  showErrorMessage,
+  showSuccessMessage,
+  validateResponse,
+} from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
@@ -27,7 +35,7 @@ const MyComponent = (props) => {
   const [currentindex, setcurrentindex] = useState(0);
   const [currentImage, setcurrentImage] = useState("");
   const [isShowLoader, setLoader] = useState(false);
-  const [data, setData] = useState("");
+  const [productData, setProductData] = useState("");
   const [loginData, setLoginData] = useState("");
   const [imageArr, setImageArr] = useState([]);
   const flatListRef = useRef();
@@ -56,7 +64,7 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          setData(res.data.item);
+          setProductData(res.data.item);
           setImageArr(res.data.item.images);
           if (res.data.item.images) {
             console.log("inner");
@@ -93,31 +101,22 @@ const MyComponent = (props) => {
     </TouchableOpacity>
   );
 
-  const addToCart = () => {
-    var options = {
-      description: "Credits towards consultation",
-      image: "https://i.imgur.com/3g7nmJC.png",
-      currency: "INR",
-      key: "rzp_test_KcH2iILATfSbfc",
-      amount: "5000",
-      name: "Acme Corp",
-      order_id: "order_IkxYYyOdV15hEp", //Replace this with an order_id created using Orders API.
-      prefill: {
-        email: loginData?.email,
-        contact: "91" + loginData?.phone,
-        name:
-          loginData?.profile?.first_name + " " + loginData?.profile?.last_name,
-      },
-      theme: { color: Colors.red },
-    };
-    RazorpayCheckout.open(options)
-      .then((data) => {
-        // handle success
-        alert(`Success: ${data.razorpay_payment_id}`);
+  const addToCart = (product_item_code, quantity) => {
+    setLoader(true);
+    const apiClass = new APICallService(ADD_TO_CART, {
+      product: [{ product_item_code: product_item_code, quantity: quantity }],
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          showSuccessMessage(res.message);
+        }
       })
-      .catch((error) => {
-        // handle failure
-        alert(`Error: ${error.code} | ${error.description}`);
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
       });
   };
 
@@ -195,16 +194,16 @@ const MyComponent = (props) => {
           </View>
         )}
         <Text style={styles.title} ellipsizeMode={"tail"}>
-          {data.item_name}
+          {productData.item_name}
         </Text>
-        <Text style={styles.brand}>Brand : {data.brand}</Text>
+        <Text style={styles.brand}>Brand : {productData.brand}</Text>
         <View style={styles.priceView}>
-          <Text style={styles.price}>₹{data.mrp}</Text>
+          <Text style={styles.price}>₹{productData.mrp}</Text>
           <View style={styles.horizontalView}>
             <View style={{ justifyContent: "center", alignItems: "center" }}>
               <Image
                 source={
-                  data.veg_non_veg == "Veg"
+                  productData.veg_non_veg == "Veg"
                     ? Images.circleVeg
                     : Images.circleNonVeg
                 }
@@ -212,7 +211,9 @@ const MyComponent = (props) => {
                 resizeMode={"contain"}
               />
               <Text style={styles.flagText}>
-                {data.veg_non_veg == "Veg" ? "Pure Veg." : "Pure NonVeg."}
+                {productData.veg_non_veg == "Veg"
+                  ? "Pure Veg."
+                  : "Pure NonVeg."}
               </Text>
             </View>
             <View style={styles.flagView}>
@@ -236,7 +237,10 @@ const MyComponent = (props) => {
           </Text>
         </View>
         <View style={styles.buttonView}>
-          <TouchableOpacity style={styles.cartView} onPress={() => addToCart()}>
+          <TouchableOpacity
+            style={styles.cartView}
+            onPress={() => addToCart(productData.item_code, 1)}
+          >
             <Image
               source={Images.cart}
               resizeMode="contain"
@@ -296,10 +300,10 @@ const MyComponent = (props) => {
         </View>
 
         <Text style={styles.Description}>
-          {data.description ? Strings.Description : ""}
+          {productData.description ? Strings.Description : ""}
         </Text>
         <View style={styles.line} />
-        <Text style={styles.text}>{data.description}</Text>
+        <Text style={styles.text}>{productData.description}</Text>
       </ScrollView>
     </View>
   );

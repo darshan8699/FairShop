@@ -42,7 +42,7 @@ export function showSuccessMessage(message, isMoreSpace) {
     // You can manually hide the Toast, or it will automatically disappear after a `duration` ms timeout.
     setTimeout(function () {
       Toast.hide(toast);
-    }, 800);
+    }, 1500);
   } catch (e) {
     Logger.log(e);
   }
@@ -66,7 +66,7 @@ export function showErrorMessage(message) {
     // You can manually hide the Toast, or it will automatically disappear after a `duration` ms timeout.
     setTimeout(function () {
       Toast.hide(toast);
-    }, 800);
+    }, 1500);
   } catch (e) {
     Logger.log(e);
   }

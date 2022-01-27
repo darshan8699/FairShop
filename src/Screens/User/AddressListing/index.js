@@ -30,9 +30,11 @@ const AddressListing = (props) => {
       isFirstRun.current = false;
       GetAddressData();
     }
-    props.navigation.addListener("focus", () => {
+    const unsubscribe = props.navigation.addListener("focus", () => {
+      Logger.log("focus");
       GetAddressData();
     });
+    return () => unsubscribe();
   });
   const deleteAddress = (id) => {
     setLoader(true);
