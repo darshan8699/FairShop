@@ -130,7 +130,7 @@ const MyComponent = (props) => {
               borderRadius: Size.FindSize(20),
             }}
           >
-            <CustomText name={Strings.OTP} style={{ marginLeft: 10 }} />
+            <CustomText name={Strings.OTP} customStyle={{ marginLeft: 10 }} />
             <OTPInputView
               style={styles.OTPView}
               pinCount={4}

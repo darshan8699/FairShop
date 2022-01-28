@@ -22,6 +22,7 @@ import {
   HOMEPAGE_NEW_PRODUCT,
   HOMEPAGE_POPULAR_PRODUCT,
   HOME_BANNER,
+  NO_IMAGE_URL,
   OFFERS,
   ADD_WISHLIST,
 } from "../../../Utility/Constants";
@@ -149,13 +150,12 @@ const MyComponent = (props) => {
           for (const key in res.data?.item?.content?.why_fairshop) {
             if (res.data?.item?.content?.why_fairshop.hasOwnProperty(key)) {
               const element = res.data?.item?.content?.why_fairshop[key];
-              whyShop.push(element[0]);
+              whyShop.push(element[0].thumbnail);
             }
           }
           setBannerImages(bannerImage);
           setPopularCategory(res.data?.item?.content?.popular_category);
           setWhyFairshop(whyShop);
-          Logger.log(whyShop);
         }
       })
       .catch((err) => {
@@ -188,14 +188,15 @@ const MyComponent = (props) => {
   const renderBrowseCategory = ({ item }) => (
     <TouchableOpacity
       style={styles.browseCard}
+      activeOpacity={1}
       onPress={() =>
         Navigator.navigate(Route.ShopCategoryWise, { categoryDetail: item })
       }
     >
       <Image
-        source={
-          item?.icon != null ? { uri: item.icon[0].url } : Images.placeholder
-        }
+        source={{
+          uri: item.icon && item.icon[0].url ? item.icon[0].url : NO_IMAGE_URL,
+        }}
         style={styles.browseImage}
       />
       <Text
@@ -243,6 +244,7 @@ const MyComponent = (props) => {
       </View>
     </TouchableOpacity>
   );
+
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} />
@@ -259,13 +261,13 @@ const MyComponent = (props) => {
           images={bannerImages}
           resizeMode="cover"
           onCurrentImagePressed={(index) =>
-            console.warn(`image ${index} pressed`)
+            Logger.log(`image ${index} pressed`)
           }
           inactiveDotColor={Colors.white}
           sliderBoxHeight={200}
           dotColor={Colors.Background}
           currentImageEmitter={(index) =>
-            console.warn(`current pos is: ${index}`)
+            Logger.log(`current pos is: ${index}`)
           }
         />
         <ImageBackground source={Images.homeBG} style={styles.back}>
@@ -386,7 +388,20 @@ const MyComponent = (props) => {
           <View style={styles.BrowseTextView}>
             <Text style={styles.BrowseText}>{Strings.Why_Fairshop}</Text>
           </View>
-          <FlatList
+          <SliderBox
+            images={whyFairshop}
+            resizeMode="contain"
+            onCurrentImagePressed={(index) =>
+              Logger.log(`image ${index} pressed`)
+            }
+            inactiveDotColor={Colors.white}
+            sliderBoxHeight={140}
+            dotColor={Colors.Background}
+            currentImageEmitter={(index) =>
+              Logger.log(`current pos is: ${index}`)
+            }
+          />
+          {/* <FlatList
             data={whyFairshop}
             style={{ paddingTop: Size.FindSize(10) }}
             renderItem={renderWhereShop}
@@ -395,19 +410,7 @@ const MyComponent = (props) => {
             horizontal
             showsHorizontalScrollIndicator={false}
             bounces={false}
-          />
-          {/* <View style={styles.whyFairShopView}>
-            <Image
-              source={Images.whyFairShop}
-              resizeMode={"contain"}
-              style={styles.whyFairshopImage}
-            />
-            <Image
-              source={Images.whyFairShop1}
-              resizeMode={"contain"}
-              style={styles.whyFairshopImage}
-            />
-          </View> */}
+          /> */}
         </View>
         <View style={styles.cookView}>
           <View style={styles.BrowseTextView}>
@@ -416,7 +419,7 @@ const MyComponent = (props) => {
           <FlatList
             data={BrowseCategory}
             horizontal={true}
-            contentContainerStyle={{ paddingRight: 15 }}
+            contentContainerStyle={{ paddingRight: Size.FindSize(15) }}
             renderItem={renderCookItem}
             showsHorizontalScrollIndicator={false}
           />

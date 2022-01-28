@@ -6,10 +6,11 @@ import Colors from "../Utility/Colors";
 import { Regular } from "../Assets/fonts";
 // create a component
 const CustomText = (props) => {
+  const { name, starText = true, customStyle } = props;
   return (
-    <Text style={[props.style, styles.text]}>
-      {props.name}
-      <Text style={styles.innerText}> *</Text>
+    <Text style={[styles.text, { customStyle }]}>
+      {name}
+      {starText && <Text style={styles.innerText}> *</Text>}
     </Text>
   );
 };

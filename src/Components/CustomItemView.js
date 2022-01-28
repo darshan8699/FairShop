@@ -8,6 +8,7 @@ import { Images } from "../Assets/images";
 import Strings from "../Utility/Strings";
 import Navigator from "../Utility/Navigator";
 import { Route } from "../Navigation/Routes";
+import { NO_IMAGE_URL } from "../Utility/Constants";
 
 // create a component
 const CustomItemView = (props) => {
@@ -21,13 +22,9 @@ const CustomItemView = (props) => {
       }}
     >
       <Image
-        source={
-          props?.item?.images != null
-            ? {
-                uri: props?.item?.images[0].url,
-              }
-            : Images.placeholder
-        }
+        source={{
+          uri: props?.item?.images ? props?.item?.images[0].url : NO_IMAGE_URL,
+        }}
         resizeMode="contain"
         style={styles.item}
       />
@@ -63,12 +60,20 @@ const CustomItemView = (props) => {
 // define your styles
 const styles = StyleSheet.create({
   list: {
-    height: Size.FindSize(261),
+    height: Size.FindSize(280),
     width: Size.FindSize(180),
     backgroundColor: Colors.white,
     marginLeft: Size.FindSize(15),
     borderRadius: Size.FindSize(10),
     marginTop: Size.FindSize(15),
+    shadowOffset: { width: 1, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 3,
+    paddingHorizontal: Size.FindSize(10),
+    paddingTop: Size.FindSize(10),
+    // backgroundColor: "#0000",
+    overflow: "hidden",
   },
   item: {
     height: Size.FindSize(100),

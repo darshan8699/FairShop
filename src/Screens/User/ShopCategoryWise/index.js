@@ -5,6 +5,7 @@ import Header from "../../../Components/Header";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
 import CustomItemView from "../../../Components/CustomItemView";
+import Header from "../../../Components/Header";
 import {
   showErrorMessage,
   showSuccessMessage,
@@ -14,6 +15,7 @@ import { HOMEPAGE_NEW_PRODUCT, ADD_WISHLIST } from "../../../Utility/Constants";
 import Loader2 from "../../../Components/Loader2";
 import APICallService from "../../../API/APICallService";
 import Logger from "../../../Utility/Logger";
+import styles from "./styles";
 
 // create a component
 const MyComponent = (props) => {

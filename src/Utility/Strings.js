@@ -47,6 +47,11 @@ export const Strings = {
   Add: "Add",
   CheckOut: "Checkout",
   Subtotal: "Subtotal",
+  TaxableAmount: "Taxable Amount",
+  CGST: "CGST",
+  SGST: "SGST",
+  IGST: "IGST",
+  TotalAmount: "Total Amount",
   Addresses: "Addresses",
   Contact_No: "Contact No.",
   Date_of_Birth: "Date of Birth",
@@ -107,9 +112,21 @@ export const Strings = {
   Email: "Email",
   Date_of_Anniversary: "Date of Anniversary",
   Update: "Update",
+  PlaceOrder: "Place Order",
+  OrderNotes: "Order Notes",
+  ShippingAddress: "Shipping Address",
+  BillingAddress: "Billing Address",
+  PaymentMethod: "Payment Method",
+  Razorpay: "Razorpay",
+  COD: "Cash on Delivery",
+  ProceedPayment: "Proceed to Payment",
   No_data_found: "No data found",
 
   No_Stores_Suggestion:
     "No store serves to your location\nOur Services are available for areas under these pincodes:",
+
+  error_Address: "Please select shipping address",
+  error_BillingAddress: "Please select billing address",
+  error_paymentMode: "Please select payment mode",
 };
 export default Strings;

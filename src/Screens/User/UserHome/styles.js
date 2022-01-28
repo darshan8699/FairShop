@@ -59,7 +59,10 @@ export default styles = StyleSheet.create({
   },
   browseImage: {
     height: Size.FindSize(147),
-    width: Size.FindSize(143),
+    width: Size.FindSize(135),
+    marginTop: Size.FindSize(10),
+    alignSelf: "center",
+    overflow: "hidden",
   },
   browseCard: {
     shadowColor: Colors.black,
@@ -69,7 +72,11 @@ export default styles = StyleSheet.create({
     elevation: 3,
     marginLeft: Size.FindSize(15),
     borderRadius: Size.FindSize(10),
-    marginBottom: Size.FindSize(20),
+    marginBottom: Size.FindSize(10),
+    backgroundColor: "#0000",
+    overflow: "hidden",
+    paddingBottom: Size.FindSize(10),
+    paddingHorizontal: Size.FindSize(10),
   },
   browseCategoryText: {
     color: Colors.headerText,
@@ -155,10 +162,12 @@ export default styles = StyleSheet.create({
     marginLeft: Size.FindSize(5),
   },
   shadow: {
-    shadowColor: Colors.black,
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 3,
+    // shadowColor: Colors.black,
+    // shadowOffset: { width: 1, height: 1 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 1,
+    // elevation: 3,
+    marginTop: 0,
+    backgroundColor: "#0000",
   },
 });

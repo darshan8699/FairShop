@@ -20,5 +20,6 @@ export { default as Address } from "./User/Address";
 export { default as AddressListing } from "./User/AddressListing";
 export { default as Wishlist } from "./User/Wishlist";
 export { default as ProductDetails } from "./User/ProductDetails";
+export { default as PaymentOrder } from "./User/PaymentOrder";
 
 LogBox.ignoreAllLogs();

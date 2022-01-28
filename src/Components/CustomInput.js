@@ -52,10 +52,6 @@ const CustomInput = (props) => {
         keyboardType={keyboardType ? keyboardType : "default"}
         returnKeyType={"done"}
         onChangeText={(text) => {
-          // var txt = isPhone && text.trim().length == 1 ? "+91 " + text : text;
-          // if (text == "+91") {
-          //   txt = "";
-          // }
           setText(text);
           if (onChangeText) {
             onChangeText(text);
