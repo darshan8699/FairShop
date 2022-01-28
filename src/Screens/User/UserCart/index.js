@@ -6,54 +6,28 @@ import RazorpayCheckout from "react-native-razorpay";
 import APICallService from "../../../API/APICallService";
 import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
+import { Route } from "../../../Navigation/Routes";
 import Colors from "../../../Utility/Colors";
-import { ADD_TO_CART, PREF_LOGIN_INFO } from "../../../Utility/Constants";
-import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import {
+  ADD_TO_CART,
+  PREF_LOGIN_INFO,
+  PAYMENT_VERIFY,
+  NO_IMAGE_URL,
+} from "../../../Utility/Constants";
+import {
+  showErrorMessage,
+  showSuccessMessage,
+  validateResponse,
+} from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
+import Navigator from "../../../Utility/Navigator";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
 
 // create a component
 const MyComponent = (props) => {
-  const cartData = [
-    {
-      image: Images.test3,
-      itemName: "Peri Peri Hummus",
-      quantity: "150gm",
-      price: "140",
-    },
-    {
-      image: Images.test3,
-      itemName: "Peri Peri Hummus",
-      quantity: "150gm",
-      price: "140",
-    },
-    {
-      image: Images.test3,
-      itemName: "Peri Peri Hummus",
-      quantity: "150gm",
-      price: "140",
-    },
-    {
-      image: Images.test3,
-      itemName: "Peri Peri Hummus",
-      quantity: "150gm",
-      price: "140",
-    },
-    {
-      image: Images.test3,
-      itemName: "Peri Peri Hummus",
-      quantity: "150gm",
-      price: "140",
-    },
-    {
-      image: Images.test3,
-      itemName: "Peri Peri Hummus",
-      quantity: "150gm",
-      price: "140",
-    },
-  ];
   const [loginData, setLoginData] = useState("");
+  const [totalPrice, setTotalPrice] = useState(0);
   const [isShowLoader, setLoader] = useState(false);
   const [cartList, setCartList] = useState([]);
   const isFirstRun = useRef(true);
@@ -94,6 +68,11 @@ const MyComponent = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           setCartList(res.data?.values);
+          let cartTotal = 0;
+          res.data?.values.map((item) => {
+            cartTotal = cartTotal + item.net_price;
+          });
+          setTotalPrice(cartTotal);
         }
       })
       .catch((err) => {
@@ -123,30 +102,66 @@ const MyComponent = (props) => {
       });
   };
 
+  const APICallVerifyPayament = (
+    order_id,
+    payment_status,
+    razorpay_order_id,
+    razorpay_payment_id
+  ) => {
+    setLoader(true);
+    const apiClass = new APICallService(PAYMENT_VERIFY, {
+      order_id: order_id,
+      payment_status: payment_status,
+      razorpay_data: {
+        razorpay_order_id: razorpay_order_id,
+        razorpay_payment_id: razorpay_payment_id,
+        razorpay_signature:
+          "89b0863d1089dbd97b999f499010c9db26634de0ce34b9aa639c90dde7265b2c",
+      },
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          showSuccessMessage(res.message);
+          APICallCartList(loginData);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+
   const checkOutButton = () => {
     var options = {
-      description: "ALF-FARMS CHICKEN BACON150gm",
-      image: "https://i.imgur.com/3g7nmJC.png",
+      description: "PSO WHOLE WHEAT CHAKKI ATTA- POUCH 2Kg",
+      image: "https://fairshop.co.in/assets/images/fairshop-logo.svg",
       currency: "INR",
       key: "rzp_test_KcH2iILATfSbfc",
-      amount: "180",
+      amount: "275000",
       name: "ALF-FARMS CHICKEN BACON150gm",
-      order_id: "order_13", //Replace this with an order_id created using Orders API.
+      // order_id: "order_IpD8fVMwrQSonX", //Replace this with an order_id created using Orders API.
       prefill: {
         email: loginData?.email,
-        contact: "91" + loginData?.phone,
+        contact: "+91" + loginData?.phone,
         name:
           loginData?.profile?.first_name + " " + loginData?.profile?.last_name,
       },
-      theme: { color: Colors.red },
+      theme: { color: Colors.Background },
     };
+    Logger.log({ options });
     RazorpayCheckout.open(options)
       .then((data) => {
         // handle success
+        Logger.log(data);
         alert(`Success: ${data.razorpay_payment_id}`);
+        APICallVerifyPayament(data.razorpay_payment_id);
       })
       .catch((error) => {
         // handle failure
+        Logger.log(error);
         alert(`Error: ${error.code} | ${error.description}`);
       });
   };
@@ -155,7 +170,11 @@ const MyComponent = (props) => {
     <View>
       <View style={styles.listView}>
         <View style={{ flexDirection: "row", flex: 1 }}>
-          <Image resizeMode="contain" source={item.image} style={styles.icon} />
+          <Image
+            resizeMode="contain"
+            source={{ uri: item.image ? item.image : NO_IMAGE_URL }}
+            style={styles.icon}
+          />
           <View style={styles.textView}>
             <Text style={styles.item}>{item.item_name}</Text>
             <Text style={styles.quantityText}>{item.quantity}</Text>
@@ -196,11 +215,12 @@ const MyComponent = (props) => {
       <View>
         <View style={styles.subTotalView}>
           <Text style={styles.subTotalText}>{Strings.Subtotal}</Text>
-          <Text style={styles.subTotalPrice}>₹{"1400"}</Text>
+          <Text style={styles.subTotalPrice}>₹{totalPrice}</Text>
         </View>
         <TouchableOpacity
           style={styles.checkOutView}
-          onPress={() => checkOutButton()}
+          // onPress={() => checkOutButton()}
+          onPress={() => Navigator.navigate(Route.PaymentOrder)}
         >
           <Text style={styles.checkOutText}>{Strings.CheckOut}</Text>
         </TouchableOpacity>

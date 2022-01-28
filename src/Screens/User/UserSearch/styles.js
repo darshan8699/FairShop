@@ -15,5 +15,5 @@ export default styles = StyleSheet.create({
   list: {
     marginHorizontal: Size.FindSize(5),
   },
-  listView: {},
+  listView: { backgroundColor: "#0000" },
 });

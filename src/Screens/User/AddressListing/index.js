@@ -141,7 +141,7 @@ const AddressListing = (props) => {
         <Text style={styles.text1}>{item.address_line_2}</Text>
         <Text style={styles.text1}>{item.landmark}</Text>
         <Text style={styles.text1}>
-          {item.city + "," + item.state + "-" + item.pincode}
+          {item.city + ", " + item.state + "-" + item.pincode}
         </Text>
       </TouchableOpacity>
     );
