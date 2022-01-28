@@ -46,3 +46,4 @@ export const ORDERS = "/order" + " " + GET_URL_PARAMS;
 export const OFFERS = "/discount/offers-list-optculture" + " " + GET;
 export const HOME_BANNER = "/settings/pages/home" + " " + GET;
 export const ADD_TO_CART = "/cart" + " " + POST_FORM;
+export const ADD_WISHLIST = "/wishlist" + " " + POST_RAW;

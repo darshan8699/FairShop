@@ -31,7 +31,10 @@ const CustomItemView = (props) => {
         resizeMode="contain"
         style={styles.item}
       />
-      <TouchableOpacity style={styles.favView}>
+      <TouchableOpacity
+        style={styles.favView}
+        onPress={() => props.addToWishList(props.item.item_code)}
+      >
         <Image source={Images.fav} resizeMode="contain" style={styles.fav} />
       </TouchableOpacity>
       <View style={styles.flagView}>

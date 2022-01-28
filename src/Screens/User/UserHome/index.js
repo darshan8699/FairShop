@@ -23,8 +23,13 @@ import {
   HOMEPAGE_POPULAR_PRODUCT,
   HOME_BANNER,
   OFFERS,
+  ADD_WISHLIST,
 } from "../../../Utility/Constants";
-import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import {
+  showSuccessMessage,
+  showErrorMessage,
+  validateResponse,
+} from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import Navigator from "../../../Utility/Navigator";
 import { Size } from "../../../Utility/sizes";
@@ -158,7 +163,25 @@ const MyComponent = (props) => {
         showErrorMessage(err.message);
       });
   };
-
+  const addToWishList = (product_item_code) => {
+    Logger.log("product_item_code", product_item_code);
+    setLoader(true);
+    const apiClass = new APICallService(ADD_WISHLIST, {
+      product_item_code: [product_item_code],
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          showSuccessMessage(res.message);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
   const renderBestItem = ({ item }) => (
     <Image source={{ uri: item?.bannerImage }} style={styles.bestImage} />
   );
@@ -302,7 +325,12 @@ const MyComponent = (props) => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingRight: 15 }}
             data={popularData}
-            renderItem={({ item }) => <CustomItemView item={item} />}
+            renderItem={({ item }) => (
+              <CustomItemView
+                item={item}
+                addToWishList={(id) => addToWishList(id)}
+              />
+            )}
           />
         </ImageBackground>
         <View style={styles.Popularback}>
@@ -322,7 +350,11 @@ const MyComponent = (props) => {
             contentContainerStyle={{ paddingRight: 15 }}
             data={newData}
             renderItem={({ item }) => (
-              <CustomItemView item={item} listView={styles.shadow} />
+              <CustomItemView
+                item={item}
+                listView={styles.shadow}
+                addToWishList={(id) => addToWishList(id)}
+              />
             )}
           />
         </View>

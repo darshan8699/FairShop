@@ -19,6 +19,7 @@ import {
   ADD_TO_CART,
   PREF_LOGIN_INFO,
   PRODUCT_DETAILS,
+  ADD_WISHLIST,
 } from "../../../Utility/Constants";
 import {
   showErrorMessage,
@@ -105,6 +106,25 @@ const MyComponent = (props) => {
     setLoader(true);
     const apiClass = new APICallService(ADD_TO_CART, {
       product: [{ product_item_code: product_item_code, quantity: quantity }],
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          showSuccessMessage(res.message);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+  const addToWishList = (product_item_code) => {
+    Logger.log("product_item_code", product_item_code);
+    setLoader(true);
+    const apiClass = new APICallService(ADD_WISHLIST, {
+      product_item_code: [product_item_code],
     });
     apiClass
       .callAPI()
@@ -248,7 +268,12 @@ const MyComponent = (props) => {
             />
             <Text style={styles.add}>{Strings.AddToCart}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.favView} onPress={() => {}}>
+          <TouchableOpacity
+            style={styles.favView}
+            onPress={() => {
+              addToWishList(productData.item_code);
+            }}
+          >
             <Image
               source={Images.fav}
               resizeMode="contain"

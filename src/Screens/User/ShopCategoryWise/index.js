@@ -10,7 +10,7 @@ import {
   showSuccessMessage,
   validateResponse,
 } from "../../../Utility/Helper";
-import { HOMEPAGE_NEW_PRODUCT } from "../../../Utility/Constants";
+import { HOMEPAGE_NEW_PRODUCT, ADD_WISHLIST } from "../../../Utility/Constants";
 import Loader2 from "../../../Components/Loader2";
 import APICallService from "../../../API/APICallService";
 import Logger from "../../../Utility/Logger";
@@ -44,6 +44,26 @@ const MyComponent = (props) => {
         showErrorMessage(err.message);
       });
   };
+
+  const addToWishList = (product_item_code) => {
+    Logger.log("product_item_code", product_item_code);
+    setLoader(true);
+    const apiClass = new APICallService(ADD_WISHLIST, {
+      product_item_code: [product_item_code],
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          showSuccessMessage(res.message);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} isRightIcon={false} isBack />
@@ -58,7 +78,11 @@ const MyComponent = (props) => {
         data={newData}
         style={styles.list}
         renderItem={({ item }) => (
-          <CustomItemView item={item} listView={styles.listView} />
+          <CustomItemView
+            item={item}
+            listView={styles.listView}
+            addToWishList={(id) => addToWishList(id)}
+          />
         )}
         nestedScrollEnabled={false}
       />

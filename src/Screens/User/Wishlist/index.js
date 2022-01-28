@@ -5,10 +5,15 @@ import APICallService from "../../../API/APICallService";
 import CustomItemView from "../../../Components/CustomItemView";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
-import { WHISHLIST } from "../../../Utility/Constants";
-import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import { WHISHLIST, ADD_WISHLIST } from "../../../Utility/Constants";
+import {
+  showSuccessMessage,
+  showErrorMessage,
+  validateResponse,
+} from "../../../Utility/Helper";
 import { Size } from "../../../Utility/sizes";
 import styles from "./styles";
+import Logger from "../../../Utility/Logger";
 
 // create a component
 const Wishlist = (props) => {
@@ -27,7 +32,7 @@ const Wishlist = (props) => {
     setLoader(true);
     const apiClass = new APICallService(WHISHLIST, {
       page: page,
-      limit: 5,
+      limit: 10,
     });
     apiClass
       .callAPI()
@@ -35,6 +40,25 @@ const Wishlist = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           setWhishList(res.data.data);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+  const addToWishList = (product_item_code) => {
+    Logger.log("product_item_code", product_item_code);
+    setLoader(true);
+    const apiClass = new APICallService(ADD_WISHLIST, {
+      product_item_code: [product_item_code],
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          showSuccessMessage(res.message);
         }
       })
       .catch((err) => {
@@ -54,7 +78,11 @@ const Wishlist = (props) => {
         data={whishList}
         style={styles.list}
         renderItem={({ item }) => (
-          <CustomItemView item={item} listView={styles.listView} />
+          <CustomItemView
+            item={item.products[0]}
+            listView={styles.listView}
+            addToWishList={(id) => addToWishList(id)}
+          />
         )}
         nestedScrollEnabled={false}
       />

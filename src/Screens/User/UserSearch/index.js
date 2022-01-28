@@ -6,12 +6,17 @@ import CustomInput from "../../../Components/CustomInput";
 import CustomItemView from "../../../Components/CustomItemView";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
-import { HOMEPAGE_NEW_PRODUCT } from "../../../Utility/Constants";
-import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import { HOMEPAGE_NEW_PRODUCT, ADD_WISHLIST } from "../../../Utility/Constants";
+import {
+  showSuccessMessage,
+  showErrorMessage,
+  validateResponse,
+} from "../../../Utility/Helper";
 import styles from "./styles";
 import NoDataView from "../../../Components/NoDataView";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
+import Logger from "../../../Utility/Logger";
 
 // create a component
 const MyComponent = (props) => {
@@ -36,6 +41,26 @@ const MyComponent = (props) => {
         if (validateResponse(res)) {
           setNewData(res.data.items);
           setSearchData(res.data.items);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+
+  const addToWishList = (product_item_code) => {
+    Logger.log("product_item_code", product_item_code);
+    setLoader(true);
+    const apiClass = new APICallService(ADD_WISHLIST, {
+      product_item_code: [product_item_code],
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          showSuccessMessage(res.message);
         }
       })
       .catch((err) => {
@@ -71,7 +96,11 @@ const MyComponent = (props) => {
         data={searchData}
         style={styles.list}
         renderItem={({ item }) => (
-          <CustomItemView item={item} listView={styles.listView} />
+          <CustomItemView
+            item={item}
+            listView={styles.listView}
+            addToWishList={(id) => addToWishList(id)}
+          />
         )}
         nestedScrollEnabled={false}
       />
