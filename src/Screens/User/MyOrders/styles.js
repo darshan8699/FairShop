@@ -24,6 +24,7 @@ export default styles = StyleSheet.create({
     marginHorizontal: Size.FindSize(15),
     borderColor: Colors.storeBorderColor,
     backgroundColor: Colors.white,
+    marginTop: Size.FindSize(10),
   },
   bestImage: {
     height: Size.FindSize(100),
@@ -40,5 +41,10 @@ export default styles = StyleSheet.create({
     fontSize: Size.FindSize(14),
     fontFamily: Regular,
     color: Colors.pincodetext,
+  },
+  priceText: {
+    color: Colors.Background,
+    fontFamily: Regular,
+    fontSize: Size.FindSize(16),
   },
 });

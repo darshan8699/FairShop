@@ -1,19 +1,16 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import { Text, View, ScrollView, FlatList } from "react-native";
-import Header from "../../../Components/Header";
-import Strings from "../../../Utility/Strings";
-import styles from "./styles";
+import { FlatList, Text, View } from "react-native";
+import APICallService from "../../../API/APICallService";
 import CustomItemView from "../../../Components/CustomItemView";
 import Header from "../../../Components/Header";
+import Loader2 from "../../../Components/Loader2";
+import { ADD_WISHLIST, HOMEPAGE_NEW_PRODUCT } from "../../../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,
   validateResponse,
 } from "../../../Utility/Helper";
-import { HOMEPAGE_NEW_PRODUCT, ADD_WISHLIST } from "../../../Utility/Constants";
-import Loader2 from "../../../Components/Loader2";
-import APICallService from "../../../API/APICallService";
 import Logger from "../../../Utility/Logger";
 import styles from "./styles";
 

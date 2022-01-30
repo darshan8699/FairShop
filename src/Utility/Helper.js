@@ -1,3 +1,4 @@
+import moment from "moment";
 import { Alert } from "react-native";
 import RNExitApp from "react-native-exit-app";
 import Toast from "react-native-root-toast";
@@ -86,4 +87,15 @@ export function showInternetMessage() {
     ],
     { cancelable: false }
   );
+}
+
+export function getFormatedate(dateTime, format = "ddd, DD.MM.yyyy, hh.mm a") {
+  moment.locale("en");
+  var dt = dateTime;
+
+  if (dateTime != null) {
+    return moment(dt).format(format);
+  } else {
+    return moment(new Date()).format(format);
+  }
 }

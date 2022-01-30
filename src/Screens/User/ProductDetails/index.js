@@ -93,9 +93,7 @@ const MyComponent = (props) => {
       }}
     >
       <Image
-        source={{
-          uri: item.url,
-        }}
+        source={{ uri: item.url ? item.url : NO_IMAGE_URL }}
         resizeMode="contain"
         style={styles.slideImage}
       />

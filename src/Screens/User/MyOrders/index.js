@@ -1,11 +1,15 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, Image, Text, View } from "react-native";
 import APICallService from "../../../API/APICallService";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
 import { ORDERS } from "../../../Utility/Constants";
-import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import {
+  showErrorMessage,
+  validateResponse,
+  getFormatedate,
+} from "../../../Utility/Helper";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
@@ -30,7 +34,7 @@ const MyOrder = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          setOffersList(res.data?.values[0]?.couponsNew);
+          setOffersList(res.data?.data);
         }
       })
       .catch((err) => {
@@ -50,13 +54,46 @@ const MyOrder = (props) => {
         data={offersList}
         renderItem={({ item }) => (
           <View style={styles.listView}>
-            <Image
-              source={{ uri: item?.bannerImage }}
-              style={styles.bestImage}
-            />
             <View style={{ flex: 1, marginStart: Size.FindSize(10) }}>
-              <Text style={styles.ShopNameText}>{item.couponCode}</Text>
-              <Text style={styles.text1}>{item.description}</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={styles.ShopNameText}>Order #{item.id}</Text>
+                <Text style={styles.text1}>
+                  {item.status == "PAYMENT_FAILED"
+                    ? "Payment Failed"
+                    : item.status == "ORDER_RECEIVED"
+                    ? "Order Received"
+                    : item.status == "PAYMENT_PENDING"
+                    ? "Payment Pending"
+                    : ""}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: Size.FindSize(2),
+                }}
+              >
+                <Text style={styles.text1}>Order Date</Text>
+                <Text style={styles.text1}>
+                  {getFormatedate(item.created_at, "YYYY-MM-DD")}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: Size.FindSize(2),
+                }}
+              >
+                <Text style={styles.text1}>Amount</Text>
+                <Text style={styles.priceText}>₹{item.total}</Text>
+              </View>
             </View>
           </View>
         )}

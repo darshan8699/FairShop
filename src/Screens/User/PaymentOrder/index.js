@@ -19,10 +19,12 @@ import Header from "../../../Components/Header";
 import Colors from "../../../Utility/Colors";
 import {
   ADD_TO_CART,
+  CREATE_ORDER,
   MY_ADDRESS,
   NO_IMAGE_URL,
   PAYMENT_VERIFY,
   PREF_LOGIN_INFO,
+  PREF_STORE_ID,
 } from "../../../Utility/Constants";
 import {
   showErrorMessage,
@@ -32,7 +34,6 @@ import {
 import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
-import { isTextNotEmpty } from "../../../Utility/Validation";
 import styles from "./styles";
 
 // create a component
@@ -55,7 +56,6 @@ const PaymentOrder = (props) => {
     } else {
     }
     const unsubscribe = props.navigation.addListener("focus", () => {
-      Logger.log("focus");
       if (loginData) APICallCartList(loginData);
     });
     return () => unsubscribe();
@@ -157,8 +157,8 @@ const PaymentOrder = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          showSuccessMessage(res.message);
-          APICallCartList(loginData);
+          showSuccessMessage("Order payment sucessfully");
+          props.navigation.goBack();
         }
       })
       .catch((err) => {
@@ -167,9 +167,8 @@ const PaymentOrder = (props) => {
       });
   };
 
-  const proceedToPayment = () => {
+  const APICallCreateOrder = async () => {
     Keyboard.dismiss();
-
     if (addressIndex == null) {
       showErrorMessage(Strings.error_Address);
       return;
@@ -180,6 +179,86 @@ const PaymentOrder = (props) => {
       showErrorMessage(Strings.error_paymentMode);
       return;
     }
+    const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    setLoader(true);
+    const redAddress =
+      addressList[addressIndex].full_name +
+      ", " +
+      addressList[addressIndex].phone +
+      ", " +
+      addressList[addressIndex].address_line_1 +
+      ", " +
+      addressList[addressIndex].address_line_2 +
+      ", " +
+      addressList[addressIndex].landmark +
+      ", " +
+      addressList[addressIndex].city +
+      ", " +
+      addressList[addressIndex].state +
+      " " +
+      addressList[addressIndex].pincode;
+
+    const billingAddress =
+      addressList[addressIndex].full_name +
+      ", " +
+      addressList[addressIndex].phone +
+      ", " +
+      addressList[addressIndex].address_line_1 +
+      ", " +
+      addressList[addressIndex].address_line_2 +
+      ", " +
+      addressList[addressIndex].landmark +
+      ", " +
+      addressList[addressIndex].city +
+      ", " +
+      addressList[addressIndex].state +
+      " " +
+      addressList[addressIndex].pincode;
+
+    let prodList = [];
+    for (const key in cartList) {
+      if (cartList.hasOwnProperty(key)) {
+        const element = cartList[key];
+        prodList.push({
+          product_item_code: element.item_code,
+          quantity: element.quantity,
+        });
+      }
+    }
+
+    const apiClass = new APICallService(CREATE_ORDER, {
+      order_using: "Web",
+      store_id: id,
+      customer_contact: loginData?.phone,
+      payment_gateway: paymentMode == 1 ? "razorpay" : "cod",
+      shipping_address: redAddress,
+      billing_address: billingAddress,
+      order_notes: orderNotes,
+      product: prodList,
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          if (paymentMode == 2) {
+            showSuccessMessage(res.message);
+            props.navigation.goBack();
+          } else {
+            proceedToPayment(
+              res?.data?.item?.id,
+              res?.data?.item?.razorpay_order_id
+            );
+          }
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+
+  const proceedToPayment = (order_id, razorpay_order_id) => {
     var options = {
       // description: "PSO WHOLE WHEAT CHAKKI ATTA- POUCH 2Kg",
       image: "https://fairshop.co.in/assets/images/fairshop-logo.svg",
@@ -201,8 +280,12 @@ const PaymentOrder = (props) => {
       .then((data) => {
         // handle success
         Logger.log(data);
-        alert(`Success: ${data.razorpay_payment_id}`);
-        APICallVerifyPayament(data.razorpay_payment_id);
+        APICallVerifyPayament(
+          order_id,
+          "success",
+          razorpay_order_id,
+          data?.razorpay_payment_id
+        );
       })
       .catch((error) => {
         // handle failure
@@ -482,7 +565,7 @@ const PaymentOrder = (props) => {
             </View>
             <TouchableOpacity
               style={styles.checkOutView}
-              onPress={() => proceedToPayment()}
+              onPress={() => APICallCreateOrder()}
             >
               <Text style={styles.checkOutText}>{Strings.ProceedPayment}</Text>
             </TouchableOpacity>

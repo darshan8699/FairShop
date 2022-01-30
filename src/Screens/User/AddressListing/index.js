@@ -82,7 +82,7 @@ const AddressListing = (props) => {
             borderColor:
               addressIndex == index ? Colors.Background : Colors.button,
             backgroundColor:
-              addressIndex == index ? Colors.pinkBack : Colors.addressBack,
+              addressIndex == index ? Colors.pinkBack : Colors.white,
           },
         ]}
         onPress={() => setaddressIndex(index)}
