@@ -30,6 +30,7 @@ import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
+import { NO_IMAGE_URL } from "../../../Utility/Constants";
 
 // create a component
 const MyComponent = (props) => {

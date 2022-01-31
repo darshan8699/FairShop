@@ -26,4 +26,6 @@ export default Colors = {
   wt: "#28CE53",
   tweet: "#469AE9",
   addressBack: "#F0F4F7",
+  orderText: "#838e92",
+  itemBack: "#F8F8F8",
 };

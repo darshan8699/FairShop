@@ -51,3 +51,4 @@ export const ADD_TO_CART = "/cart" + " " + POST_FORM;
 export const ADD_WISHLIST = "/wishlist" + " " + POST_RAW;
 export const PAYMENT_VERIFY = "/order/payment-verify" + " " + POST_FORM;
 export const CREATE_ORDER = "/order" + " " + POST_FORM;
+export const LOYALTY_INQUIRY = "/user/loyalty-inquiry" + " " + GET;

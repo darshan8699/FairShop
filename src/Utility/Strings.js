@@ -128,5 +128,12 @@ export const Strings = {
   error_Address: "Please select shipping address",
   error_BillingAddress: "Please select billing address",
   error_paymentMode: "Please select payment mode",
+
+  Total: "Total",
+  Item: "Item",
+  Order_id: "Order ID: ",
+  Payment_id: "Payment ID: ",
+  Loyalty_Rewards: "Loyalty Rewards",
+  Membership: "Membership",
 };
 export default Strings;

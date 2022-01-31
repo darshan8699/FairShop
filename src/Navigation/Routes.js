@@ -22,4 +22,6 @@ export const Route = {
   ProductDetails: "ProductDetails",
   Wishlist: "Wishlist",
   PaymentOrder: "PaymentOrder",
+  OrderDetails: "OrderDetails",
+  LoyaltyRewards: "LoyaltyRewards",
 };

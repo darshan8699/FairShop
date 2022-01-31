@@ -38,6 +38,8 @@ export const Images = {
   call: require("./call.png"),
   delete: require("./delete.png"),
   pencil: require("./pencil.png"),
+  close: require("./close.png"),
+  badge: require("./badge.png"),
   //test images
   test: require("./test.png"),
   test2: require("./test2.png"),

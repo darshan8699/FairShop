@@ -1,6 +1,6 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Image, Text, View } from "react-native";
+import { FlatList, Image, Text, View, TouchableOpacity } from "react-native";
 import APICallService from "../../../API/APICallService";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
@@ -13,6 +13,9 @@ import {
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
+import { Route } from "../../../Navigation/Routes";
+import Navigator from "../../../Utility/Navigator";
+import Logger from "../../../Utility/Logger";
 
 // create a component
 const MyOrder = (props) => {
@@ -53,7 +56,13 @@ const MyOrder = (props) => {
         contentContainerStyle={{ paddingRight: Size.FindSize(15) }}
         data={offersList}
         renderItem={({ item }) => (
-          <View style={styles.listView}>
+          <TouchableOpacity
+            style={styles.listView}
+            onPress={() => {
+              Logger.log("order id ", item);
+              Navigator.navigate(Route.OrderDetails, { item: item });
+            }}
+          >
             <View style={{ flex: 1, marginStart: Size.FindSize(10) }}>
               <View
                 style={{
@@ -95,7 +104,7 @@ const MyOrder = (props) => {
                 <Text style={styles.priceText}>₹{item.total}</Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
         nestedScrollEnabled={false}
       />

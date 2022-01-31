@@ -86,6 +86,19 @@ const MyComponent = (props) => {
         </View>
       </TouchableOpacity>
       <View style={styles.line} />
+      <TouchableOpacity
+        onPress={() => Navigator.navigate(Route.LoyaltyRewards)}
+      >
+        <View style={styles.buttonView}>
+          <Image
+            source={Images.badge}
+            resizeMode="contain"
+            style={styles.icon}
+          />
+          <Text style={styles.text}>{Strings.Loyalty_Rewards}</Text>
+        </View>
+      </TouchableOpacity>
+      <View style={styles.line} />
       <TouchableOpacity onPress={() => Navigator.navigate(Route.MyOrders)}>
         <View style={styles.buttonView}>
           <Image

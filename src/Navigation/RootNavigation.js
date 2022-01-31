@@ -199,6 +199,14 @@ function RootNavigation() {
           name={Route.PaymentOrder}
           component={screen.PaymentOrder}
         />
+        <Stack.Screen
+          name={Route.OrderDetails}
+          component={screen.OrderDetails}
+        />
+        <Stack.Screen
+          name={Route.LoyaltyRewards}
+          component={screen.LoyaltyRewards}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
