@@ -28,4 +28,10 @@ export default Colors = {
   addressBack: "#F0F4F7",
   orderText: "#838e92",
   itemBack: "#F8F8F8",
+  progressColor: "#F2F2F2",
+  goldBorder: "#FEE17D",
+  goldText: "#C8750C",
+  goldBack: "#FFFAE0",
+  balanceText: "#202020",
+  currencyText: "#858585",
 };

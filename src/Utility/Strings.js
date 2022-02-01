@@ -135,5 +135,11 @@ export const Strings = {
   Payment_id: "Payment ID: ",
   Loyalty_Rewards: "Loyalty Rewards",
   Membership: "Membership",
+  Balances: "Balances",
+  Next_Tier: "Next Tier",
+  Rewards: "Rewards",
+  Points: "Points",
+  Currency: "Currency",
+  Gift: "Gift",
 };
 export default Strings;
