@@ -270,24 +270,26 @@ const MyComponent = (props) => {
             Logger.log(`current pos is: ${index}`)
           }
         />
-        <ImageBackground source={Images.homeBG} style={styles.back}>
-          <View style={styles.bestView}>
-            <Text style={styles.bestText}>{Strings.Best_value}</Text>
-            <TouchableOpacity>
-              <Image
-                source={Images.rightArrow}
-                resizeMode="contain"
-                style={styles.rightIcon}
-              />
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            data={bestValueOffers}
-            horizontal={true}
-            renderItem={renderBestItem}
-            showsHorizontalScrollIndicator={false}
-          />
-        </ImageBackground>
+        {bestValueOffers.length > 0 && (
+          <ImageBackground source={Images.homeBG} style={styles.back}>
+            <View style={styles.bestView}>
+              <Text style={styles.bestText}>{Strings.Best_value}</Text>
+              <TouchableOpacity>
+                <Image
+                  source={Images.rightArrow}
+                  resizeMode="contain"
+                  style={styles.rightIcon}
+                />
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={bestValueOffers}
+              horizontal={true}
+              renderItem={renderBestItem}
+              showsHorizontalScrollIndicator={false}
+            />
+          </ImageBackground>
+        )}
         <View style={styles.BrowseView}>
           <View style={styles.BrowseTextView}>
             <Text style={styles.BrowseText}>{Strings.BrowseText}</Text>

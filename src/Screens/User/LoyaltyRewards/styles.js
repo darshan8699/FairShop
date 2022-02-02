@@ -8,8 +8,15 @@ export default styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
   },
+  headerText: {
+    fontSize: Size.FindSize(24),
+    fontFamily: SemiBold,
+    color: Colors.headerText,
+    marginVertical: Size.FindSize(20),
+    paddingHorizontal: Size.FindSize(15),
+  },
   back: {
-    height: Size.FindSize(180),
+    height: Size.FindSize(100),
     marginTop: Size.FindSize(1),
     alignItems: "center",
     justifyContent: "center",
@@ -21,7 +28,7 @@ export default styles = StyleSheet.create({
   },
   mainView: {
     paddingHorizontal: Size.FindSize(30),
-    marginTop: Size.FindSize(40),
+    marginTop: Size.FindSize(20),
   },
   memberView: {
     borderWidth: Size.FindSize(0.5),
@@ -79,7 +86,7 @@ export default styles = StyleSheet.create({
   },
   balanceText: {
     marginVertical: Size.FindSize(20),
-    fontSize: Size.FindSize(30),
+    fontSize: Size.FindSize(24),
     fontFamily: Bold,
     color: Colors.balanceText,
   },

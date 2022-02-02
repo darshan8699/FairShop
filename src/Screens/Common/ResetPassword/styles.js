@@ -10,11 +10,11 @@ export default styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   loginText: {
-    fontSize: Size.FindSize(30),
+    fontSize: Size.FindSize(24),
     fontFamily: Bold,
     color: Colors.loginText,
-    textAlign: "center",
-    marginTop: Size.FindSize(80),
+    //textAlign: "center",
+    marginTop: Size.FindSize(20),
   },
   forgotText: {
     fontSize: Size.FindSize(14),

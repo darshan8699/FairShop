@@ -11,6 +11,7 @@ import NoDataView from "../../../Components/NoDataView";
 import Colors from "../../../Utility/Colors";
 import { PREF_STORE_ID, STORE_LOCATOR } from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
@@ -49,13 +50,23 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          const list = res.data.items;
-          setStoreListing(list);
-          setSearchStoreListing(list);
-          let pinList = [];
+          const list = [...res.data.items];
+          let tempList = [];
           for (const key in list) {
             if (list.hasOwnProperty(key)) {
               const element = list[key];
+              if (element.is_active == 1) {
+                tempList.push(element);
+              }
+            }
+          }
+
+          setStoreListing(tempList);
+          setSearchStoreListing(tempList);
+          let pinList = [];
+          for (const key in tempList) {
+            if (tempList.hasOwnProperty(key)) {
+              const element = tempList[key];
               pinList = [...pinList, ...element.servicable_pincodes];
             }
           }

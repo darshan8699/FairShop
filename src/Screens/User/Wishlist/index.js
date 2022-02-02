@@ -1,6 +1,6 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, View, Text } from "react-native";
 import APICallService from "../../../API/APICallService";
 import CustomItemView from "../../../Components/CustomItemView";
 import Header from "../../../Components/Header";
@@ -14,6 +14,7 @@ import {
 import { Size } from "../../../Utility/sizes";
 import styles from "./styles";
 import Logger from "../../../Utility/Logger";
+import Strings from "../../../Utility/Strings";
 
 // create a component
 const Wishlist = (props) => {
@@ -71,6 +72,9 @@ const Wishlist = (props) => {
     <View style={styles.container}>
       <Header isBack navigation={props.navigation} isRightIcon={false} />
       <Loader2 modalVisible={isShowLoader} />
+
+      <Text style={styles.headerText}>{Strings.Wishlist}</Text>
+
       <FlatList
         numColumns={2}
         showsVerticalScrollIndicator={false}
@@ -84,7 +88,6 @@ const Wishlist = (props) => {
             addToWishList={(id) => addToWishList(id)}
           />
         )}
-        nestedScrollEnabled={false}
       />
     </View>
   );

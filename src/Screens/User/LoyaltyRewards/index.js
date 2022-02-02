@@ -1,34 +1,21 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Image,
-  Text,
-  View,
-  TouchableOpacity,
-  ImageBackground,
-  ScrollView,
-} from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import * as Progress from "react-native-progress";
 import APICallService from "../../../API/APICallService";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
-import { LOYALTY_INQUIRY } from "../../../Utility/Constants";
-import {
-  showSuccessMessage,
-  showErrorMessage,
-  validateResponse,
-} from "../../../Utility/Helper";
-import { Size } from "../../../Utility/sizes";
-import styles from "./styles";
-import Logger from "../../../Utility/Logger";
-import Strings from "../../../Utility/Strings";
-import { Images } from "../../../Assets/images";
-import * as Progress from "react-native-progress";
 import Colors from "../../../Utility/Colors";
+import { LOYALTY_INQUIRY } from "../../../Utility/Constants";
+import { showErrorMessage } from "../../../Utility/Helper";
+import { Size } from "../../../Utility/sizes";
+import Strings from "../../../Utility/Strings";
+import styles from "./styles";
 
 // create a component
 const MyComponent = (props) => {
   const [isShowLoader, setLoader] = useState(false);
-  const [data, setData] = useState([]);
+  const [loyaltyData, setLoyaltyData] = useState(null);
   const isFirstRun = useRef(true);
   useEffect(() => {
     if (isFirstRun.current) {
@@ -44,8 +31,7 @@ const MyComponent = (props) => {
       .callAPI()
       .then(async function (res) {
         setLoader(false);
-        Logger.log("res is ::", res.data);
-        setData(res.data);
+        setLoyaltyData(res.data);
       })
       .catch((err) => {
         setLoader(false);
@@ -57,6 +43,7 @@ const MyComponent = (props) => {
     <View style={styles.container}>
       <Header isBack navigation={props.navigation} isRightIcon={false} />
       <Loader2 modalVisible={isShowLoader} />
+
       <ScrollView
         style={{
           marginBottom: Size.FindSize(20),
@@ -64,13 +51,7 @@ const MyComponent = (props) => {
         }}
         showsVerticalScrollIndicator={false}
       >
-        <ImageBackground
-          source={Images.homeBG}
-          style={styles.back}
-          resizeMode="cover"
-        >
-          <Text style={styles.text}>{Strings.Loyalty_Rewards}</Text>
-        </ImageBackground>
+        <Text style={styles.headerText}>{Strings.Loyalty_Rewards}</Text>
         <View style={styles.mainView}>
           <View style={styles.memberView}>
             <Text style={styles.memberText}>{Strings.Membership}</Text>
@@ -78,7 +59,7 @@ const MyComponent = (props) => {
           <View style={styles.pointView}>
             <View style={styles.progressView}>
               <Progress.Bar
-                progress={data?.membership?.currentTierValue}
+                progress={loyaltyData?.membership?.currentTierValue}
                 height={Size.FindSize(10)}
                 width={Size.FindSize(280)}
                 color={Colors.Background}
@@ -86,7 +67,7 @@ const MyComponent = (props) => {
                 borderWidth={0}
               />
               <Text style={styles.percetageText}>
-                {data?.membership?.currentTierValue * 100}%
+                {loyaltyData?.membership?.currentTierValue * 100}%
               </Text>
             </View>
             <View style={styles.rowView}>
@@ -94,11 +75,12 @@ const MyComponent = (props) => {
               <View style={styles.goldView}>
                 <TouchableOpacity style={styles.goldButton}>
                   <Text style={styles.goldText}>
-                    {data?.membership?.nextTierName}
+                    {loyaltyData?.membership?.nextTierName}
                   </Text>
                 </TouchableOpacity>
                 <Text style={styles.tierText}>
-                  {parseInt(data?.membership?.nextTierMilestone)} points to go
+                  {parseInt(loyaltyData?.membership?.nextTierMilestone)} points
+                  to go
                 </Text>
               </View>
             </View>
@@ -110,11 +92,15 @@ const MyComponent = (props) => {
           <View style={styles.secondView}>
             <View>
               <Text style={styles.currencyText}>{Strings.Points}</Text>
-              <Text style={styles.countText}>0</Text>
+              <Text style={styles.countText}>
+                {loyaltyData ? loyaltyData?.balances[0].amount : 0}
+              </Text>
             </View>
             <View style={{ marginLeft: Size.width / 2 - Size.FindSize(50) }}>
               <Text style={styles.currencyText}>{Strings.Currency}</Text>
-              <Text style={styles.countText}>0</Text>
+              <Text style={styles.countText}>
+                {loyaltyData ? loyaltyData?.balances[1].amount : 0}
+              </Text>
             </View>
           </View>
           <View style={[styles.memberView, { marginTop: Size.FindSize(30) }]}>
@@ -125,7 +111,9 @@ const MyComponent = (props) => {
           >
             <View>
               <Text style={styles.currencyText}>{Strings.Currency}</Text>
-              <Text style={styles.countText}>0</Text>
+              <Text style={styles.countText}>
+                {loyaltyData ? loyaltyData?.balances[2].amount : 0}
+              </Text>
             </View>
           </View>
         </View>
