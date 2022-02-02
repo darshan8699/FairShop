@@ -20,6 +20,7 @@ import {
   PREF_LOGIN_INFO,
   PRODUCT_DETAILS,
   ADD_WISHLIST,
+  ALL_WISHLIST,
 } from "../../../Utility/Constants";
 import {
   showErrorMessage,
@@ -121,22 +122,49 @@ const MyComponent = (props) => {
   };
   const addToWishList = (product_item_code) => {
     Logger.log("product_item_code", product_item_code);
-    setLoader(true);
-    const apiClass = new APICallService(ADD_WISHLIST, {
-      product_item_code: [product_item_code],
+    AsyncStorageLib.getItem(ALL_WISHLIST, (err, result) => {
+      const id = [product_item_code];
+      if (result !== null && result != product_item_code) {
+        var newIds = JSON.parse(result).concat(id);
+        AsyncStorageLib.setItem(ALL_WISHLIST, JSON.stringify(newIds));
+        setLoader(true);
+        const apiClass = new APICallService(ADD_WISHLIST, {
+          product_item_code: newIds,
+        });
+        apiClass
+          .callAPI()
+          .then(async function (res) {
+            setLoader(false);
+            if (validateResponse(res)) {
+              showSuccessMessage(res.message);
+            }
+          })
+          .catch((err) => {
+            setLoader(false);
+            showErrorMessage(err.message);
+          });
+        console.log("all wishlist---------", newIds);
+      } else {
+        AsyncStorageLib.setItem(ALL_WISHLIST, JSON.stringify(id));
+        setLoader(true);
+        const apiClass = new APICallService(ADD_WISHLIST, {
+          product_item_code: id,
+        });
+        apiClass
+          .callAPI()
+          .then(async function (res) {
+            setLoader(false);
+            if (validateResponse(res)) {
+              showSuccessMessage(res.message);
+            }
+          })
+          .catch((err) => {
+            setLoader(false);
+            showErrorMessage(err.message);
+          });
+        Logger.log("single wishlist--------");
+      }
     });
-    apiClass
-      .callAPI()
-      .then(async function (res) {
-        setLoader(false);
-        if (validateResponse(res)) {
-          showSuccessMessage(res.message);
-        }
-      })
-      .catch((err) => {
-        setLoader(false);
-        showErrorMessage(err.message);
-      });
   };
 
   return (
