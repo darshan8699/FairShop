@@ -1,5 +1,6 @@
 //import liraries
-import React, { Component } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { Component, useEffect, useState } from "react";
 import { Text, StyleSheet, TouchableOpacity, Image, View } from "react-native";
 import { Size } from "../Utility/sizes";
 import { Regular } from "../Assets/fonts";
@@ -8,10 +9,18 @@ import { Images } from "../Assets/images";
 import Strings from "../Utility/Strings";
 import Navigator from "../Utility/Navigator";
 import { Route } from "../Navigation/Routes";
-import { NO_IMAGE_URL } from "../Utility/Constants";
+import { NO_IMAGE_URL, ALL_WISHLIST } from "../Utility/Constants";
+import { checkFavItem } from "../Utility/Helper";
 
 // create a component
 const CustomItemView = (props) => {
+  const [favarray, setFavarray] = useState([]);
+
+  useEffect(() => {
+    AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
+      setFavarray(JSON.parse(result));
+    });
+  });
   return (
     <TouchableOpacity
       style={[styles.list, props.listView]}
@@ -32,7 +41,15 @@ const CustomItemView = (props) => {
         style={styles.favView}
         onPress={() => props.addToWishList(props.item.item_code)}
       >
-        <Image source={Images.fav} resizeMode="contain" style={styles.fav} />
+        {favarray.indexOf(props.item.item_code) !== -1 ? (
+          <Image
+            source={Images.heart}
+            resizeMode="contain"
+            style={styles.fav}
+          />
+        ) : (
+          <Image source={Images.fav} resizeMode="contain" style={styles.fav} />
+        )}
       </TouchableOpacity>
       <View style={styles.flagView}>
         <Image source={Images.flag} resizeMode="contain" style={styles.flag} />

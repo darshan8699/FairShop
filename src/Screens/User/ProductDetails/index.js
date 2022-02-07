@@ -26,6 +26,7 @@ import {
   showErrorMessage,
   showSuccessMessage,
   validateResponse,
+  checkFavItem,
 } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
@@ -43,11 +44,16 @@ const MyComponent = (props) => {
   const [imageArr, setImageArr] = useState([]);
   const flatListRef = useRef();
   const isFirstRun = useRef(true);
+  const [favarray, setFavarray] = useState([]);
+
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       GetItemData();
       setLoginInfo();
+      AsyncStorageLib.getItem(ALL_WISHLIST, (err, result) => {
+        setFavarray(JSON.parse(result));
+      });
     }
   });
   async function setLoginInfo() {
@@ -121,7 +127,6 @@ const MyComponent = (props) => {
       });
   };
   const addToWishList = (product_item_code) => {
-    Logger.log("product_item_code", product_item_code);
     AsyncStorageLib.getItem(ALL_WISHLIST, (err, result) => {
       const id = [product_item_code];
       if (result !== null && result != product_item_code) {
@@ -143,7 +148,6 @@ const MyComponent = (props) => {
             setLoader(false);
             showErrorMessage(err.message);
           });
-        console.log("all wishlist---------", newIds);
       } else {
         AsyncStorageLib.setItem(ALL_WISHLIST, JSON.stringify(id));
         setLoader(true);
@@ -301,11 +305,19 @@ const MyComponent = (props) => {
               addToWishList(productData.item_code);
             }}
           >
-            <Image
-              source={Images.fav}
-              resizeMode="contain"
-              style={styles.fav}
-            />
+            {favarray.indexOf(productData.item_code) !== -1 ? (
+              <Image
+                source={Images.heart}
+                resizeMode="contain"
+                style={styles.fav}
+              />
+            ) : (
+              <Image
+                source={Images.fav}
+                resizeMode="contain"
+                style={styles.fav}
+              />
+            )}
           </TouchableOpacity>
         </View>
         <View style={styles.socialButton}>

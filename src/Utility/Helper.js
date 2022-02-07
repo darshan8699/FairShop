@@ -5,6 +5,8 @@ import Toast from "react-native-root-toast";
 import Colors from "./Colors";
 import Logger from "./Logger";
 import Strings from "./Strings";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ALL_WISHLIST } from "../Utility/Constants";
 
 export function validateResponse(res) {
   Logger.log(res);
@@ -98,4 +100,18 @@ export function getFormatedate(dateTime, format = "ddd, DD.MM.yyyy, hh.mm a") {
   } else {
     return moment(new Date()).format(format);
   }
+}
+
+export function checkFavItem(itemCode) {
+  AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
+    console.log("result is :", JSON.parse(result));
+    console.log("item code is :", itemCode);
+    if (JSON.parse(result).indexOf(itemCode) !== -1) {
+      console.log("true");
+      return true;
+    } else {
+      console.log("false");
+      return false;
+    }
+  });
 }

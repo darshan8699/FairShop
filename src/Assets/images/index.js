@@ -40,6 +40,7 @@ export const Images = {
   pencil: require("./pencil.png"),
   close: require("./close.png"),
   badge: require("./badge.png"),
+  heart:require("./heart.png"),
   //test images
   test: require("./test.png"),
   test2: require("./test2.png"),
