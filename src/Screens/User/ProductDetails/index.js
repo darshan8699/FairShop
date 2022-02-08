@@ -130,24 +130,51 @@ const MyComponent = (props) => {
     AsyncStorageLib.getItem(ALL_WISHLIST, (err, result) => {
       const id = [product_item_code];
       if (result !== null && result != product_item_code) {
-        var newIds = JSON.parse(result).concat(id);
-        AsyncStorageLib.setItem(ALL_WISHLIST, JSON.stringify(newIds));
-        setLoader(true);
-        const apiClass = new APICallService(ADD_WISHLIST, {
-          product_item_code: newIds,
-        });
-        apiClass
-          .callAPI()
-          .then(async function (res) {
-            setLoader(false);
-            if (validateResponse(res)) {
-              showSuccessMessage(res.message);
-            }
-          })
-          .catch((err) => {
-            setLoader(false);
-            showErrorMessage(err.message);
+        if (JSON.parse(result).includes(product_item_code) == false) {
+          var newIds = JSON.parse(result).concat(id);
+          AsyncStorageLib.setItem(ALL_WISHLIST, JSON.stringify(newIds));
+          setLoader(true);
+          const apiClass = new APICallService(ADD_WISHLIST, {
+            product_item_code: newIds,
           });
+          apiClass
+            .callAPI()
+            .then(async function (res) {
+              setLoader(false);
+              if (validateResponse(res)) {
+                showSuccessMessage(res.message);
+                setFavarray(JSON.stringify(newIds));
+              }
+            })
+            .catch((err) => {
+              setLoader(false);
+              showErrorMessage(err.message);
+            });
+        } else {
+          try {
+            let favItemArray = JSON.parse(result);
+            alteredItems = favItemArray.filter(function (e) {
+              return e !== product_item_code;
+            });
+            AsyncStorageLib.setItem(ALL_WISHLIST, JSON.stringify(alteredItems));
+            const apiClass = new APICallService(ADD_WISHLIST, {
+              product_item_code: alteredItems,
+            });
+            apiClass
+              .callAPI()
+              .then(async function (res) {
+                if (validateResponse(res)) {
+                  showSuccessMessage(res.message);
+                  setFavarray(JSON.stringify(alteredItems));
+                }
+              })
+              .catch((err) => {
+                showErrorMessage(err.message);
+              });
+          } catch (error) {
+            console.log(error);
+          }
+        }
       } else {
         AsyncStorageLib.setItem(ALL_WISHLIST, JSON.stringify(id));
         setLoader(true);
@@ -160,13 +187,13 @@ const MyComponent = (props) => {
             setLoader(false);
             if (validateResponse(res)) {
               showSuccessMessage(res.message);
+              setFavarray(JSON.stringify(id));
             }
           })
           .catch((err) => {
             setLoader(false);
             showErrorMessage(err.message);
           });
-        Logger.log("single wishlist--------");
       }
     });
   };

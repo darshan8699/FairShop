@@ -165,52 +165,52 @@ const MyComponent = (props) => {
         showErrorMessage(err.message);
       });
   };
-  const addToWishList = (product_item_code) => {
-    Logger.log("product_item_code", product_item_code);
-    AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
-      const id = [product_item_code];
-      if (result !== null && result != product_item_code) {
-        var newIds = JSON.parse(result).concat(id);
-        AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(newIds));
-        setLoader(true);
-        const apiClass = new APICallService(ADD_WISHLIST, {
-          product_item_code: newIds,
-        });
-        apiClass
-          .callAPI()
-          .then(async function (res) {
-            setLoader(false);
-            if (validateResponse(res)) {
-              showSuccessMessage(res.message);
-            }
-          })
-          .catch((err) => {
-            setLoader(false);
-            showErrorMessage(err.message);
-          });
-        console.log("all wishlist---------", newIds);
-      } else {
-        AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(id));
-        setLoader(true);
-        const apiClass = new APICallService(ADD_WISHLIST, {
-          product_item_code: id,
-        });
-        apiClass
-          .callAPI()
-          .then(async function (res) {
-            setLoader(false);
-            if (validateResponse(res)) {
-              showSuccessMessage(res.message);
-            }
-          })
-          .catch((err) => {
-            setLoader(false);
-            showErrorMessage(err.message);
-          });
-        Logger.log("single wishlist--------");
-      }
-    });
-  };
+  // const addToWishList = (product_item_code) => {
+  //   Logger.log("product_item_code", product_item_code);
+  //   AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
+  //     const id = [product_item_code];
+  //     if (result !== null && result != product_item_code) {
+  //       var newIds = JSON.parse(result).concat(id);
+  //       AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(newIds));
+  //       setLoader(true);
+  //       const apiClass = new APICallService(ADD_WISHLIST, {
+  //         product_item_code: newIds,
+  //       });
+  //       apiClass
+  //         .callAPI()
+  //         .then(async function (res) {
+  //           setLoader(false);
+  //           if (validateResponse(res)) {
+  //             showSuccessMessage(res.message);
+  //           }
+  //         })
+  //         .catch((err) => {
+  //           setLoader(false);
+  //           showErrorMessage(err.message);
+  //         });
+  //       console.log("all wishlist---------", newIds);
+  //     } else {
+  //       AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(id));
+  //       setLoader(true);
+  //       const apiClass = new APICallService(ADD_WISHLIST, {
+  //         product_item_code: id,
+  //       });
+  //       apiClass
+  //         .callAPI()
+  //         .then(async function (res) {
+  //           setLoader(false);
+  //           if (validateResponse(res)) {
+  //             showSuccessMessage(res.message);
+  //           }
+  //         })
+  //         .catch((err) => {
+  //           setLoader(false);
+  //           showErrorMessage(err.message);
+  //         });
+  //       Logger.log("single wishlist--------");
+  //     }
+  //   });
+  // };
   const renderBestItem = ({ item }) => (
     <Image source={{ uri: item?.bannerImage }} style={styles.bestImage} />
   );
@@ -361,7 +361,7 @@ const MyComponent = (props) => {
             renderItem={({ item }) => (
               <CustomItemView
                 item={item}
-                addToWishList={(id) => addToWishList(id)}
+                // addToWishList={(id) => addToWishList(id)}
               />
             )}
           />
@@ -386,7 +386,7 @@ const MyComponent = (props) => {
               <CustomItemView
                 item={item}
                 listView={styles.shadow}
-                addToWishList={(id) => addToWishList(id)}
+                // addToWishList={(id) => addToWishList(id)}
               />
             )}
           />
