@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import RazorpayCheckout from "react-native-razorpay";
 import APICallService from "../../../API/APICallService";
 import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
@@ -17,22 +16,21 @@ import Loader2 from "../../../Components/Loader2";
 import Colors from "../../../Utility/Colors";
 import {
   ADD_TO_CART,
-  PREF_LOGIN_INFO,
-  PRODUCT_DETAILS,
   ADD_WISHLIST,
   ALL_WISHLIST,
+  NO_IMAGE_URL,
+  PREF_LOGIN_INFO,
+  PRODUCT_DETAILS,
 } from "../../../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,
   validateResponse,
-  checkFavItem,
 } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
-import { NO_IMAGE_URL } from "../../../Utility/Constants";
 
 // create a component
 const MyComponent = (props) => {
@@ -52,7 +50,7 @@ const MyComponent = (props) => {
       GetItemData();
       setLoginInfo();
       AsyncStorageLib.getItem(ALL_WISHLIST, (err, result) => {
-        setFavarray(JSON.parse(result));
+        if (result) setFavarray(JSON.parse(result));
       });
     }
   });

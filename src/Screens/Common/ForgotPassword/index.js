@@ -15,6 +15,7 @@ import CustomButton from "../../../Components/CustomButton";
 import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
 import Loader2 from "../../../Components/Loader2";
+import { Route } from "../../../Navigation/Routes";
 import Colors from "../../../Utility/Colors";
 import {
   SEND_OTP,
@@ -26,12 +27,11 @@ import {
   validateResponse,
 } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
+import Navigator from "../../../Utility/Navigator";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import { isTextNotEmpty } from "../../../Utility/Validation";
-import Navigator from "../../../Utility/Navigator";
 import styles from "./styles";
-import { Route } from "../../../Navigation/Routes";
 
 // create a component
 const MyComponent = (props) => {

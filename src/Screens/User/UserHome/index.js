@@ -19,20 +19,16 @@ import Loader2 from "../../../Components/Loader2";
 import { Route } from "../../../Navigation/Routes";
 import Colors from "../../../Utility/Colors";
 import {
+  ALL_WISHLIST,
   CATEGORY,
   HOMEPAGE_NEW_PRODUCT,
   HOMEPAGE_POPULAR_PRODUCT,
   HOME_BANNER,
   NO_IMAGE_URL,
   OFFERS,
-  ADD_WISHLIST,
-  ALL_WISHLIST,
+  WHISHLIST,
 } from "../../../Utility/Constants";
-import {
-  showSuccessMessage,
-  showErrorMessage,
-  validateResponse,
-} from "../../../Utility/Helper";
+import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import Navigator from "../../../Utility/Navigator";
 import { Size } from "../../../Utility/sizes";
@@ -59,6 +55,7 @@ const MyComponent = (props) => {
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
+      APICallWishList();
       GetPopularProductData();
       GetNewProductData();
       GetBrowseCategory();
@@ -165,6 +162,35 @@ const MyComponent = (props) => {
         showErrorMessage(err.message);
       });
   };
+
+  const APICallWishList = () => {
+    setLoader(true);
+    const apiClass = new APICallService(WHISHLIST, {
+      // page: page,
+      limit: -1,
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          const wishListArr = res.data.items[0].products;
+          let array = [];
+          for (const key in wishListArr) {
+            if (wishListArr.hasOwnProperty(key)) {
+              const element = wishListArr[key];
+              array.push(element.item_code);
+            }
+          }
+          AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(array));
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+
   // const addToWishList = (product_item_code) => {
   //   Logger.log("product_item_code", product_item_code);
   //   AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {

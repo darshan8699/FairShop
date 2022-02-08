@@ -1,21 +1,21 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Image, Text, View, TouchableOpacity } from "react-native";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import APICallService from "../../../API/APICallService";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
+import { Route } from "../../../Navigation/Routes";
 import { ORDERS } from "../../../Utility/Constants";
 import {
+  getFormatedate,
   showErrorMessage,
   validateResponse,
-  getFormatedate,
 } from "../../../Utility/Helper";
+import Logger from "../../../Utility/Logger";
+import Navigator from "../../../Utility/Navigator";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
-import { Route } from "../../../Navigation/Routes";
-import Navigator from "../../../Utility/Navigator";
-import Logger from "../../../Utility/Logger";
 
 // create a component
 const MyOrder = (props) => {

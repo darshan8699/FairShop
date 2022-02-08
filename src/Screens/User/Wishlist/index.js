@@ -1,25 +1,17 @@
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, View, Text } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import APICallService from "../../../API/APICallService";
 import CustomItemView from "../../../Components/CustomItemView";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
-import {
-  WHISHLIST,
-  ADD_WISHLIST,
-  ALL_WISHLIST,
-} from "../../../Utility/Constants";
-import {
-  showSuccessMessage,
-  showErrorMessage,
-  validateResponse,
-} from "../../../Utility/Helper";
-import { Size } from "../../../Utility/sizes";
-import styles from "./styles";
+import { ALL_WISHLIST, WHISHLIST } from "../../../Utility/Constants";
+import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
+import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
+import styles from "./styles";
 
 // create a component
 const Wishlist = (props) => {
@@ -33,7 +25,6 @@ const Wishlist = (props) => {
       APICallWishList();
     }
     const unsubscribe = props.navigation.addListener("focus", () => {
-      Logger.log("focus");
       APICallWishList();
     });
     return () => unsubscribe();
@@ -42,15 +33,24 @@ const Wishlist = (props) => {
   const APICallWishList = () => {
     setLoader(true);
     const apiClass = new APICallService(WHISHLIST, {
-      page: page,
-      limit: 10,
+      // page: page,
+      limit: -1,
     });
     apiClass
       .callAPI()
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          setWhishList(res.data.data[0].products);
+          const wishListArr = res.data.items[0].products;
+          let array = [];
+          setWhishList(wishListArr);
+          for (const key in wishListArr) {
+            if (wishListArr.hasOwnProperty(key)) {
+              const element = wishListArr[key];
+              array.push(element.item_code);
+            }
+          }
+          AsyncStorageLib.setItem(ALL_WISHLIST, JSON.stringify(array));
         }
       })
       .catch((err) => {
@@ -122,6 +122,7 @@ const Wishlist = (props) => {
           <CustomItemView
             item={item}
             listView={styles.listView}
+            onRefresh={() => APICallWishList()}
             // addToWishList={(id) => addToWishList(id)}
           />
         )}

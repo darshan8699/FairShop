@@ -11,7 +11,6 @@ import NoDataView from "../../../Components/NoDataView";
 import Colors from "../../../Utility/Colors";
 import { PREF_STORE_ID, STORE_LOCATOR } from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
-import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";

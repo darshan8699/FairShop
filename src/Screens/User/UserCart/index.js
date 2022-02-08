@@ -2,23 +2,15 @@ import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
-import RazorpayCheckout from "react-native-razorpay";
 import APICallService from "../../../API/APICallService";
-import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
 import { Route } from "../../../Navigation/Routes";
-import Colors from "../../../Utility/Colors";
 import {
   ADD_TO_CART,
-  PREF_LOGIN_INFO,
-  PAYMENT_VERIFY,
   NO_IMAGE_URL,
+  PREF_LOGIN_INFO,
 } from "../../../Utility/Constants";
-import {
-  showErrorMessage,
-  showSuccessMessage,
-  validateResponse,
-} from "../../../Utility/Helper";
+import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import Navigator from "../../../Utility/Navigator";
 import Strings from "../../../Utility/Strings";

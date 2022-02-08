@@ -1,4 +1,5 @@
 //import liraries
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
 import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import {
@@ -12,7 +13,6 @@ import {
 } from "react-native";
 import DatePicker from "react-native-date-picker";
 import { Dropdown } from "react-native-element-dropdown";
-import { launchImageLibrary } from "react-native-image-picker";
 import ImagePicker from "react-native-image-crop-picker";
 import RadioForm from "react-native-simple-radio-button";
 import AntDesign from "react-native-vector-icons/AntDesign";
@@ -29,7 +29,6 @@ import {
   ATTACHMENTS,
   GET_PROFILE,
   PREF_LOGIN_INFO,
-  PREF_TOKEN,
   PUT,
 } from "../../../Utility/Constants";
 import {
@@ -42,7 +41,6 @@ import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import { isTextNotEmpty } from "../../../Utility/Validation";
 import styles from "./styles";
-import AsyncStorageLib from "@react-native-async-storage/async-storage";
 // create a component
 const MyComponent = (props) => {
   const [email, setEmail] = useState("");

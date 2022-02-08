@@ -1,22 +1,21 @@
 //import liraries
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { Component, useEffect, useState } from "react";
-import { Text, StyleSheet, TouchableOpacity, Image, View } from "react-native";
-import { Size } from "../Utility/sizes";
+import React, { useEffect, useState } from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import APICallService from "../API/APICallService";
 import { Regular } from "../Assets/fonts";
-import Colors from "../Utility/Colors";
 import { Images } from "../Assets/images";
-import Strings from "../Utility/Strings";
-import Navigator from "../Utility/Navigator";
 import { Route } from "../Navigation/Routes";
-import { NO_IMAGE_URL, ALL_WISHLIST, ADD_WISHLIST } from "../Utility/Constants";
-import { checkFavItem } from "../Utility/Helper";
+import Colors from "../Utility/Colors";
+import { ADD_WISHLIST, ALL_WISHLIST, NO_IMAGE_URL } from "../Utility/Constants";
 import {
-  showSuccessMessage,
   showErrorMessage,
+  showSuccessMessage,
   validateResponse,
 } from "../Utility/Helper";
-import APICallService from "../API/APICallService";
+import Navigator from "../Utility/Navigator";
+import { Size } from "../Utility/sizes";
+import Strings from "../Utility/Strings";
 
 // create a component
 const CustomItemView = (props) => {
@@ -24,7 +23,7 @@ const CustomItemView = (props) => {
 
   useEffect(() => {
     AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
-      setFavarray(JSON.parse(result));
+      if (result) setFavarray(JSON.parse(result));
     });
   });
 
@@ -94,6 +93,8 @@ const CustomItemView = (props) => {
             showErrorMessage(err.message);
           });
       }
+
+      props.onRefresh && props.onRefresh();
     });
   };
 
@@ -103,7 +104,6 @@ const CustomItemView = (props) => {
       activeOpacity={1}
       onPress={() => {
         Navigator.navigate(Route.ProductDetails, { id: props.item.item_code });
-        console.log("item is :", props.item);
       }}
     >
       <Image

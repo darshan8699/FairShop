@@ -1,22 +1,22 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Text, TouchableOpacity, View, Image } from "react-native";
+import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import APICallService from "../../../API/APICallService";
+import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
+import Loader2 from "../../../Components/Loader2";
 import { Route } from "../../../Navigation/Routes";
 import Colors from "../../../Utility/Colors";
-import Navigator from "../../../Utility/Navigator";
-import Strings from "../../../Utility/Strings";
-import styles from "./styles";
+import { DELETE_ADDRESS, MY_ADDRESS } from "../../../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,
   validateResponse,
 } from "../../../Utility/Helper";
-import { MY_ADDRESS, DELETE_ADDRESS } from "../../../Utility/Constants";
-import Loader2 from "../../../Components/Loader2";
-import APICallService from "../../../API/APICallService";
 import Logger from "../../../Utility/Logger";
-import { Images } from "../../../Assets/images";
+import Navigator from "../../../Utility/Navigator";
+import Strings from "../../../Utility/Strings";
+import styles from "./styles";
 
 // create a component
 const AddressListing = (props) => {
