@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { EventRegister } from "react-native-event-listeners";
 import APICallService from "../../../API/APICallService";
 import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
@@ -17,10 +18,12 @@ import Colors from "../../../Utility/Colors";
 import {
   ADD_TO_CART,
   ADD_WISHLIST,
+  ALL_CART,
   ALL_WISHLIST,
   NO_IMAGE_URL,
   PREF_LOGIN_INFO,
   PRODUCT_DETAILS,
+  UPDATE_CART_COUNT,
 } from "../../../Utility/Constants";
 import {
   showErrorMessage,
@@ -106,17 +109,45 @@ const MyComponent = (props) => {
     </TouchableOpacity>
   );
 
-  const addToCart = (product_item_code, quantity) => {
+  const addToCart = (product) => {
+    AsyncStorageLib.getItem(ALL_CART, (err, result) => {
+      product.quantity = 1;
+      const cartList = [product];
+      var prefList = [];
+      if (result && JSON.parse(result).length > 0) {
+        const saveList = JSON.parse(result);
+        prefList = [...saveList, ...cartList];
+      } else {
+        prefList = [...cartList];
+      }
+      AsyncStorageLib.setItem(ALL_CART, JSON.stringify(prefList));
+      let productList = [];
+      for (const key in prefList) {
+        if (prefList.hasOwnProperty(key)) {
+          const element = prefList[key];
+          productList.push({
+            product_item_code: element.item_code,
+            quantity: element.quantity,
+          });
+        }
+      }
+      APICallAddToCart(productList);
+    });
+  };
+
+  const APICallAddToCart = (product_list) => {
     setLoader(true);
     const apiClass = new APICallService(ADD_TO_CART, {
-      product: [{ product_item_code: product_item_code, quantity: quantity }],
+      product: product_list,
+      order_using: "Web_store",
     });
     apiClass
       .callAPI()
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          showSuccessMessage(res.message);
+          showSuccessMessage("Cart updated");
+          EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
         }
       })
       .catch((err) => {
@@ -315,7 +346,7 @@ const MyComponent = (props) => {
         <View style={styles.buttonView}>
           <TouchableOpacity
             style={styles.cartView}
-            onPress={() => addToCart(productData.item_code, 1)}
+            onPress={() => addToCart(productData, 1)}
           >
             <Image
               source={Images.cart}

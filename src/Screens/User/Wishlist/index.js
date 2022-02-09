@@ -115,7 +115,10 @@ const Wishlist = (props) => {
       <FlatList
         numColumns={2}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingRight: Size.FindSize(15) }}
+        contentContainerStyle={{
+          paddingRight: Size.FindSize(15),
+          paddingBottom: Size.FindSize(20),
+        }}
         data={whishList}
         style={styles.list}
         renderItem={({ item }) => (

@@ -1,8 +1,10 @@
+export const UPDATE_CART_COUNT = "UPDATE_CART_COUNT";
 export const PREF_TOKEN = "Token";
 export const PREF_USER_ID = "PREF_USER_ID";
 export const PREF_STORE_ID = "PREF_STORE_ID";
 export const PREF_LOGIN_INFO = "loginInfo";
 export const ALL_WISHLIST = "ALL_WISHLIST";
+export const ALL_CART = "ALL_CART";
 export const BASE_URL = "https://dev.fairshop.co.in/backend/public/api";
 export const NO_IMAGE_URL =
   "https://dev.fairshop.co.in/_next/static/image/images/imgfallback.b48a540a7337fb7c68443ab63b361162.png";

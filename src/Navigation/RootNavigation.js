@@ -1,15 +1,20 @@
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
-import { Platform, Image } from "react-native";
-import * as screen from "../Screens";
-import { Route } from "./Routes";
-import CustomDrawerNavigator from "./CustomDrawerNavigator";
-import CustomBottomNavigator from "./CustomBottomNavigator";
+import { Image, Platform, Text, View } from "react-native";
+import { EventRegister } from "react-native-event-listeners";
+import { Bold } from "../Assets/fonts";
 import { Images } from "../Assets/images";
+import * as screen from "../Screens";
 import Colors from "../Utility/Colors";
+import { ALL_CART, UPDATE_CART_COUNT } from "../Utility/Constants";
+import Logger from "../Utility/Logger";
+import { Size } from "../Utility/sizes";
+import CustomDrawerNavigator from "./CustomDrawerNavigator";
+import { Route } from "./Routes";
 const horizontalAnimation = {
   gestureDirection: "horizontal",
   headerShown: false,
@@ -52,6 +57,20 @@ const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 
 function BottomTabApp() {
+  const [tabCount, setCount] = React.useState(0);
+
+  React.useEffect(() => {
+    AsyncStorageLib.getItem(ALL_CART, (err, result) => {
+      if (result) {
+        let list = JSON.parse(result);
+        setCount(list.length);
+      }
+    });
+    EventRegister.addEventListener(UPDATE_CART_COUNT, (count) => {
+      Logger.log({ count });
+      setCount(count);
+    });
+  }, []);
   return (
     <Tab.Navigator
       initialRouteName={Route.Landing}
@@ -101,17 +120,52 @@ function BottomTabApp() {
         component={screen.UserCart}
         options={{
           tabBarShowLabel: false,
-          tabBarIcon: ({ focused, color, size }) => (
-            <Image
-              style={{
-                height: 25,
-                width: 25,
-                tintColor: focused ? Colors.Background : Colors.button,
-              }}
-              resizeMode="contain"
-              source={Images.cart}
-            />
-          ),
+          tabBarIcon: ({ focused, color, size }) => {
+            AsyncStorageLib.getItem(ALL_CART, (err, result) => {
+              if (result) {
+                let list = JSON.parse(result);
+                setCount(list.length);
+              }
+            });
+            return (
+              <View>
+                <Image
+                  style={{
+                    height: 25,
+                    width: 25,
+                    tintColor: focused ? Colors.Background : Colors.button,
+                  }}
+                  resizeMode="contain"
+                  source={Images.cart}
+                />
+                {tabCount > 0 && (
+                  <View
+                    style={{
+                      position: "absolute",
+                      end: -15,
+                      top: -3,
+                      backgroundColor: Colors.Background,
+                      borderRadius: Size.FindSize(10),
+                      height: Size.FindSize(20),
+                      width: Size.FindSize(20),
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        fontFamily: Bold,
+                        fontSize: Size.FindSize(12),
+                      }}
+                    >
+                      {tabCount}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            );
+          },
         }}
       />
       <Tab.Screen

@@ -7,7 +7,14 @@ import { Regular } from "../Assets/fonts";
 import { Images } from "../Assets/images";
 import { Route } from "../Navigation/Routes";
 import Colors from "../Utility/Colors";
-import { ADD_WISHLIST, ALL_WISHLIST, NO_IMAGE_URL } from "../Utility/Constants";
+import {
+  ADD_TO_CART,
+  ADD_WISHLIST,
+  ALL_CART,
+  ALL_WISHLIST,
+  NO_IMAGE_URL,
+  UPDATE_CART_COUNT,
+} from "../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,
@@ -16,6 +23,7 @@ import {
 import Navigator from "../Utility/Navigator";
 import { Size } from "../Utility/sizes";
 import Strings from "../Utility/Strings";
+import { EventRegister } from "react-native-event-listeners";
 
 // create a component
 const CustomItemView = (props) => {
@@ -98,6 +106,50 @@ const CustomItemView = (props) => {
     });
   };
 
+  const addToCart = (product) => {
+    AsyncStorage.getItem(ALL_CART, (err, result) => {
+      product.quantity = 1;
+      const cartList = [product];
+      var prefList = [];
+      if (result && JSON.parse(result).length > 0) {
+        const saveList = JSON.parse(result);
+        prefList = [...saveList, ...cartList];
+      } else {
+        prefList = [...cartList];
+      }
+      AsyncStorage.setItem(ALL_CART, JSON.stringify(prefList));
+      let productList = [];
+      for (const key in prefList) {
+        if (prefList.hasOwnProperty(key)) {
+          const element = prefList[key];
+          productList.push({
+            product_item_code: element.item_code,
+            quantity: element.quantity,
+          });
+        }
+      }
+      APICallAddToCart(productList);
+    });
+  };
+
+  const APICallAddToCart = (product_list) => {
+    const apiClass = new APICallService(ADD_TO_CART, {
+      product: product_list,
+      order_using: "Web_store",
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        if (validateResponse(res)) {
+          EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
+          showSuccessMessage("Cart updated");
+        }
+      })
+      .catch((err) => {
+        showErrorMessage(err.message);
+      });
+  };
+
   return (
     <TouchableOpacity
       style={[styles.list, props.listView]}
@@ -141,7 +193,7 @@ const CustomItemView = (props) => {
       <Text style={styles.price}>₹{props.item.mrp}</Text>
       <TouchableOpacity
         style={styles.cartView}
-        onPress={() => console.log("item is :", props.item)}
+        onPress={() => addToCart(props.item)}
       >
         <Image source={Images.cart} resizeMode="contain" style={styles.cart} />
         <Text style={styles.add}>{Strings.Add}</Text>

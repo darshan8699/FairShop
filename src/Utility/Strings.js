@@ -121,6 +121,7 @@ export const Strings = {
   COD: "Cash on Delivery",
   ProceedPayment: "Proceed to Payment",
   No_data_found: "No data found",
+  No_cart_found: "No cart items found",
 
   No_Stores_Suggestion:
     "No store serves to your location\nOur Services are available for areas under these pincodes:",

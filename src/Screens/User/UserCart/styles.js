@@ -74,9 +74,10 @@ export default styles = StyleSheet.create({
     color: Colors.headerText,
   },
   countText: {
-    fontSize: Size.FindSize(23),
+    fontSize: Size.FindSize(20),
     color: Colors.Background,
     fontFamily: Regular,
+    justifyContent: "center",
   },
   plusText: {
     fontSize: Size.FindSize(20),

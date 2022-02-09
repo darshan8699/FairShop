@@ -3,6 +3,7 @@ import AsyncStorageLib from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
 import {
   FlatList,
+  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -12,6 +13,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import APICallService from "../API/APICallService";
 import { Regular } from "../Assets/fonts";
+import { Images } from "../Assets/images";
 import Loader2 from "../Components/Loader2";
 import { Route } from "../Navigation/Routes";
 import Colors from "../Utility/Colors";
@@ -80,7 +82,7 @@ const MyComponent = (props) => {
             props.navigation.closeDrawer();
           }}
         >
-          <MaterialCommunityIcons name={"close"} size={20} />
+          <Image source={Images.close} style={{ height: 15, width: 15 }} />
         </TouchableOpacity>
       </View>
       <View style={styles.lineView} />

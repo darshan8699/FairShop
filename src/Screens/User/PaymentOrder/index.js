@@ -2,9 +2,11 @@ import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   FlatList,
   Image,
   Keyboard,
+  LogBox,
   Text,
   TouchableOpacity,
   View,
@@ -16,15 +18,18 @@ import { Bold, Regular } from "../../../Assets/fonts";
 import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
 import Header from "../../../Components/Header";
+import Loader2 from "../../../Components/Loader2";
 import Colors from "../../../Utility/Colors";
 import {
   ADD_TO_CART,
+  ALL_CART,
   CREATE_ORDER,
   MY_ADDRESS,
   NO_IMAGE_URL,
   PAYMENT_VERIFY,
   PREF_LOGIN_INFO,
   PREF_STORE_ID,
+  UPDATE_CART_COUNT,
 } from "../../../Utility/Constants";
 import {
   showErrorMessage,
@@ -35,6 +40,7 @@ import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
+import { EventRegister } from "react-native-event-listeners";
 
 // create a component
 const PaymentOrder = (props) => {
@@ -50,6 +56,7 @@ const PaymentOrder = (props) => {
   const isFirstRun = useRef(true);
 
   useEffect(() => {
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
     if (isFirstRun.current) {
       isFirstRun.current = false;
       setLoginInfo();
@@ -68,9 +75,33 @@ const PaymentOrder = (props) => {
 
     if (loginInfo) {
       setLoginData(loginInfo?.item);
-      APICallCartList(loginInfo?.item);
+      // APICallCartList(loginInfo?.item);
+      getCartList();
       APICallGetAddressData();
     }
+  }
+
+  function getCartList() {
+    AsyncStorageLib.getItem(ALL_CART, (err, result) => {
+      if (result) {
+        let list = JSON.parse(result);
+        list = list.filter(function (person) {
+          return person.quantity != 0;
+        });
+        Logger.log({ list });
+        setCartList(list);
+        updateCartTotal(list);
+      }
+    });
+  }
+
+  function updateCartTotal(cartList) {
+    let cartTotal = 0;
+    Logger.log("updateCartTotal=>", cartList);
+    cartList.map((item) => {
+      cartTotal = cartTotal + item.mrp * item.quantity;
+    });
+    setTotalPrice(cartTotal);
   }
 
   const APICallGetAddressData = () => {
@@ -115,23 +146,58 @@ const PaymentOrder = (props) => {
       });
   };
 
-  const APICalladdToCart = (product_item_code, quantity) => {
+  const addToCartStorage = (product, quantity) => {
+    AsyncStorageLib.getItem(ALL_CART, (err, result) => {
+      product.quantity = quantity;
+
+      if (result && JSON.parse(result).length > 0) {
+        let saveList = JSON.parse(result);
+        for (const key in saveList) {
+          if (saveList.hasOwnProperty(key)) {
+            const element = saveList[key];
+            if (element.item_code == product.item_code) {
+              saveList[key].quantity = quantity;
+            }
+          }
+        }
+        saveList = saveList.filter(function (person) {
+          return person.quantity != 0;
+        });
+        AsyncStorageLib.setItem(ALL_CART, JSON.stringify(saveList));
+        setCartList(saveList);
+        updateCartTotal(saveList);
+        let productList = [];
+        for (const key in saveList) {
+          if (saveList.hasOwnProperty(key)) {
+            const element = saveList[key];
+            productList.push({
+              product_item_code: element.item_code,
+              quantity: element.quantity,
+            });
+          }
+        }
+        APICallAddToCart(productList);
+      }
+    });
+  };
+
+  const APICallAddToCart = (product_list) => {
     setLoader(true);
     const apiClass = new APICallService(ADD_TO_CART, {
-      product: [{ product_item_code: product_item_code, quantity: quantity }],
+      product: product_list,
+      order_using: "Web_store",
     });
     apiClass
       .callAPI()
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          //showSuccessMessage(res.message);
-          APICallCartList(loginData);
+          EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
         }
       })
       .catch((err) => {
-        setLoader(false);
         showErrorMessage(err.message);
+        setLoader(false);
       });
   };
 
@@ -139,7 +205,8 @@ const PaymentOrder = (props) => {
     order_id,
     payment_status,
     razorpay_order_id,
-    razorpay_payment_id
+    razorpay_payment_id,
+    razorpay_signature
   ) => {
     setLoader(true);
     const apiClass = new APICallService(PAYMENT_VERIFY, {
@@ -148,8 +215,7 @@ const PaymentOrder = (props) => {
       razorpay_data: {
         razorpay_order_id: razorpay_order_id,
         razorpay_payment_id: razorpay_payment_id,
-        razorpay_signature:
-          "89b0863d1089dbd97b999f499010c9db26634de0ce34b9aa639c90dde7265b2c",
+        razorpay_signature: razorpay_signature,
       },
     });
     apiClass
@@ -158,6 +224,7 @@ const PaymentOrder = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           showSuccessMessage("Order payment sucessfully");
+          AsyncStorageLib.setItem(ALL_CART, JSON.stringify([]));
           props.navigation.goBack();
         }
       })
@@ -243,6 +310,7 @@ const PaymentOrder = (props) => {
         if (validateResponse(res)) {
           if (paymentMode == 2) {
             showSuccessMessage(res.message);
+            AsyncStorageLib.setItem(ALL_CART, JSON.stringify([]));
             props.navigation.goBack();
           } else {
             proceedToPayment(
@@ -264,9 +332,9 @@ const PaymentOrder = (props) => {
       image: "https://fairshop.co.in/assets/images/fairshop-logo.svg",
       currency: "INR",
       key: "rzp_test_KcH2iILATfSbfc",
-      amount: "" + totalPrice,
+      amount: totalPrice + "00",
       // name: "ALF-FARMS CHICKEN BACON150gm",
-      // order_id: "order_IpD8fVMwrQSonX", //Replace this with an order_id created using Orders API.
+      order_id: razorpay_order_id, //Replace this with an order_id created using Orders API.
       prefill: {
         email: loginData?.email,
         contact: "+91" + loginData?.phone,
@@ -283,14 +351,15 @@ const PaymentOrder = (props) => {
         APICallVerifyPayament(
           order_id,
           "success",
-          razorpay_order_id,
-          data?.razorpay_payment_id
+          data?.razorpay_order_id,
+          data?.razorpay_payment_id,
+          data?.razorpay_signature
         );
       })
       .catch((error) => {
         // handle failure
         Logger.log(error);
-        alert(`Error: ${error.code} | ${error.description}`);
+        Alert.alert("", `${error.description}`);
       });
   };
 
@@ -320,7 +389,7 @@ const PaymentOrder = (props) => {
         <View style={styles.countPanelView}>
           <TouchableOpacity
             style={styles.minusButton}
-            onPress={() => APICalladdToCart(item.item_code, item.quantity - 1)}
+            onPress={() => addToCartStorage(item, item.quantity - 1)}
           >
             <Text style={styles.minusText}>-</Text>
           </TouchableOpacity>
@@ -329,12 +398,12 @@ const PaymentOrder = (props) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.plusButton}
-            onPress={() => APICalladdToCart(item.item_code, item.quantity + 1)}
+            onPress={() => addToCartStorage(item, item.quantity + 1)}
           >
             <Text style={styles.plusText}>+</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.priceText2}>₹{item.net_price}</Text>
+        <Text style={styles.priceText2}>₹{item.mrp * item.quantity}</Text>
       </View>
       <View style={styles.line} />
     </View>
@@ -411,6 +480,7 @@ const PaymentOrder = (props) => {
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} isRightIcon={false} isBack />
+      <Loader2 modalVisible={isShowLoader} />
       <Text style={styles.headerText}>{Strings.CheckOut}</Text>
       <ScrollView
         overScrollMode="never"
