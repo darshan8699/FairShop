@@ -60,7 +60,7 @@ const MyComponent = (props) => {
 
     if (loginInfo) {
       setLoginData(loginInfo?.item);
-      APICallCartList(loginInfo?.item);
+      // APICallCartList(loginInfo?.item);
     }
   }
 

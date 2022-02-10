@@ -35,7 +35,7 @@ const Header2 = (props) => {
 const styles = StyleSheet.create({
   container: {
     height: Size.FindSize(60),
-    marginBottom: Size.FindSize(10),
+    //marginBottom: Size.FindSize(10),
     justifyContent: "space-between",
     alignItems: "center",
     flexDirection: "row",
@@ -53,7 +53,10 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: Regular,
-    fontSize: Size.FindSize(18),
+    fontSize: Size.FindSize(16),
+    lineHeight: Size.FindSize(60),
+    color: Colors.headerText,
+    alignSelf: "center",
   },
 });
 

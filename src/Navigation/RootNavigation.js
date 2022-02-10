@@ -1,4 +1,3 @@
-import AsyncStorageLib from "@react-native-async-storage/async-storage";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
@@ -10,7 +9,7 @@ import { Bold } from "../Assets/fonts";
 import { Images } from "../Assets/images";
 import * as screen from "../Screens";
 import Colors from "../Utility/Colors";
-import { ALL_CART, UPDATE_CART_COUNT } from "../Utility/Constants";
+import { UPDATE_CART_COUNT } from "../Utility/Constants";
 import Logger from "../Utility/Logger";
 import { Size } from "../Utility/sizes";
 import CustomDrawerNavigator from "./CustomDrawerNavigator";
@@ -60,12 +59,6 @@ function BottomTabApp() {
   const [tabCount, setCount] = React.useState(0);
 
   React.useEffect(() => {
-    AsyncStorageLib.getItem(ALL_CART, (err, result) => {
-      if (result) {
-        let list = JSON.parse(result);
-        setCount(list.length);
-      }
-    });
     EventRegister.addEventListener(UPDATE_CART_COUNT, (count) => {
       Logger.log({ count });
       setCount(count);
@@ -121,12 +114,6 @@ function BottomTabApp() {
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, color, size }) => {
-            AsyncStorageLib.getItem(ALL_CART, (err, result) => {
-              if (result) {
-                let list = JSON.parse(result);
-                setCount(list.length);
-              }
-            });
             return (
               <View>
                 <Image

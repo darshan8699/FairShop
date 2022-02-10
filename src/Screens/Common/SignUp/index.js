@@ -140,7 +140,7 @@ const Signup = (props) => {
         <CustomInput
           onChangeText={(text) => setEmail(text)}
           keyboardType={"email-address"}
-          autoCapitalize={false}
+          autoCapitalize={"none"}
         />
         <CustomText name={Strings.Phone} />
         <CustomInput

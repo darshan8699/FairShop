@@ -205,13 +205,13 @@ const Login = (props) => {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="always"
       >
-        <AuthHeader />
+        <AuthHeader isBack navigation={props.navigation} />
         <Text style={styles.loginText}>{Strings.Login}</Text>
         <CustomText name={Strings.Email_or_Phone} />
         <CustomInput
           onChangeText={(text) => setEmail(text)}
           keyboardType={"email-address"}
-          autoCapitalize={false}
+          autoCapitalize={"none"}
         />
         <CustomText name={Strings.Password} />
         <CustomInput

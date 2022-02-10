@@ -1,23 +1,13 @@
 //import liraries
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
+import { RootSiblingParent } from "react-native-root-siblings";
 import MainRouteConfig from "./src/Navigation/RootNavigation";
 import Colors from "./src/Utility/Colors";
-import { RootSiblingParent } from "react-native-root-siblings";
 // export const store = createStore(mainReducer, applyMiddleware(ReduxThunk));
 
 // create a component
 const MyComponent = () => {
-  const isFirstRun = useRef(true);
-  useEffect(() => {
-    if (isFirstRun.current) {
-      isFirstRun.current = false;
-      //componentDidMount
-    } else {
-      //componentWillReceiveProps
-    }
-  }, []);
-
   return (
     <RootSiblingParent>
       <View style={{ flex: 1 }}>

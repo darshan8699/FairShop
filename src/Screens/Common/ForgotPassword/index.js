@@ -180,7 +180,7 @@ const MyComponent = (props) => {
         <CustomInput
           onChangeText={(text) => setEmail(text)}
           keyboardType={"email-address"}
-          autoCapitalize={false}
+          autoCapitalize={"none"}
           onSubmitEditing={() => onSubmit()}
         />
         <CustomButton

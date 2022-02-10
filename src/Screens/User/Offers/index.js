@@ -45,7 +45,10 @@ const Offers = (props) => {
       <Text style={styles.headerText}>{Strings.Offers}</Text>
       <FlatList
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingRight: Size.FindSize(15) }}
+        contentContainerStyle={{
+          paddingRight: Size.FindSize(15),
+          paddingBottom: Size.FindSize(20),
+        }}
         data={offersList}
         renderItem={({ item }) => (
           <View style={styles.listView}>

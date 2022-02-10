@@ -23,6 +23,7 @@ export default styles = StyleSheet.create({
     fontFamily: SemiBold,
     fontSize: Size.FindSize(16),
     marginBottom: Size.FindSize(3),
+    color: Colors.headerText,
   },
   greyText: {
     color: Colors.orderText,
@@ -35,9 +36,10 @@ export default styles = StyleSheet.create({
     fontSize: Size.FindSize(14),
   },
   normalText: {
+    color: Colors.orderText,
     fontFamily: Regular,
     fontSize: Size.FindSize(14),
-    marginBottom: Size.FindSize(10),
+    marginBottom: Size.FindSize(20),
   },
   smallText: {
     color: Colors.orderText,
@@ -52,7 +54,9 @@ export default styles = StyleSheet.create({
     borderBottomWidth: Size.FindSize(0.5),
     borderTopColor: Colors.headerline,
     borderBottomColor: Colors.headerline,
-    paddingLeft: Size.FindSize(15),
+    paddingHorizontal: Size.FindSize(15),
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   itemRenderView: {
     flexDirection: "row",
@@ -72,6 +76,7 @@ export default styles = StyleSheet.create({
     fontSize: Size.FindSize(14),
     marginRight: Size.FindSize(15),
     width: Size.FindSize(230),
+    color: Colors.headerText,
   },
   childContainer: {
     padding: Size.FindSize(15),

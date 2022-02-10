@@ -34,17 +34,17 @@ export default styles = StyleSheet.create({
   item: {
     color: Colors.headerText,
     fontFamily: Regular,
-    fontSize: Size.FindSize(16),
+    fontSize: Size.FindSize(14),
   },
   quantityText: {
     color: Colors.cookBorder,
     fontFamily: Regular,
-    fontSize: Size.FindSize(14),
+    fontSize: Size.FindSize(12),
   },
   priceText: {
     color: Colors.Background,
     fontFamily: Regular,
-    fontSize: Size.FindSize(18),
+    fontSize: Size.FindSize(16),
   },
   textView: {
     marginLeft: Size.FindSize(15),
@@ -61,6 +61,9 @@ export default styles = StyleSheet.create({
     width: Size.FindSize(47),
     justifyContent: "center",
     alignItems: "center",
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    borderColor: Colors.cookBorder,
   },
   plusButton: {
     height: Size.FindSize(28),
@@ -71,25 +74,30 @@ export default styles = StyleSheet.create({
   },
   minusText: {
     fontSize: Size.FindSize(20),
+    lineHeight: Size.FindSize(28),
     color: Colors.headerText,
+    fontFamily: Regular,
   },
   countText: {
-    fontSize: Size.FindSize(20),
+    fontSize: Size.FindSize(16),
+    lineHeight: Size.FindSize(28),
     color: Colors.Background,
     fontFamily: Regular,
     justifyContent: "center",
   },
   plusText: {
     fontSize: Size.FindSize(20),
+    lineHeight: Size.FindSize(28),
     color: Colors.white,
+    fontFamily: Regular,
   },
   countPanelView: {
     flexDirection: "row",
     alignSelf: "center",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: Colors.cookBorder,
+    // borderWidth: 1,
+    // borderColor: Colors.cookBorder,
   },
   subTotalView: {
     flexDirection: "row",

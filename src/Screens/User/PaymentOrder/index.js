@@ -53,6 +53,9 @@ const PaymentOrder = (props) => {
   const [addressIndex, setAddressIndex] = useState(null);
   const [billingAddressIndex, setBillingAddressIndex] = useState(null);
   const [paymentMode, setPaymentMode] = useState(null);
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [pincode, setPincode] = useState("");
   const isFirstRun = useRef(true);
 
   useEffect(() => {
@@ -60,7 +63,6 @@ const PaymentOrder = (props) => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       setLoginInfo();
-    } else {
     }
     const unsubscribe = props.navigation.addListener("focus", () => {
       if (loginData) APICallCartList(loginData);
@@ -76,9 +78,9 @@ const PaymentOrder = (props) => {
     if (loginInfo) {
       setLoginData(loginInfo?.item);
       // APICallCartList(loginInfo?.item);
-      getCartList();
       APICallGetAddressData();
     }
+    getCartList();
   }
 
   function getCartList() {
@@ -476,6 +478,20 @@ const PaymentOrder = (props) => {
       </View>
     </TouchableOpacity>
   );
+  const renderShippingAddress = () => (
+    <View>
+      <CustomText name={Strings.City} />
+      <CustomInput onChangeText={(text) => setCity(text)} value={city} />
+      <CustomText name={Strings.State} />
+      <CustomInput onChangeText={(text) => setState(text)} value={state} />
+      <CustomText name={Strings.Pincode} />
+      <CustomInput
+        onChangeText={(text) => setPincode(text)}
+        value={pincode}
+        keyboardType="numeric"
+      />
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -520,6 +536,7 @@ const PaymentOrder = (props) => {
                 nestedScrollEnabled={false}
                 bounces={false}
               />
+              {/* {renderShippingAddress()} */}
             </View>
             <View style={styles.rowItem}>
               <CustomText
@@ -565,7 +582,7 @@ const PaymentOrder = (props) => {
                       borderColor:
                         paymentMode == 1 ? Colors.Background : Colors.border,
                       backgroundColor:
-                        paymentMode == 1 ? Colors.pinkBack : Colors.white,
+                        paymentMode == 1 ? Colors.pinkBack : Colors.line,
                     },
                   ]}
                   onPress={() => setPaymentMode(1)}
@@ -573,10 +590,15 @@ const PaymentOrder = (props) => {
                   <Text
                     style={[
                       styles.subTotalText,
-                      { fontFamily: paymentMode == 1 ? Bold : Regular },
+                      {
+                        color:
+                          paymentMode == 1
+                            ? Colors.Background
+                            : Colors.headerText,
+                      },
                     ]}
                   >
-                    {Strings.Razorpay}
+                    {Strings.CardUPIWallet}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -587,7 +609,7 @@ const PaymentOrder = (props) => {
                       borderColor:
                         paymentMode == 2 ? Colors.Background : Colors.border,
                       backgroundColor:
-                        paymentMode == 2 ? Colors.pinkBack : Colors.white,
+                        paymentMode == 2 ? Colors.pinkBack : Colors.line,
                     },
                   ]}
                   onPress={() => setPaymentMode(2)}
@@ -595,7 +617,12 @@ const PaymentOrder = (props) => {
                   <Text
                     style={[
                       styles.subTotalText,
-                      { fontFamily: paymentMode == 2 ? Bold : Regular },
+                      {
+                        color:
+                          paymentMode == 2
+                            ? Colors.Background
+                            : Colors.headerText,
+                      },
                     ]}
                   >
                     {Strings.COD}

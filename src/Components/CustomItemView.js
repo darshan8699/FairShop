@@ -90,14 +90,12 @@ const CustomItemView = (props) => {
         apiClass
           .callAPI()
           .then(async function (res) {
-            setLoader(false);
             if (validateResponse(res)) {
               showSuccessMessage(res.message);
               setFavarray(JSON.stringify(id));
             }
           })
           .catch((err) => {
-            setLoader(false);
             showErrorMessage(err.message);
           });
       }

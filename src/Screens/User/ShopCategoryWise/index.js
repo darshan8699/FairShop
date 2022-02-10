@@ -17,6 +17,7 @@ import {
   validateResponse,
 } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
+import { Size } from "../../../Utility/sizes";
 import styles from "./styles";
 
 // create a component
@@ -105,7 +106,10 @@ const MyComponent = (props) => {
       <FlatList
         numColumns={2}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingRight: 15 }}
+        contentContainerStyle={{
+          paddingRight: Size.FindSize(15),
+          paddingBottom: Size.FindSize(20),
+        }}
         data={newData}
         style={styles.list}
         renderItem={({ item }) => (

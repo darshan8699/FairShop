@@ -53,13 +53,15 @@ const MyOrder = (props) => {
       <Text style={styles.headerText}>{Strings.My_Order}</Text>
       <FlatList
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingRight: Size.FindSize(15) }}
+        contentContainerStyle={{
+          paddingRight: Size.FindSize(15),
+          paddingBottom: Size.FindSize(20),
+        }}
         data={offersList}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.listView}
             onPress={() => {
-              Logger.log("order id ", item);
               Navigator.navigate(Route.OrderDetails, { item: item });
             }}
           >

@@ -19,6 +19,15 @@ export default styles = StyleSheet.create({
     flexDirection: "row",
     marginHorizontal: Size.FindSize(15),
   },
+  loginView: {
+    flexDirection: "row",
+    marginHorizontal: Size.FindSize(15),
+    alignSelf: "center",
+    justifyContent: "center",
+    borderWidth: Size.FindSize(2),
+    padding: Size.FindSize(10),
+    borderColor: Colors.Background,
+  },
   icon: {
     height: Size.FindSize(25),
     width: Size.FindSize(25),
@@ -28,6 +37,20 @@ export default styles = StyleSheet.create({
     color: Colors.forgotText,
     fontSize: Size.FindSize(16),
     marginLeft: Size.FindSize(10),
+  },
+  loginText: {
+    fontFamily: Regular,
+    color: Colors.Background,
+    fontSize: Size.FindSize(16),
+    paddingHorizontal: Size.FindSize(30),
+  },
+  loginText2: {
+    fontFamily: Regular,
+    color: Colors.headerText,
+    fontSize: Size.FindSize(16),
+    paddingHorizontal: Size.FindSize(30),
+    marginBottom: Size.FindSize(20),
+    textAlign: "center",
   },
   line: {
     backgroundColor: Colors.line,

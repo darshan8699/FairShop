@@ -18,7 +18,7 @@ const CustomInput = (props) => {
     RightIcon,
     onRightButtonPress,
     enable = true,
-    autoCapitalize = true,
+    autoCapitalize = "sentences",
     value = "",
     isPhone = false,
   } = props;

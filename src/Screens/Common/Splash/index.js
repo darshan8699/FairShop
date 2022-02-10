@@ -15,15 +15,16 @@ const MyComponent = (props) => {
     initialCalls();
   }, []);
   const initialCalls = async () => {
-    const jsonValue = await AsyncStorage.getItem("loginInfo");
-    const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
-    Logger.log({ loginInfo });
+    // const jsonValue = await AsyncStorage.getItem("loginInfo");
+    // const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
+    // Logger.log({ loginInfo });
     setTimeout(() => {
-      if (loginInfo) {
-        Navigator.resetFrom(Route.DrawerApp);
-      } else {
-        Navigator.resetFrom(Route.Login);
-      }
+      Navigator.resetFrom(Route.DrawerApp);
+      // if (loginInfo) {
+      //   Navigator.resetFrom(Route.DrawerApp);
+      // } else {
+      //   Navigator.resetFrom(Route.Login);
+      // }
     }, 5000);
   };
   return (

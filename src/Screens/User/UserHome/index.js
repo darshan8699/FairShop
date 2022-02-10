@@ -98,14 +98,14 @@ const MyComponent = (props) => {
   };
   const GetBrowseCategory = () => {
     setLoader(true);
-    const apiClass = new APICallService(CATEGORY, { limit: 10 });
+    const apiClass = new APICallService(CATEGORY, { limit: -1 });
     apiClass
       .callAPI()
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("category data is---", res.data.data);
-          setCategory(res.data.data);
+          Logger.log("category data is---", res.data.items);
+          setCategory(res.data.items);
         }
       })
       .catch((err) => {
@@ -126,7 +126,7 @@ const MyComponent = (props) => {
       })
       .catch((err) => {
         setLoader(false);
-        showErrorMessage(err.message);
+        // showErrorMessage(err.message);
       });
   };
   const APICallBanner = () => {
@@ -187,7 +187,7 @@ const MyComponent = (props) => {
       })
       .catch((err) => {
         setLoader(false);
-        showErrorMessage(err.message);
+        // showErrorMessage(err.message);
       });
   };
 

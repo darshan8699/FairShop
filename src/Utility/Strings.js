@@ -118,6 +118,7 @@ export const Strings = {
   BillingAddress: "Billing Address",
   PaymentMethod: "Payment Method",
   Razorpay: "Razorpay",
+  CardUPIWallet: "Card/UPI/Wallet",
   COD: "Cash on Delivery",
   ProceedPayment: "Proceed to Payment",
   No_data_found: "No data found",
@@ -131,7 +132,8 @@ export const Strings = {
   error_paymentMode: "Please select payment mode",
 
   Total: "Total",
-  Item: "Item",
+  Item: "Items",
+  Price: "Price",
   Order_id: "Order ID: ",
   Payment_id: "Payment ID: ",
   Loyalty_Rewards: "Loyalty Rewards",
