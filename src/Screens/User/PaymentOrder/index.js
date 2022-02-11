@@ -11,10 +11,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { EventRegister } from "react-native-event-listeners";
 import { ScrollView } from "react-native-gesture-handler";
 import RazorpayCheckout from "react-native-razorpay";
 import APICallService from "../../../API/APICallService";
-import { Bold, Regular } from "../../../Assets/fonts";
 import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
 import Header from "../../../Components/Header";
@@ -39,8 +39,8 @@ import {
 import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
+import { isTextNotEmpty } from "../../../Utility/Validation";
 import styles from "./styles";
-import { EventRegister } from "react-native-event-listeners";
 
 // create a component
 const PaymentOrder = (props) => {
@@ -53,9 +53,20 @@ const PaymentOrder = (props) => {
   const [addressIndex, setAddressIndex] = useState(null);
   const [billingAddressIndex, setBillingAddressIndex] = useState(null);
   const [paymentMode, setPaymentMode] = useState(null);
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [pincode, setPincode] = useState("");
+
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [shippingFullName, setShippingFullName] = useState("");
+  const [shippingContact, setShippingContact] = useState("");
+  const [shippingCity, setShippingCity] = useState("");
+  const [shippingState, setShippingState] = useState("");
+  const [shippingPincode, setShippingPincode] = useState("");
+
+  const [billingAddress, setBillingAddress] = useState("");
+  const [billingFullName, setBillingFullName] = useState("");
+  const [billingContact, setBillingContact] = useState("");
+  const [billingCity, setBillingCity] = useState("");
+  const [billingState, setBillingState] = useState("");
+  const [billingPincode, setBillingPincode] = useState("");
   const isFirstRun = useRef(true);
 
   useEffect(() => {
@@ -226,7 +237,9 @@ const PaymentOrder = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           showSuccessMessage("Order payment sucessfully");
-          AsyncStorageLib.setItem(ALL_CART, JSON.stringify([]));
+          const list = [];
+          AsyncStorageLib.setItem(ALL_CART, JSON.stringify(list));
+          EventRegister.emit(UPDATE_CART_COUNT, 0);
           props.navigation.goBack();
         }
       })
@@ -238,52 +251,123 @@ const PaymentOrder = (props) => {
 
   const APICallCreateOrder = async () => {
     Keyboard.dismiss();
-    if (addressIndex == null) {
-      showErrorMessage(Strings.error_Address);
-      return;
-    } else if (billingAddressIndex == null) {
-      showErrorMessage(Strings.error_Address);
-      return;
-    } else if (paymentMode == null) {
+    if (loginData) {
+      if (addressIndex == null) {
+        showErrorMessage(Strings.error_Address);
+        return;
+      } else if (billingAddressIndex == null) {
+        showErrorMessage(Strings.error_Address);
+        return;
+      }
+    } else {
+      if (!isTextNotEmpty(shippingFullName)) {
+        showErrorMessage(Strings.error_receiver_name);
+        return;
+      } else if (!isTextNotEmpty(shippingContact)) {
+        showErrorMessage(Strings.error_contact_no);
+        return;
+      } else if (!isTextNotEmpty(shippingAddress)) {
+        showErrorMessage(Strings.error_address);
+        return;
+      } else if (!isTextNotEmpty(shippingCity)) {
+        showErrorMessage(Strings.error_city);
+        return;
+      } else if (!isTextNotEmpty(shippingState)) {
+        showErrorMessage(Strings.error_State);
+        return;
+      } else if (!isTextNotEmpty(shippingPincode)) {
+        showErrorMessage(Strings.error_pincode);
+        return;
+      } else if (!isTextNotEmpty(billingFullName)) {
+        showErrorMessage(Strings.error_receiver_name);
+        return;
+      } else if (!isTextNotEmpty(billingContact)) {
+        showErrorMessage(Strings.error_contact_no);
+        return;
+      } else if (!isTextNotEmpty(billingAddress)) {
+        showErrorMessage(Strings.error_address);
+        return;
+      } else if (!isTextNotEmpty(billingCity)) {
+        showErrorMessage(Strings.error_city);
+        return;
+      } else if (!isTextNotEmpty(billingState)) {
+        showErrorMessage(Strings.error_State);
+        return;
+      } else if (!isTextNotEmpty(billingPincode)) {
+        showErrorMessage(Strings.error_pincode);
+        return;
+      }
+    }
+    if (paymentMode == null) {
       showErrorMessage(Strings.error_paymentMode);
       return;
     }
     const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     setLoader(true);
-    const redAddress =
-      addressList[addressIndex].full_name +
-      ", " +
-      addressList[addressIndex].phone +
-      ", " +
-      addressList[addressIndex].address_line_1 +
-      ", " +
-      addressList[addressIndex].address_line_2 +
-      ", " +
-      addressList[addressIndex].landmark +
-      ", " +
-      addressList[addressIndex].city +
-      ", " +
-      addressList[addressIndex].state +
-      " " +
-      addressList[addressIndex].pincode;
-
-    const billingAddress =
-      addressList[addressIndex].full_name +
-      ", " +
-      addressList[addressIndex].phone +
-      ", " +
-      addressList[addressIndex].address_line_1 +
-      ", " +
-      addressList[addressIndex].address_line_2 +
-      ", " +
-      addressList[addressIndex].landmark +
-      ", " +
-      addressList[addressIndex].city +
-      ", " +
-      addressList[addressIndex].state +
-      " " +
-      addressList[addressIndex].pincode;
-
+    let redAddress;
+    if (loginData) {
+      redAddress =
+        addressList[addressIndex].full_name +
+        ", " +
+        addressList[addressIndex].phone +
+        ", " +
+        addressList[addressIndex].address_line_1 +
+        ", " +
+        addressList[addressIndex].address_line_2 +
+        ", " +
+        addressList[addressIndex].landmark +
+        ", " +
+        addressList[addressIndex].city +
+        ", " +
+        addressList[addressIndex].state +
+        " " +
+        addressList[addressIndex].pincode;
+    } else {
+      redAddress =
+        shippingFullName +
+        ", " +
+        shippingContact +
+        ", " +
+        shippingAddress +
+        ", " +
+        shippingCity +
+        ", " +
+        shippingState +
+        " " +
+        shippingPincode;
+    }
+    let fullBillingAddress;
+    if (loginData) {
+      fullBillingAddress =
+        addressList[addressIndex].full_name +
+        ", " +
+        addressList[addressIndex].phone +
+        ", " +
+        addressList[addressIndex].address_line_1 +
+        ", " +
+        addressList[addressIndex].address_line_2 +
+        ", " +
+        addressList[addressIndex].landmark +
+        ", " +
+        addressList[addressIndex].city +
+        ", " +
+        addressList[addressIndex].state +
+        " " +
+        addressList[addressIndex].pincode;
+    } else {
+      fullBillingAddress =
+        billingFullName +
+        ", " +
+        billingContact +
+        ", " +
+        billingAddress +
+        ", " +
+        billingCity +
+        ", " +
+        billingState +
+        " " +
+        billingPincode;
+    }
     let prodList = [];
     for (const key in cartList) {
       if (cartList.hasOwnProperty(key)) {
@@ -298,10 +382,10 @@ const PaymentOrder = (props) => {
     const apiClass = new APICallService(CREATE_ORDER, {
       order_using: "Web",
       store_id: id,
-      customer_contact: loginData?.phone,
+      customer_contact: loginData?.phone ? loginData?.phone : billingContact,
       payment_gateway: paymentMode == 1 ? "razorpay" : "cod",
       shipping_address: redAddress,
-      billing_address: billingAddress,
+      billing_address: fullBillingAddress,
       order_notes: orderNotes,
       product: prodList,
     });
@@ -312,7 +396,9 @@ const PaymentOrder = (props) => {
         if (validateResponse(res)) {
           if (paymentMode == 2) {
             showSuccessMessage(res.message);
-            AsyncStorageLib.setItem(ALL_CART, JSON.stringify([]));
+            const list = [];
+            AsyncStorageLib.setItem(ALL_CART, JSON.stringify(list));
+            EventRegister.emit(UPDATE_CART_COUNT, 0);
             props.navigation.goBack();
           } else {
             proceedToPayment(
@@ -330,6 +416,7 @@ const PaymentOrder = (props) => {
 
   const proceedToPayment = (order_id, razorpay_order_id) => {
     var options = {
+      name: "FairShop",
       // description: "PSO WHOLE WHEAT CHAKKI ATTA- POUCH 2Kg",
       image: "https://fairshop.co.in/assets/images/fairshop-logo.svg",
       currency: "INR",
@@ -338,10 +425,11 @@ const PaymentOrder = (props) => {
       // name: "ALF-FARMS CHICKEN BACON150gm",
       order_id: razorpay_order_id, //Replace this with an order_id created using Orders API.
       prefill: {
-        email: loginData?.email,
-        contact: "+91" + loginData?.phone,
-        name:
-          loginData?.profile?.first_name + " " + loginData?.profile?.last_name,
+        email: loginData?.email ? loginData?.email : "",
+        shippingContact: loginData?.phone ? "+91" + loginData?.phone : "",
+        name: loginData
+          ? loginData?.profile?.first_name + " " + loginData?.profile?.last_name
+          : billingFullName,
       },
       theme: { color: Colors.Background },
     };
@@ -478,18 +566,119 @@ const PaymentOrder = (props) => {
       </View>
     </TouchableOpacity>
   );
+
   const renderShippingAddress = () => (
-    <View>
-      <CustomText name={Strings.City} />
-      <CustomInput onChangeText={(text) => setCity(text)} value={city} />
-      <CustomText name={Strings.State} />
-      <CustomInput onChangeText={(text) => setState(text)} value={state} />
-      <CustomText name={Strings.Pincode} />
+    <View
+      style={{
+        backgroundColor: Colors.line,
+        paddingBottom: Size.FindSize(15),
+        paddingHorizontal: Size.FindSize(10),
+        marginTop: Size.FindSize(10),
+      }}
+    >
+      <CustomText name={Strings.Receiver_name} marginTop={Size.FindSize(15)} />
       <CustomInput
-        onChangeText={(text) => setPincode(text)}
-        value={pincode}
-        keyboardType="numeric"
+        onChangeText={(text) => setShippingFullName(text)}
+        value={shippingFullName}
       />
+
+      <CustomText name={Strings.Contact_No} marginTop={Size.FindSize(25)} />
+      <CustomInput
+        onChangeText={(text) => setShippingContact(text)}
+        value={shippingContact}
+        keyboardType="numeric"
+        placeHolder={"+91"}
+        isPhone
+      />
+
+      <CustomText name={Strings.Address} marginTop={Size.FindSize(25)} />
+      <CustomInput
+        onChangeText={(text) => setShippingAddress(text)}
+        value={shippingAddress}
+      />
+      <View style={{ flexDirection: "row" }}>
+        <View style={{ flex: 1 }}>
+          <CustomText name={Strings.City} marginTop={Size.FindSize(25)} />
+          <CustomInput
+            onChangeText={(text) => setShippingCity(text)}
+            value={shippingCity}
+          />
+        </View>
+        <View style={{ width: Size.FindSize(5) }} />
+        <View style={{ flex: 1 }}>
+          <CustomText name={Strings.State} marginTop={Size.FindSize(25)} />
+          <CustomInput
+            onChangeText={(text) => setShippingState(text)}
+            value={shippingState}
+          />
+        </View>
+        <View style={{ width: Size.FindSize(5) }} />
+        <View style={{ flex: 1 }}>
+          <CustomText name={Strings.Pincode} marginTop={Size.FindSize(25)} />
+          <CustomInput
+            onChangeText={(text) => setShippingPincode(text)}
+            value={shippingPincode}
+            keyboardType="numeric"
+          />
+        </View>
+      </View>
+    </View>
+  );
+  const renderBillingAddress = () => (
+    <View
+      style={{
+        backgroundColor: Colors.line,
+        paddingBottom: Size.FindSize(15),
+        paddingHorizontal: Size.FindSize(10),
+        marginTop: Size.FindSize(10),
+      }}
+    >
+      <CustomText name={Strings.Receiver_name} marginTop={Size.FindSize(15)} />
+      <CustomInput
+        onChangeText={(text) => setBillingFullName(text)}
+        value={billingFullName}
+      />
+
+      <CustomText name={Strings.Contact_No} marginTop={Size.FindSize(25)} />
+      <CustomInput
+        onChangeText={(text) => setBillingContact(text)}
+        value={billingContact}
+        keyboardType="numeric"
+        placeHolder={"+91"}
+        isPhone
+      />
+
+      <CustomText name={Strings.Address} marginTop={Size.FindSize(25)} />
+      <CustomInput
+        onChangeText={(text) => setBillingAddress(text)}
+        value={billingAddress}
+      />
+      <View style={{ flexDirection: "row" }}>
+        <View style={{ flex: 1 }}>
+          <CustomText name={Strings.City} marginTop={Size.FindSize(25)} />
+          <CustomInput
+            onChangeText={(text) => setBillingCity(text)}
+            value={billingCity}
+          />
+        </View>
+        <View style={{ width: Size.FindSize(5) }} />
+        <View style={{ flex: 1 }}>
+          <CustomText name={Strings.State} marginTop={Size.FindSize(25)} />
+          <CustomInput
+            onChangeText={(text) => setBillingState(text)}
+            value={billingState}
+          />
+        </View>
+        <View style={{ width: Size.FindSize(5) }} />
+        <View style={{ flex: 1 }}>
+          <CustomText name={Strings.Pincode} marginTop={Size.FindSize(25)} />
+          <CustomInput
+            onChangeText={(text) => setBillingPincode(text)}
+            value={billingPincode}
+            keyboardType="numeric"
+          />
+        </View>
+      </View>
     </View>
   );
 
@@ -497,7 +686,7 @@ const PaymentOrder = (props) => {
     <View style={styles.container}>
       <Header navigation={props.navigation} isRightIcon={false} isBack />
       <Loader2 modalVisible={isShowLoader} />
-      <Text style={styles.headerText}>{Strings.CheckOut}</Text>
+
       <ScrollView
         overScrollMode="never"
         bounces={false}
@@ -507,6 +696,7 @@ const PaymentOrder = (props) => {
         nestedScrollEnabled={true}
       >
         <View style={{}}>
+          <Text style={styles.headerText}>{Strings.CheckOut}</Text>
           <FlatList
             showsVerticalScrollIndicator={false}
             data={cartList}
@@ -526,38 +716,48 @@ const PaymentOrder = (props) => {
                 customStyle={{
                   paddingHorizontal: Size.FindSize(5),
                 }}
+                marginTop={Size.FindSize(25)}
               />
-              <FlatList
-                showsHorizontalScrollIndicator={false}
-                data={addressList}
-                horizontal
-                renderItem={renderAddressList}
-                style={styles.addressList}
-                nestedScrollEnabled={false}
-                bounces={false}
-              />
-              {/* {renderShippingAddress()} */}
+              {addressList.length > 0 && (
+                <FlatList
+                  showsHorizontalScrollIndicator={false}
+                  data={addressList}
+                  horizontal
+                  renderItem={renderAddressList}
+                  style={styles.addressList}
+                  nestedScrollEnabled={false}
+                  bounces={false}
+                />
+              )}
+              {loginData ? null : renderShippingAddress()}
             </View>
             <View style={styles.rowItem}>
               <CustomText
                 name={Strings.BillingAddress}
                 customStyle={{
                   paddingHorizontal: Size.FindSize(5),
-                  marginTop: Size.FindSize(10),
                 }}
               />
-              <FlatList
-                showsHorizontalScrollIndicator={false}
-                data={addressList}
-                horizontal
-                renderItem={renderBillingAddressList}
-                style={styles.addressList}
-                nestedScrollEnabled={false}
-                bounces={false}
-              />
+              {addressList.length > 0 && (
+                <FlatList
+                  showsHorizontalScrollIndicator={false}
+                  data={addressList}
+                  horizontal
+                  renderItem={renderBillingAddressList}
+                  style={styles.addressList}
+                  nestedScrollEnabled={false}
+                  bounces={false}
+                />
+              )}
+              {loginData ? null : renderBillingAddress()}
             </View>
             <View style={[styles.cartItem, { marginTop: Size.FindSize(20) }]}>
-              <Text style={styles.subTotalText}>{Strings.OrderNotes}</Text>
+              {/* <Text style={styles.subTotalText}>{Strings.OrderNotes}</Text> */}
+              <CustomText
+                name={Strings.OrderNotes}
+                marginTop={Size.FindSize(10)}
+                starText={false}
+              />
               <CustomInput
                 onChangeText={(text) => setOrderNotes(text)}
                 value={orderNotes}
@@ -568,8 +768,8 @@ const PaymentOrder = (props) => {
                 name={Strings.PaymentMethod}
                 customStyle={{
                   paddingHorizontal: Size.FindSize(5),
-                  marginTop: Size.FindSize(10),
                 }}
+                marginTop={Size.FindSize(10)}
               />
               <View
                 style={{ flexDirection: "row", marginTop: Size.FindSize(20) }}

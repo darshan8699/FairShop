@@ -46,13 +46,13 @@ const MyComponent = (props) => {
 
       <ScrollView
         style={{
-          marginBottom: Size.FindSize(20),
+          paddingBottom: Size.FindSize(20),
           flex: 1,
         }}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.headerText}>{Strings.Loyalty_Rewards}</Text>
         <View style={styles.mainView}>
+          <Text style={styles.headerText}>{Strings.Loyalty_Rewards}</Text>
           <View style={styles.memberView}>
             <Text style={styles.memberText}>{Strings.Membership}</Text>
           </View>
@@ -78,7 +78,7 @@ const MyComponent = (props) => {
                     {loyaltyData?.membership?.nextTierName}
                   </Text>
                 </TouchableOpacity>
-                <Text style={styles.tierText}>
+                <Text style={[styles.tierText, { justifyContent: "center" }]}>
                   {parseInt(loyaltyData?.membership?.nextTierMilestone)} points
                   to go
                 </Text>
@@ -99,7 +99,11 @@ const MyComponent = (props) => {
             <View style={{ marginLeft: Size.width / 2 - Size.FindSize(50) }}>
               <Text style={styles.currencyText}>{Strings.Currency}</Text>
               <Text style={styles.countText}>
-                {loyaltyData ? loyaltyData?.balances[1].amount : 0}
+                {loyaltyData
+                  ? loyaltyData?.balances[1].amount > 0
+                    ? loyaltyData?.balances[1].amount
+                    : 0
+                  : 0}
               </Text>
             </View>
           </View>
@@ -112,7 +116,11 @@ const MyComponent = (props) => {
             <View>
               <Text style={styles.currencyText}>{Strings.Currency}</Text>
               <Text style={styles.countText}>
-                {loyaltyData ? loyaltyData?.balances[2].amount : 0}
+                {loyaltyData
+                  ? loyaltyData?.balances[2].amount > 0
+                    ? loyaltyData?.balances[2].amount
+                    : 0
+                  : 0}
               </Text>
             </View>
           </View>

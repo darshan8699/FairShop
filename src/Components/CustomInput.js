@@ -40,6 +40,7 @@ const CustomInput = (props) => {
     <View style={styles.container}>
       <TextInput
         placeholder={placeHolder}
+        placeholderTextColor={Colors.forgotText}
         style={[
           styles.input,
           { backgroundColor: enable ? Colors.white : Colors.line },

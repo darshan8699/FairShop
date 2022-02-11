@@ -140,7 +140,7 @@ const CustomItemView = (props) => {
       .then(async function (res) {
         if (validateResponse(res)) {
           EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
-          showSuccessMessage("Cart updated");
+          showSuccessMessage("item added in cart");
         }
       })
       .catch((err) => {

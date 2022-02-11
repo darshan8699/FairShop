@@ -13,7 +13,7 @@ export default styles = StyleSheet.create({
     fontFamily: SemiBold,
     color: Colors.headerText,
     marginVertical: Size.FindSize(20),
-    paddingHorizontal: Size.FindSize(15),
+    //paddingHorizontal: Size.FindSize(15),
   },
   back: {
     height: Size.FindSize(100),
@@ -29,6 +29,7 @@ export default styles = StyleSheet.create({
   mainView: {
     paddingHorizontal: Size.FindSize(30),
     marginTop: Size.FindSize(20),
+    marginBottom: Size.FindSize(20),
   },
   memberView: {
     borderWidth: Size.FindSize(0.5),
@@ -37,7 +38,8 @@ export default styles = StyleSheet.create({
   },
   memberText: {
     fontSize: Size.FindSize(16),
-    fontFamily: Regular,
+    fontFamily: Bold,
+    color: Colors.headerText,
   },
   pointView: {
     borderWidth: Size.FindSize(0.5),
@@ -64,10 +66,12 @@ export default styles = StyleSheet.create({
     paddingLeft: Size.FindSize(10),
     fontSize: Size.FindSize(16),
     fontFamily: Regular,
+    color: Colors.headerText,
   },
   tierText: {
     fontSize: Size.FindSize(12),
     fontFamily: Regular,
+    color: Colors.headerText,
   },
   goldButton: {
     height: Size.FindSize(25),
@@ -100,6 +104,7 @@ export default styles = StyleSheet.create({
     paddingVertical: Size.FindSize(10),
     fontSize: Size.FindSize(22),
     fontFamily: Regular,
+    color: Colors.text,
   },
   currencyText: {
     fontSize: Size.FindSize(16),

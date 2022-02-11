@@ -69,13 +69,15 @@ const Login = (props) => {
     apiClass
       .callAPI()
       .then(async function (res) {
-        setLoader(false);
         if (validateResponse(res)) {
           showSuccessMessage(res.message);
           const jsonValue = JSON.stringify(res.data);
           await AsyncStorage.setItem(PREF_TOKEN, res.data?.token);
           await AsyncStorage.setItem("loginInfo", jsonValue);
+          setLoader(false);
           Navigator.resetFrom(Route.DrawerApp);
+        } else {
+          setLoader(false);
         }
       })
       .catch((err) => {

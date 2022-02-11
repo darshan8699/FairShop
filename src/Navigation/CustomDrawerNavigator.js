@@ -28,12 +28,21 @@ import Strings from "../Utility/Strings";
 const MyComponent = (props) => {
   const [listview, setlistview] = useState(false);
   const [isShowLoader, setLoader] = useState(false);
+  const [loginInfo, setLoginInfo] = useState("");
   const [data, setData] = useState([]);
 
   useEffect(() => {
+    initialCalls();
     APICall();
     getSelectedStore();
   }, []);
+
+  const initialCalls = async () => {
+    const jsonValue = await AsyncStorageLib.getItem("loginInfo");
+    const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
+    Logger.log({ loginInfo });
+    setLoginInfo(loginInfo);
+  };
 
   async function getSelectedStore() {
     const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
@@ -74,15 +83,35 @@ const MyComponent = (props) => {
     <View style={styles.container}>
       <Loader2 modalVisible={isShowLoader} />
       <View style={styles.header}>
-        <Text style={[styles.textToggleView, { color: Colors.text }]}>
+        <Text
+          style={[
+            styles.textToggleView,
+            {
+              color: Colors.text,
+              alignSelf: "center",
+              justifyContent: "center",
+            },
+          ]}
+        >
           {Strings.Menu}
         </Text>
         <TouchableOpacity
+          style={{
+            justifyContent: "center",
+            padding: Size.FindSize(10),
+          }}
           onPress={() => {
             props.navigation.closeDrawer();
           }}
         >
-          <Image source={Images.close} style={{ height: 15, width: 15 }} />
+          <Image
+            source={Images.close}
+            style={{
+              height: Size.FindSize(15),
+              width: Size.FindSize(15),
+            }}
+            resizeMode={"contain"}
+          />
         </TouchableOpacity>
       </View>
       <View style={styles.lineView} />
@@ -122,9 +151,11 @@ const MyComponent = (props) => {
         <TouchableOpacity onPress={() => Navigator.navigate(Route.Recipes)}>
           <Text style={styles.textView}>{Strings.Recipes}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => Navigator.navigate(Route.Offers)}>
-          <Text style={styles.textView}>{Strings.Offers}</Text>
-        </TouchableOpacity>
+        {loginInfo ? (
+          <TouchableOpacity onPress={() => Navigator.navigate(Route.Offers)}>
+            <Text style={styles.textView}>{Strings.Offers}</Text>
+          </TouchableOpacity>
+        ) : null}
         <TouchableOpacity
           onPress={() => Navigator.navigate(Route.StoreLocator)}
         >
@@ -146,7 +177,8 @@ const styles = StyleSheet.create({
   },
   header: {
     justifyContent: "space-between",
-    padding: 20,
+    paddingHorizontal: Size.FindSize(20),
+    paddingVertical: Size.FindSize(10),
     flexDirection: "row",
   },
   lineView: {
@@ -154,17 +186,17 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.headerline,
   },
   body: {
-    padding: 20,
+    padding: Size.FindSize(20),
   },
   categoryButton: {
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingHorizontal: Size.FindSize(20),
+    paddingVertical: Size.FindSize(15),
     flexDirection: "row",
   },
   textView: {
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingHorizontal: Size.FindSize(20),
+    paddingVertical: Size.FindSize(15),
     color: Colors.forgotText,
     fontFamily: Regular,
   },

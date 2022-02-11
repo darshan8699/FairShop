@@ -18,11 +18,11 @@ const Offers = (props) => {
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
-      APICallWishList();
+      APICallOfferList();
     }
   });
 
-  const APICallWishList = () => {
+  const APICallOfferList = () => {
     setLoader(true);
     const apiClass = new APICallService(OFFERS, {});
     apiClass

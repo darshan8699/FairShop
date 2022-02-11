@@ -6,9 +6,14 @@ import Colors from "../Utility/Colors";
 import { Regular } from "../Assets/fonts";
 // create a component
 const CustomText = (props) => {
-  const { name, starText = true, customStyle } = props;
+  const {
+    name,
+    starText = true,
+    customStyle,
+    marginTop = Size.FindSize(45),
+  } = props;
   return (
-    <Text style={[styles.text, { customStyle }]}>
+    <Text style={[styles.text, { customStyle, marginTop: marginTop }]}>
       {name}
       {starText && <Text style={styles.innerText}> *</Text>}
     </Text>

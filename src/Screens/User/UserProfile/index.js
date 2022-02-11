@@ -7,7 +7,7 @@ import APICallService from "../../../API/APICallService";
 import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
 import { Route } from "../../../Navigation/Routes";
-import { LOGOUT } from "../../../Utility/Constants";
+import { LOGOUT, PREF_STORE_ID } from "../../../Utility/Constants";
 import {
   showErrorMessage,
   showSuccessMessage,
@@ -65,8 +65,10 @@ const MyComponent = (props) => {
       .then(async function (res) {
         if (validateResponse(res)) {
           showSuccessMessage(res.message);
+          const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
           await AsyncStorageLib.clear();
-          Navigator.resetFrom(Route.Login);
+          await AsyncStorageLib.setItem(PREF_STORE_ID, id);
+          Navigator.navigate(Route.Login);
         }
       })
       .catch((err) => {

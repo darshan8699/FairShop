@@ -146,7 +146,7 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          showSuccessMessage("Cart updated");
+          showSuccessMessage("item added in cart");
           EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
         }
       })
