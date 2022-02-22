@@ -263,19 +263,25 @@ const MyComponent = (props) => {
       </Text>
     </TouchableOpacity>
   );
+
   const renderPopularCategory = ({ item }) => (
     <Image
       source={{ uri: item?.image[0]?.url }}
       style={styles.popularCatImage}
     />
   );
-  const renderWhereShop = ({ item }) => (
+
+  const renderWhereShop = ({ item, index }) => (
     <Image
-      source={{ uri: item?.url }}
-      style={styles.WhyFairshopImage}
-      // resizeMode={"cover"}
+      source={{ uri: item }}
+      style={[
+        styles.WhyFairshopImage,
+        { marginEnd: Size.FindSize(index == whyFairshop.length - 1 ? 15 : 0) },
+      ]}
+      resizeMode={"contain"}
     />
   );
+
   const renderCookItem = ({ item }) => (
     <TouchableOpacity style={styles.cookList}>
       <Image source={Images.videoTest} style={styles.cookImage} />
@@ -382,7 +388,10 @@ const MyComponent = (props) => {
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingRight: 15 }}
+            contentContainerStyle={{
+              paddingRight: 15,
+              // height: Size.FindSize(280),
+            }}
             data={popularData}
             renderItem={({ item }) => (
               <CustomItemView
@@ -445,7 +454,7 @@ const MyComponent = (props) => {
           <View style={styles.BrowseTextView}>
             <Text style={styles.BrowseText}>{Strings.Why_Fairshop}</Text>
           </View>
-          <SliderBox
+          {/* <SliderBox
             images={whyFairshop}
             resizeMode="contain"
             onCurrentImagePressed={(index) =>
@@ -453,21 +462,22 @@ const MyComponent = (props) => {
             }
             inactiveDotColor={Colors.white}
             sliderBoxHeight={140}
+            sliderBoxWidth={Size.width - 10}
             dotColor={Colors.Background}
             currentImageEmitter={(index) =>
               Logger.log(`current pos is: ${index}`)
             }
-          />
-          {/* <FlatList
+          /> */}
+          <FlatList
             data={whyFairshop}
-            style={{ paddingTop: Size.FindSize(10) }}
+            // style={{ paddingTop: Size.FindSize(10) }}
             renderItem={renderWhereShop}
             showsVerticalScrollIndicator={false}
             nestedScrollEnabled={false}
             horizontal
             showsHorizontalScrollIndicator={false}
             bounces={false}
-          /> */}
+          />
         </View>
         <View style={styles.cookView}>
           <View style={styles.BrowseTextView}>

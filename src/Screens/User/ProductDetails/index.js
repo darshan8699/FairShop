@@ -303,34 +303,40 @@ const MyComponent = (props) => {
         <Text style={styles.title} ellipsizeMode={"tail"}>
           {productData.item_name}
         </Text>
-        <Text style={styles.brand}>Brand : {productData.brand}</Text>
+        {productData.brand && (
+          <Text style={styles.brand}>Brand : {productData.brand}</Text>
+        )}
         <View style={styles.priceView}>
           <Text style={styles.price}>₹{productData.mrp}</Text>
           <View style={styles.horizontalView}>
-            <View style={{ justifyContent: "center", alignItems: "center" }}>
-              <Image
-                source={
-                  productData.veg_non_veg == "Veg"
-                    ? Images.circleVeg
-                    : Images.circleNonVeg
-                }
-                style={styles.circleFlag}
-                resizeMode={"contain"}
-              />
-              <Text style={styles.flagText}>
-                {productData.veg_non_veg == "Veg"
-                  ? "Pure Veg."
-                  : "Pure NonVeg."}
-              </Text>
-            </View>
-            <View style={styles.flagView}>
-              <Image
-                source={Images.circleFlag}
-                style={styles.circleFlag}
-                resizeMode={"contain"}
-              />
-              <Text style={styles.flagText}>Origin : {"India"}</Text>
-            </View>
+            {productData.veg_non_veg && (
+              <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <Image
+                  source={
+                    productData.veg_non_veg == "Veg"
+                      ? Images.circleVeg
+                      : Images.circleNonVeg
+                  }
+                  style={styles.circleFlag}
+                  resizeMode={"contain"}
+                />
+                <Text style={styles.flagText}>
+                  {productData.veg_non_veg == "Veg"
+                    ? Strings.VEG
+                    : Strings.NON_VEG}
+                </Text>
+              </View>
+            )}
+            {productData.country_of_origin && (
+              <View style={styles.flagView}>
+                <Image
+                  source={Images.circleFlag}
+                  style={styles.circleFlag}
+                  resizeMode={"contain"}
+                />
+                <Text style={styles.flagText}>Origin : {"India"}</Text>
+              </View>
+            )}
           </View>
         </View>
         <View style={styles.pointView}>

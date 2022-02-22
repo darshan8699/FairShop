@@ -144,7 +144,7 @@ const MyComponent = (props) => {
             data={data}
             renderItem={renderItem}
             showsVerticalScrollIndicator={false}
-            style={{ height: Size.FindSize(250) }}
+            // style={{ height: Size.FindSize(250) }}
             bounces={false}
           />
         ) : null}

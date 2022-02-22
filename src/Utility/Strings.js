@@ -146,5 +146,8 @@ export const Strings = {
   Points: "Points",
   Currency: "Currency",
   Gift: "Gift",
+
+  VEG: "Pure Veg.",
+  NON_VEG: "NonVeg.",
 };
 export default Strings;

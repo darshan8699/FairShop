@@ -1,23 +1,21 @@
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 import APICallService from "../../../API/APICallService";
 import CustomItemView from "../../../Components/CustomItemView";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
+import NoDataView from "../../../Components/NoDataView";
 import {
-  ADD_WISHLIST,
   HOMEPAGE_NEW_PRODUCT,
-  ALL_WISHLIST,
+  PREF_STORE_ID,
+  PRODUCT_LIST,
 } from "../../../Utility/Constants";
-import {
-  showErrorMessage,
-  showSuccessMessage,
-  validateResponse,
-} from "../../../Utility/Helper";
+import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
+import Strings from "../../../Utility/Strings";
 import styles from "./styles";
 
 // create a component
@@ -32,16 +30,22 @@ const MyComponent = (props) => {
       GetNewProductData();
     }
   });
-  const GetNewProductData = () => {
+  const GetNewProductData = async () => {
+    const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     setLoader(true);
-    const apiClass = new APICallService(HOMEPAGE_NEW_PRODUCT);
+    const apiClass = new APICallService(PRODUCT_LIST, {
+      limit: -1,
+      categories: props.route.params.categoryDetail.slug,
+      store_id: store_id,
+    });
     apiClass
       .callAPI()
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("data is---", res.data.items);
           setNewData(res.data.items);
+        } else {
+          setNewData([]);
         }
       })
       .catch((err) => {
@@ -50,52 +54,6 @@ const MyComponent = (props) => {
       });
   };
 
-  // const addToWishList = (product_item_code) => {
-  //   Logger.log("product_item_code", product_item_code);
-  //   AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
-  //     const id = [product_item_code];
-  //     if (result !== null && result != product_item_code) {
-  //       var newIds = JSON.parse(result).concat(id);
-  //       AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(newIds));
-  //       setLoader(true);
-  //       const apiClass = new APICallService(ADD_WISHLIST, {
-  //         product_item_code: newIds,
-  //       });
-  //       apiClass
-  //         .callAPI()
-  //         .then(async function (res) {
-  //           setLoader(false);
-  //           if (validateResponse(res)) {
-  //             showSuccessMessage(res.message);
-  //           }
-  //         })
-  //         .catch((err) => {
-  //           setLoader(false);
-  //           showErrorMessage(err.message);
-  //         });
-  //       console.log("all wishlist---------", newIds);
-  //     } else {
-  //       AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(id));
-  //       setLoader(true);
-  //       const apiClass = new APICallService(ADD_WISHLIST, {
-  //         product_item_code: id,
-  //       });
-  //       apiClass
-  //         .callAPI()
-  //         .then(async function (res) {
-  //           setLoader(false);
-  //           if (validateResponse(res)) {
-  //             showSuccessMessage(res.message);
-  //           }
-  //         })
-  //         .catch((err) => {
-  //           setLoader(false);
-  //           showErrorMessage(err.message);
-  //         });
-  //       Logger.log("single wishlist--------");
-  //     }
-  //   });
-  // };
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} isRightIcon={false} isBack />
@@ -120,6 +78,12 @@ const MyComponent = (props) => {
           />
         )}
         nestedScrollEnabled={false}
+      />
+      <NoDataView
+        isVisible={newData.length == 0}
+        title={Strings.No_data_found}
+        containerStyle={{ height: Size.height / 2.5 }}
+        isLoader={isShowLoader}
       />
     </View>
   );

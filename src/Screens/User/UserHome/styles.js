@@ -69,12 +69,13 @@ export default styles = StyleSheet.create({
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
-    elevation: 3,
+    elevation: 2,
     marginLeft: Size.FindSize(15),
     borderRadius: Size.FindSize(10),
     marginBottom: Size.FindSize(10),
     backgroundColor: "#0000",
     overflow: "hidden",
+
     paddingBottom: Size.FindSize(10),
     paddingHorizontal: Size.FindSize(10),
   },
@@ -107,7 +108,8 @@ export default styles = StyleSheet.create({
     flex: 1,
   },
   Popularback: {
-    height: Size.FindSize(400),
+    // height: Size.FindSize(400),
+    paddingBottom: Size.FindSize(30),
   },
   popularCatImage: {
     height: Size.FindSize(200),
@@ -117,12 +119,13 @@ export default styles = StyleSheet.create({
     alignSelf: "center",
   },
   WhyFairshopImage: {
-    height: Size.width * 0.6,
-    width: Size.width / 2 - Size.FindSize(20),
+    height: Size.width * 0.4,
+    height: Size.FindSize(140),
+    width: Size.width - Size.FindSize(60),
     marginBottom: Size.FindSize(15),
     marginLeft: Size.FindSize(15),
     alignSelf: "center",
-    borderRadius: Size.FindSize(10),
+    borderRadius: Size.FindSize(5),
   },
   cookView: {
     height: Size.FindSize(400),

@@ -55,3 +55,4 @@ export const ADD_WISHLIST = "/wishlist" + " " + POST_RAW;
 export const PAYMENT_VERIFY = "/order/payment-verify" + " " + POST_FORM;
 export const CREATE_ORDER = "/order" + " " + POST_FORM;
 export const LOYALTY_INQUIRY = "/user/loyalty-inquiry" + " " + GET;
+export const PRODUCT_LIST = "/product-list" + " " + GET_URL_PARAMS;

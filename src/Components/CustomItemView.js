@@ -177,14 +177,24 @@ const CustomItemView = (props) => {
           <Image source={Images.fav} resizeMode="contain" style={styles.fav} />
         )}
       </TouchableOpacity>
+
       <View style={styles.flagView}>
-        <Image source={Images.flag} resizeMode="contain" style={styles.flag} />
-        <Image
-          source={props.item.veg_non_veg ? Images.nonveg : Images.veg}
-          resizeMode="contain"
-          style={styles.veg}
-        />
+        {props?.item?.country_of_origin ? (
+          <Image
+            source={Images.flag}
+            resizeMode="contain"
+            style={styles.flag}
+          />
+        ) : null}
+        {props.item.veg_non_veg && (
+          <Image
+            source={props.item.veg_non_veg ? Images.nonveg : Images.veg}
+            resizeMode="contain"
+            style={styles.veg}
+          />
+        )}
       </View>
+
       <Text style={styles.name} numberOfLines={1} ellipsizeMode={"tail"}>
         {props.item.item_name}
       </Text>
@@ -203,18 +213,20 @@ const CustomItemView = (props) => {
 // define your styles
 const styles = StyleSheet.create({
   list: {
-    height: Size.FindSize(280),
+    // height: Size.FindSize(280),
     width: Size.FindSize(180),
     backgroundColor: Colors.white,
     marginLeft: Size.FindSize(15),
     borderRadius: Size.FindSize(10),
-    marginTop: Size.FindSize(15),
+    marginTop: Size.FindSize(5),
     shadowOffset: { width: 1, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
-    elevation: 3,
-    paddingHorizontal: Size.FindSize(10),
-    paddingTop: Size.FindSize(10),
+    elevation: 2,
+    paddingHorizontal: Size.FindSize(5),
+    paddingTop: Size.FindSize(15),
+    paddingBottom: Size.FindSize(15),
+    marginBottom: Size.FindSize(15),
     // backgroundColor: "#0000",
     overflow: "hidden",
   },
@@ -248,6 +260,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingRight: Size.FindSize(7),
     marginTop: Size.FindSize(3),
+    minHeight: Size.FindSize(20),
   },
   name: {
     fontFamily: Regular,
