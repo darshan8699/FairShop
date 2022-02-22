@@ -1,7 +1,14 @@
 //import liraries
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import APICallService from "../API/APICallService";
 import { Regular } from "../Assets/fonts";
 import { Images } from "../Assets/images";
@@ -156,56 +163,77 @@ const CustomItemView = (props) => {
         Navigator.navigate(Route.ProductDetails, { id: props.item.item_code });
       }}
     >
-      <Image
-        source={{
-          uri: props?.item?.images ? props?.item?.images[0].url : NO_IMAGE_URL,
+      <View
+        style={{
+          backgroundColor: Colors.white,
+          paddingHorizontal: Size.FindSize(5),
+          paddingTop: Size.FindSize(15),
+          paddingBottom: Size.FindSize(15),
+          borderRadius: Size.FindSize(10),
+          flex: 1,
         }}
-        resizeMode="contain"
-        style={styles.item}
-      />
-      <TouchableOpacity
-        style={styles.favView}
-        onPress={() => addToWishList(props.item.item_code)}
       >
-        {favarray.indexOf(props.item.item_code) !== -1 ? (
-          <Image
-            source={Images.heart}
-            resizeMode="contain"
-            style={styles.fav}
-          />
-        ) : (
-          <Image source={Images.fav} resizeMode="contain" style={styles.fav} />
-        )}
-      </TouchableOpacity>
+        <Image
+          source={{
+            uri: props?.item?.images
+              ? props?.item?.images[0].url
+              : NO_IMAGE_URL,
+          }}
+          resizeMode="contain"
+          style={styles.item}
+        />
+        <TouchableOpacity
+          style={styles.favView}
+          onPress={() => addToWishList(props.item.item_code)}
+        >
+          {favarray.indexOf(props.item.item_code) !== -1 ? (
+            <Image
+              source={Images.heart}
+              resizeMode="contain"
+              style={styles.fav}
+            />
+          ) : (
+            <Image
+              source={Images.fav}
+              resizeMode="contain"
+              style={styles.fav}
+            />
+          )}
+        </TouchableOpacity>
 
-      <View style={styles.flagView}>
-        {props?.item?.country_of_origin ? (
+        <View style={styles.flagView}>
+          {props?.item?.country_of_origin ? (
+            <Image
+              source={Images.flag}
+              resizeMode="contain"
+              style={styles.flag}
+            />
+          ) : null}
+          {props.item.veg_non_veg && (
+            <Image
+              source={props.item.veg_non_veg ? Images.nonveg : Images.veg}
+              resizeMode="contain"
+              style={styles.veg}
+            />
+          )}
+        </View>
+
+        <Text style={styles.name} numberOfLines={1} ellipsizeMode={"tail"}>
+          {props.item.item_name}
+        </Text>
+        <Text style={styles.price}>₹{props.item.mrp}</Text>
+        <TouchableOpacity
+          style={styles.cartView}
+          onPress={() => addToCart(props.item)}
+        >
           <Image
-            source={Images.flag}
+            source={Images.cart}
             resizeMode="contain"
-            style={styles.flag}
+            style={styles.cart}
           />
-        ) : null}
-        {props.item.veg_non_veg && (
-          <Image
-            source={props.item.veg_non_veg ? Images.nonveg : Images.veg}
-            resizeMode="contain"
-            style={styles.veg}
-          />
-        )}
+          <Text style={styles.add}>{Strings.Add}</Text>
+        </TouchableOpacity>
       </View>
-
-      <Text style={styles.name} numberOfLines={1} ellipsizeMode={"tail"}>
-        {props.item.item_name}
-      </Text>
-      <Text style={styles.price}>₹{props.item.mrp}</Text>
-      <TouchableOpacity
-        style={styles.cartView}
-        onPress={() => addToCart(props.item)}
-      >
-        <Image source={Images.cart} resizeMode="contain" style={styles.cart} />
-        <Text style={styles.add}>{Strings.Add}</Text>
-      </TouchableOpacity>
     </TouchableOpacity>
   );
 };
@@ -215,20 +243,21 @@ const styles = StyleSheet.create({
   list: {
     // height: Size.FindSize(280),
     width: Size.FindSize(180),
-    backgroundColor: Colors.white,
+    // backgroundColor: Colors.white,
     marginLeft: Size.FindSize(15),
     borderRadius: Size.FindSize(10),
     marginTop: Size.FindSize(5),
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
     elevation: 2,
-    paddingHorizontal: Size.FindSize(5),
-    paddingTop: Size.FindSize(15),
-    paddingBottom: Size.FindSize(15),
+    // paddingHorizontal: Size.FindSize(5),
+    // paddingTop: Size.FindSize(15),
+    // paddingBottom: Size.FindSize(15),
     marginBottom: Size.FindSize(15),
-    // backgroundColor: "#0000",
-    overflow: "hidden",
+    // overflow: "hidden",
+
+    shadowColor: "#000",
+    shadowOffset: { width: Platform.OS == "ios" ? 0 : 1, height: 1 },
+    shadowOpacity: Platform.OS == "ios" ? 0.5 : 0.1,
+    shadowRadius: Platform.OS == "ios" ? 2 : 1,
   },
   item: {
     height: Size.FindSize(100),

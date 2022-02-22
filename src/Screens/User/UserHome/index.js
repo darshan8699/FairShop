@@ -248,19 +248,22 @@ const MyComponent = (props) => {
         Navigator.navigate(Route.ShopCategoryWise, { categoryDetail: item })
       }
     >
-      <Image
-        source={{
-          uri: item.icon && item.icon[0].url ? item.icon[0].url : NO_IMAGE_URL,
-        }}
-        style={styles.browseImage}
-      />
-      <Text
-        style={styles.browseCategoryText}
-        numberOfLines={2}
-        ellipsizeMode={"tail"}
-      >
-        {item.name}
-      </Text>
+      <View style={styles.browseCardView}>
+        <Image
+          source={{
+            uri:
+              item.icon && item.icon[0].url ? item.icon[0].url : NO_IMAGE_URL,
+          }}
+          style={styles.browseImage}
+        />
+        <Text
+          style={styles.browseCategoryText}
+          numberOfLines={2}
+          ellipsizeMode={"tail"}
+        >
+          {item.name}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 
@@ -365,7 +368,10 @@ const MyComponent = (props) => {
           <FlatList
             data={category}
             horizontal={true}
-            contentContainerStyle={{ paddingRight: 15 }}
+            contentContainerStyle={{
+              paddingRight: Size.FindSize(15),
+              marginTop: Size.FindSize(5),
+            }}
             renderItem={renderBrowseCategory}
             showsHorizontalScrollIndicator={false}
           />
@@ -389,7 +395,8 @@ const MyComponent = (props) => {
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{
-              paddingRight: 15,
+              paddingRight: Size.FindSize(15),
+              marginTop: Size.FindSize(15),
               // height: Size.FindSize(280),
             }}
             data={popularData}
@@ -415,7 +422,10 @@ const MyComponent = (props) => {
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingRight: 15 }}
+            contentContainerStyle={{
+              paddingRight: Size.FindSize(15),
+              paddingTop: Size.FindSize(5),
+            }}
             data={newData}
             renderItem={({ item }) => (
               <CustomItemView

@@ -36,7 +36,7 @@ export default styles = StyleSheet.create({
     borderRadius: Size.FindSize(10),
   },
   BrowseView: {
-    height: Size.FindSize(315),
+    // height: Size.FindSize(315),
     marginBottom: Size.FindSize(30),
   },
   BrowseTextView: {
@@ -65,20 +65,27 @@ export default styles = StyleSheet.create({
     overflow: "hidden",
   },
   browseCard: {
-    shadowColor: Colors.black,
-    shadowOffset: { width: 1, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 2,
     marginLeft: Size.FindSize(15),
-    borderRadius: Size.FindSize(10),
+    // borderRadius: Size.FindSize(10),
     marginBottom: Size.FindSize(10),
-    backgroundColor: "#0000",
-    overflow: "hidden",
+    marginTop: Size.FindSize(5),
+    borderRadius: Size.FindSize(10),
+    shadowColor: "#000",
+    shadowOffset: { width: Platform.OS == "ios" ? 0 : 1, height: 1 },
+    shadowOpacity: Platform.OS == "ios" ? 0.5 : 0.1,
+    shadowRadius: Platform.OS == "ios" ? 2 : 1,
+    elevation: 2,
+  },
 
+  browseCardView: {
+    borderRadius: Size.FindSize(10),
+    overflow: "hidden",
     paddingBottom: Size.FindSize(10),
     paddingHorizontal: Size.FindSize(10),
+    backgroundColor: Colors.white,
+    flex: 1,
   },
+
   browseCategoryText: {
     color: Colors.headerText,
     fontFamily: Medium,
