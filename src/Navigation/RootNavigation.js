@@ -255,6 +255,14 @@ function RootNavigation() {
           name={Route.LoyaltyRewards}
           component={screen.LoyaltyRewards}
         />
+        <Stack.Screen
+          name={Route.PopularProduct}
+          component={screen.PopularProduct}
+        />
+        <Stack.Screen
+          name={Route.AllBrowseCategory}
+          component={screen.AllBrowseCategory}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -52,10 +52,17 @@ export default styles = StyleSheet.create({
     fontFamily: SemiBold,
     color: Colors.storeColor,
     marginBottom: Size.FindSize(3),
+    flex: 1,
   },
   text1: {
     fontSize: Size.FindSize(14),
     fontFamily: Regular,
     color: Colors.pincodetext,
+  },
+  usericon: {
+    height: Size.FindSize(15),
+    width: Size.FindSize(15),
+    marginRight: Size.FindSize(7),
+    tintColor: Colors.green,
   },
 });

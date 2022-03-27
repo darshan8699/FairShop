@@ -75,6 +75,7 @@ export default styles = StyleSheet.create({
     shadowOpacity: Platform.OS == "ios" ? 0.5 : 0.1,
     shadowRadius: Platform.OS == "ios" ? 2 : 1,
     elevation: 2,
+    width: Size.width / 2 - Size.FindSize(25),
   },
 
   browseCardView: {
@@ -91,8 +92,15 @@ export default styles = StyleSheet.create({
     fontFamily: Medium,
     fontSize: Size.FindSize(14),
     textAlign: "center",
-    width: Size.FindSize(143),
+    // width: Size.FindSize(143),
     marginTop: Size.FindSize(5),
+  },
+  viewAll: {
+    color: Colors.headerText,
+    fontFamily: Medium,
+    fontSize: Size.FindSize(14),
+    textAlign: "center",
+    textDecorationLine: "underline",
   },
   back1: {
     height: Size.FindSize(300),

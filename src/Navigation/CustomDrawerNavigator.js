@@ -161,8 +161,45 @@ const MyComponent = (props) => {
         >
           <Text style={styles.textView}>{Strings.StoreLocator}</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => Navigator.navigate(Route.AboutUs)}>
+        <TouchableOpacity
+          onPress={() => Navigator.navigate(Route.AboutUs, { type: 1 })}
+        >
           <Text style={styles.textView}>{Strings.AboutUs}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+        //onPress={() => Navigator.navigate(Route.AboutUs, { type: 1 })}
+        >
+          <Text style={styles.textView}>{Strings.ContactUs}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+        //onPress={() => Navigator.navigate(Route.AboutUs, { type: 2 })}
+        >
+          <Text style={styles.textView}>{Strings.CorporateInquiry}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => Navigator.navigate(Route.AboutUs, { type: 3 })}
+        >
+          <Text style={styles.textView}>{Strings.Careers}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => Navigator.navigate(Route.AboutUs, { type: 4 })}
+        >
+          <Text style={styles.textView}>{Strings.ReturnRefund}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => Navigator.navigate(Route.AboutUs, { type: 5 })}
+        >
+          <Text style={styles.textView}>{Strings.ShippingPolicy}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => Navigator.navigate(Route.AboutUs, { type: 6 })}
+        >
+          <Text style={styles.textView}>{Strings.TermsConditions}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => Navigator.navigate(Route.AboutUs, { type: 7 })}
+        >
+          <Text style={styles.textView}>{Strings.PrivacyPolicy}</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -23,5 +23,7 @@ export { default as ProductDetails } from "./User/ProductDetails";
 export { default as PaymentOrder } from "./User/PaymentOrder";
 export { default as OrderDetails } from "./User/OrderDetails";
 export { default as LoyaltyRewards } from "./User/LoyaltyRewards";
+export { default as PopularProduct } from "./User/PopularProduct";
+export { default as AllBrowseCategory } from "./User/AllBrowseCategory";
 
 LogBox.ignoreAllLogs();

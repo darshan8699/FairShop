@@ -323,12 +323,13 @@ const MyComponent = (props) => {
       >
         <SliderBox
           images={bannerImages}
-          resizeMode="cover"
+          resizeMode="contain"
+          resizeMethod="auto"
           onCurrentImagePressed={(index) =>
             Logger.log(`image ${index} pressed`)
           }
           inactiveDotColor={Colors.white}
-          sliderBoxHeight={200}
+          sliderBoxHeight={140}
           dotColor={Colors.Background}
           currentImageEmitter={(index) =>
             Logger.log(`current pos is: ${index}`)
@@ -357,21 +358,28 @@ const MyComponent = (props) => {
         <View style={styles.BrowseView}>
           <View style={styles.BrowseTextView}>
             <Text style={styles.BrowseText}>{Strings.BrowseText}</Text>
-            <TouchableOpacity>
-              <Image
+            <TouchableOpacity
+              style={{ flexDirection: "row" }}
+              onPress={() => {
+                Navigator.navigate(Route.AllBrowseCategory, {});
+              }}
+            >
+              <Text style={styles.viewAll}>{Strings.ViewAll}</Text>
+              {/* <Image
                 source={Images.rightArrow}
                 resizeMode="contain"
                 style={styles.browserightIcon}
-              />
+              /> */}
             </TouchableOpacity>
           </View>
           <FlatList
-            data={category}
-            horizontal={true}
+            data={category.slice(0, 4)}
+            // horizontal={true}
             contentContainerStyle={{
               paddingRight: Size.FindSize(15),
               marginTop: Size.FindSize(5),
             }}
+            numColumns={2}
             renderItem={renderBrowseCategory}
             showsHorizontalScrollIndicator={false}
           />
@@ -383,27 +391,35 @@ const MyComponent = (props) => {
         >
           <View style={styles.bestView}>
             <Text style={styles.bestText}>{Strings.Popular_product}</Text>
-            <TouchableOpacity>
-              <Image
+            <TouchableOpacity
+              onPress={() => {
+                Navigator.navigate(Route.PopularProduct, {});
+              }}
+            >
+              <Text style={[styles.viewAll, { color: Colors.white }]}>
+                {Strings.ViewAll}
+              </Text>
+              {/* <Image
                 source={Images.rightArrow}
                 resizeMode="contain"
                 style={styles.rightIcon}
-              />
+              /> */}
             </TouchableOpacity>
           </View>
           <FlatList
-            horizontal
+            // horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{
               paddingRight: Size.FindSize(15),
               marginTop: Size.FindSize(15),
               // height: Size.FindSize(280),
             }}
-            data={popularData}
+            numColumns={2}
+            data={popularData.slice(0, 4)}
             renderItem={({ item }) => (
               <CustomItemView
                 item={item}
-                // addToWishList={(id) => addToWishList(id)}
+                listView={{ width: Size.width / 2 - Size.FindSize(25) }}
               />
             )}
           />
@@ -412,11 +428,12 @@ const MyComponent = (props) => {
           <View style={styles.BrowseTextView}>
             <Text style={styles.BrowseText}>{Strings.NewProduct}</Text>
             <TouchableOpacity>
-              <Image
+              <Text style={styles.viewAll}>{Strings.ViewAll}</Text>
+              {/* <Image
                 source={Images.rightArrow}
                 resizeMode="contain"
                 style={styles.browserightIcon}
-              />
+              /> */}
             </TouchableOpacity>
           </View>
           <FlatList
@@ -489,7 +506,7 @@ const MyComponent = (props) => {
             bounces={false}
           />
         </View>
-        <View style={styles.cookView}>
+        {/* <View style={styles.cookView}>
           <View style={styles.BrowseTextView}>
             <Text style={styles.BrowseText}>{Strings.today_cook}</Text>
           </View>
@@ -500,7 +517,7 @@ const MyComponent = (props) => {
             renderItem={renderCookItem}
             showsHorizontalScrollIndicator={false}
           />
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );

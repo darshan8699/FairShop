@@ -1,7 +1,14 @@
 import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  Linking,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import APICallService from "../../../API/APICallService";
 import { Images } from "../../../Assets/images";
 import CustomInput from "../../../Components/CustomInput";
@@ -115,7 +122,20 @@ const MyComponent = (props) => {
           );
         }}
       >
-        <Text style={styles.ShopNameText}>{item.name}</Text>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={styles.ShopNameText}>{item.name}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              Linking.openURL(`tel:${item.phone}`);
+            }}
+          >
+            <Image
+              source={Images.call}
+              resizeMode={"contain"}
+              style={styles.usericon}
+            />
+          </TouchableOpacity>
+        </View>
         <Text style={styles.text1}>
           {item.address_line_1 + ", " + item.address_line_2}
         </Text>

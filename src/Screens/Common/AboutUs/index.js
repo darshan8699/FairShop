@@ -8,7 +8,14 @@ import { Regular } from "../../../Assets/fonts";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
 import Colors from "../../../Utility/Colors";
-import { SETTING_ABOUT } from "../../../Utility/Constants";
+import {
+  SETTING_ABOUT,
+  SETTING_REFUND_POLICY,
+  SETTING_SHIPPING_POLICY,
+  SETTING_PRIVACY_POLICY,
+  SETTING_TERMSANDCONDITIONS,
+  SETTING_CAREERS,
+} from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import Strings from "../../../Utility/Strings";
@@ -35,7 +42,8 @@ const aboutUS = `<!DOCTYPE html><html> <head>
 
 const AboutUs = (props) => {
   const [isShowLoader, setLoader] = useState(false);
-  const [aboutData, setAboutData] = useState(aboutUS);
+  const [aboutData, setAboutData] = useState();
+  const [pageType, setPageType] = useState(1);
 
   const webViewRef = useRef();
   const isFirstRun = useRef(true);
@@ -44,6 +52,8 @@ const AboutUs = (props) => {
       isFirstRun.current = false;
       //componentDidMount
       setLoader(true);
+      const type = props.route.params.type ? props.route.params.type : 1;
+      setPageType(type);
       APICall();
     } else {
       //componentWillReceiveProps
@@ -51,12 +61,29 @@ const AboutUs = (props) => {
   }, []);
 
   const APICall = () => {
+    Logger.log(props.route.params.type);
+    const type = props.route.params.type ? props.route.params.type : 1;
     setLoader(true);
-    const apiClass = new APICallService(SETTING_ABOUT);
+    const apiClass = new APICallService(
+      type == 1
+        ? SETTING_ABOUT
+        : type == 2
+        ? SETTING_REFUND_POLICY
+        : type == 3
+        ? SETTING_CAREERS
+        : type == 4
+        ? SETTING_REFUND_POLICY
+        : type == 5
+        ? SETTING_SHIPPING_POLICY
+        : type == 6
+        ? SETTING_TERMSANDCONDITIONS
+        : type == 7
+        ? SETTING_PRIVACY_POLICY
+        : SETTING_ABOUT
+    );
     apiClass
       .callAPI()
       .then(async function (res) {
-        setLoader(false);
         if (validateResponse(res)) {
           var about = `<!DOCTYPE html><html> <head>
     <title>Downloads</title>
@@ -74,7 +101,9 @@ const AboutUs = (props) => {
       }
     </style>
   </head><body>${res.data?.item?.content}</body></html>`;
+          Logger.log(res.data?.item?.content);
           setAboutData(decode(about));
+          setLoader(false);
         } else {
           setLoader(false);
         }
@@ -89,7 +118,11 @@ const AboutUs = (props) => {
     <View style={styles.container}>
       <Loader2 modalVisible={isShowLoader} />
       <Header navigation={props.navigation} isBack isRightIcon={false} />
-      <Text style={styles.headerText}>{Strings.AboutUs}</Text>
+      {pageType == 1 ? (
+        <Text style={styles.headerText}>
+          {pageType == 1 ? Strings.AboutUs : ""}
+        </Text>
+      ) : null}
       <WebView
         ref={webViewRef}
         cacheEnabled={false}
