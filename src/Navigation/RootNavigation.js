@@ -263,6 +263,7 @@ function RootNavigation() {
           name={Route.AllBrowseCategory}
           component={screen.AllBrowseCategory}
         />
+        <Stack.Screen name={Route.NewProducts} component={screen.NewProducts} />
       </Stack.Navigator>
     </NavigationContainer>
   );

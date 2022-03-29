@@ -16,7 +16,7 @@ export default styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: Size.FindSize(15),
     alignItems: "center",
-    paddingTop: Size.FindSize(30),
+    paddingTop: Size.FindSize(40),
   },
   bestText: {
     color: Colors.white,

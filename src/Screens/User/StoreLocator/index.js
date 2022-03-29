@@ -120,6 +120,7 @@ const MyComponent = (props) => {
             PREF_STORE_ID,
             JSON.stringify(item?.id)
           );
+          props.navigation.goBack();
         }}
       >
         <View style={{ flexDirection: "row" }}>

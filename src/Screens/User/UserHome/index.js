@@ -373,7 +373,7 @@ const MyComponent = (props) => {
             </TouchableOpacity>
           </View>
           <FlatList
-            data={category.slice(0, 4)}
+            data={category.slice(0, 8)}
             // horizontal={true}
             contentContainerStyle={{
               paddingRight: Size.FindSize(15),
@@ -415,7 +415,7 @@ const MyComponent = (props) => {
               // height: Size.FindSize(280),
             }}
             numColumns={2}
-            data={popularData.slice(0, 4)}
+            data={popularData.slice(0, 8)}
             renderItem={({ item }) => (
               <CustomItemView
                 item={item}
@@ -427,7 +427,11 @@ const MyComponent = (props) => {
         <View style={styles.Popularback}>
           <View style={styles.BrowseTextView}>
             <Text style={styles.BrowseText}>{Strings.NewProduct}</Text>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                Navigator.navigate(Route.NewProducts, {});
+              }}
+            >
               <Text style={styles.viewAll}>{Strings.ViewAll}</Text>
               {/* <Image
                 source={Images.rightArrow}
@@ -437,13 +441,14 @@ const MyComponent = (props) => {
             </TouchableOpacity>
           </View>
           <FlatList
-            horizontal
+            // horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{
               paddingRight: Size.FindSize(15),
               paddingTop: Size.FindSize(5),
             }}
-            data={newData}
+            numColumns={2}
+            data={newData.slice(0, 8)}
             renderItem={({ item }) => (
               <CustomItemView
                 item={item}
