@@ -56,7 +56,12 @@ export default styles = StyleSheet.create({
   icon: {
     height: Size.FindSize(15),
     width: Size.FindSize(15),
-    marginLeft: Size.FindSize(15),
+    marginLeft: Size.FindSize(30),
+    tintColor: Colors.button,
+  },
+  editIcon: {
+    height: Size.FindSize(15),
+    width: Size.FindSize(15),
     tintColor: Colors.button,
   },
   nameView: {

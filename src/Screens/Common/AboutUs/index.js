@@ -117,7 +117,8 @@ const AboutUs = (props) => {
   return (
     <View style={styles.container}>
       <Loader2 modalVisible={isShowLoader} />
-      <Header navigation={props.navigation} isBack isRightIcon={false} />
+      <Header navigation={props.navigation} isBack />
+      {/* <Header navigation={props.navigation} isBack isRightIcon={false} /> */}
       {pageType == 1 ? (
         <Text style={styles.headerText}>
           {pageType == 1 ? Strings.AboutUs : ""}

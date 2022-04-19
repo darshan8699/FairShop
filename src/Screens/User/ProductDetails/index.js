@@ -74,6 +74,7 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
+          console.log("res:-----", res.data);
           setProductData(res.data.item);
           setImageArr(res.data.item.images);
           if (res.data.item.images) {
@@ -229,7 +230,8 @@ const MyComponent = (props) => {
 
   return (
     <View style={styles.container}>
-      <Header navigation={props.navigation} isRightIcon={false} isBack />
+      <Header navigation={props.navigation} isBack />
+      {/* <Header navigation={props.navigation} isRightIcon={false} isBack /> */}
       <Loader2 modalVisible={isShowLoader} />
       <ScrollView
         style={{
@@ -307,7 +309,16 @@ const MyComponent = (props) => {
           <Text style={styles.brand}>Brand : {productData.brand}</Text>
         )}
         <View style={styles.priceView}>
-          <Text style={styles.price}>₹{productData.mrp}</Text>
+          {productData.offer ? (
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text style={styles.price}>
+                ₹{productData.mrp - productData.offer.discount}
+              </Text>
+              <Text style={styles.totalprice}>₹{productData.mrp}</Text>
+            </View>
+          ) : (
+            <Text style={styles.price}>₹{productData.mrp}</Text>
+          )}
           <View style={styles.horizontalView}>
             {productData.veg_non_veg && (
               <View style={{ justifyContent: "center", alignItems: "center" }}>
@@ -339,7 +350,25 @@ const MyComponent = (props) => {
             )}
           </View>
         </View>
-        <View style={styles.pointView}>
+        {productData.offer && (
+          <View>
+            <Text style={styles.discountPrice}>
+              You save ₹{productData.offer.discount}
+            </Text>
+            <View style={styles.discountBox}>
+              <Text style={styles.discountPrice}>%</Text>
+              <View>
+                <Text style={styles.flatDiscountText}>
+                  {productData.offer.description}
+                </Text>
+                <Text style={styles.flatDiscountText1}>
+                  {productData.offer.description}
+                </Text>
+              </View>
+            </View>
+          </View>
+        )}
+        {/* <View style={styles.pointView}>
           <Image
             source={Images.Point}
             style={styles.pointIcon}
@@ -348,7 +377,7 @@ const MyComponent = (props) => {
           <Text style={styles.pointText}>
             {"Collect 100 points with this purchase"}
           </Text>
-        </View>
+        </View> */}
         <View style={styles.buttonView}>
           <TouchableOpacity
             style={styles.cartView}
@@ -360,6 +389,9 @@ const MyComponent = (props) => {
               style={styles.cart}
             />
             <Text style={styles.add}>{Strings.AddToCart}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.BuycartView} onPress={() => {}}>
+            <Text style={styles.buyText}>{Strings.BuyNow}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.favView}
@@ -391,7 +423,7 @@ const MyComponent = (props) => {
               source={Images.facebook}
               resizeMode={"contain"}
             />
-            <Text style={styles.fbText}>{Strings.Share}</Text>
+            <Text style={styles.fbText}>{Strings.Facebook}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.fbButton, { backgroundColor: Colors.tweet }]}
@@ -401,7 +433,7 @@ const MyComponent = (props) => {
               source={Images.tweet}
               resizeMode={"contain"}
             />
-            <Text style={styles.fbText}>{Strings.Tweet}</Text>
+            <Text style={styles.fbText}>{Strings.Twitter}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.fbButton, { backgroundColor: Colors.wt }]}
@@ -411,7 +443,7 @@ const MyComponent = (props) => {
               source={Images.wt}
               resizeMode={"contain"}
             />
-            <Text style={styles.fbText}>{Strings.Share}</Text>
+            <Text style={styles.fbText}>{Strings.WhatsApp}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.fbButton, { backgroundColor: Colors.mail }]}
@@ -424,12 +456,20 @@ const MyComponent = (props) => {
             <Text style={styles.fbText}>{Strings.Email}</Text>
           </TouchableOpacity>
         </View>
-
-        <Text style={styles.Description}>
-          {productData.description ? Strings.Description : ""}
-        </Text>
-        <View style={styles.line} />
-        <Text style={styles.text}>{productData.description}</Text>
+        <View>
+          <Text style={styles.Description}>{Strings.Disclaimer}</Text>
+          <View style={styles.line} />
+          <Text style={styles.text}>{Strings.disclaimerSentence}</Text>
+        </View>
+        {/* {productData.description && (
+          <View>
+            <Text style={styles.Description}>
+              {productData.description ? Strings.Description : ""}
+            </Text>
+            <View style={styles.line} />
+            <Text style={styles.text}>{productData.description}</Text>
+          </View>
+        )} */}
       </ScrollView>
     </View>
   );

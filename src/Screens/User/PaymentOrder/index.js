@@ -426,7 +426,8 @@ const PaymentOrder = (props) => {
       order_id: razorpay_order_id, //Replace this with an order_id created using Orders API.
       prefill: {
         email: loginData?.email ? loginData?.email : "",
-        shippingContact: loginData?.phone ? "+91" + loginData?.phone : "",
+        // shippingContact: loginData?.phone ? "+91" + loginData?.phone : "",
+        contact: loginData?.phone ? "+91" + loginData?.phone : "",
         name: loginData
           ? loginData?.profile?.first_name + " " + loginData?.profile?.last_name
           : billingFullName,
@@ -459,7 +460,8 @@ const PaymentOrder = (props) => {
         <View style={{ flexDirection: "row", flex: 1 }}>
           <Image
             resizeMode="contain"
-            source={{ uri: item.image ? item.image : NO_IMAGE_URL }}
+            // source={{ uri: item.image ? item.image : NO_IMAGE_URL }}
+            source={{ uri: item?.images ? item?.images[0].url : NO_IMAGE_URL }}
             style={styles.icon}
           />
           <View style={styles.textView}>
@@ -684,7 +686,8 @@ const PaymentOrder = (props) => {
 
   return (
     <View style={styles.container}>
-      <Header navigation={props.navigation} isRightIcon={false} isBack />
+      <Header navigation={props.navigation} isBack />
+      {/* <Header navigation={props.navigation} isRightIcon={false} isBack /> */}
       <Loader2 modalVisible={isShowLoader} />
 
       <ScrollView

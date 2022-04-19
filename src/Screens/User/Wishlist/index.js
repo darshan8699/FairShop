@@ -107,7 +107,8 @@ const Wishlist = (props) => {
 
   return (
     <View style={styles.container}>
-      <Header isBack navigation={props.navigation} isRightIcon={false} />
+      <Header isBack navigation={props.navigation} />
+      {/* <Header isBack navigation={props.navigation} isRightIcon={false} /> */}
       <Loader2 modalVisible={isShowLoader} />
 
       <Text style={styles.headerText}>{Strings.Wishlist}</Text>

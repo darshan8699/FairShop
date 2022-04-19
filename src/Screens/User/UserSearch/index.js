@@ -73,7 +73,8 @@ const MyComponent = (props) => {
   };
   return (
     <View style={styles.container}>
-      <Header navigation={props.navigation} isRightIcon={false} />
+      <Header navigation={props.navigation} />
+      {/* <Header navigation={props.navigation} isRightIcon={false} /> */}
       <Loader2 modalVisible={isShowLoader} />
 
       <View style={styles.childContainer}>
