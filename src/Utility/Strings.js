@@ -166,5 +166,8 @@ export const Strings = {
   Facebook: "Facebook",
   Twitter: "Twitter",
   WhatsApp: "WhatsApp",
+
+  OrderPlacedSuccessfully: "Order Placed Successfully",
+  ContinueShopping: "Continue Shopping",
 };
 export default Strings;

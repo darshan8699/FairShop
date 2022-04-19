@@ -71,7 +71,7 @@ const MyComponent = (props) => {
     const apiClass = new APICallService(PRODUCT_DETAILS, props.route.params.id);
     apiClass
       .callAPI()
-      .then(async function (res) {
+      .then(function (res) {
         setLoader(false);
         if (validateResponse(res)) {
           console.log("res:-----", res.data);

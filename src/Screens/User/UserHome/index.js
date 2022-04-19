@@ -156,7 +156,7 @@ const MyComponent = (props) => {
           setBannerImages(bannerImage);
           console.log(
             "popular category:-",
-            res.data?.item?.content?.popular_category
+            JSON.stringify(res.data?.item?.content?.popular_category)
           );
           setPopularCategory(res.data?.item?.content?.popular_category);
           setWhyFairshop(whyShop);
@@ -242,11 +242,16 @@ const MyComponent = (props) => {
   //     }
   //   });
   // };
-  const renderBestItem = ({ item }) => (
-    <Image source={{ uri: item?.bannerImage }} style={styles.bestImage} />
+  const renderBestItem = ({ item, index }) => (
+    <Image
+      source={{ uri: item?.bannerImage }}
+      style={styles.bestImage}
+      key={index}
+    />
   );
-  const renderBrowseCategory = ({ item }) => (
+  const renderBrowseCategory = ({ item, index }) => (
     <TouchableOpacity
+      key={index}
       style={styles.browseCard}
       activeOpacity={1}
       onPress={() =>
@@ -272,8 +277,9 @@ const MyComponent = (props) => {
     </TouchableOpacity>
   );
 
-  const renderPopularCategory = ({ item }) => (
+  const renderPopularCategory = ({ item, index }) => (
     <Image
+      key={index}
       source={{ uri: item?.image[0]?.url }}
       style={styles.popularCatImage}
     />
@@ -281,6 +287,7 @@ const MyComponent = (props) => {
 
   const renderWhereShop = ({ item, index }) => (
     <Image
+      key={index}
       source={{ uri: item }}
       style={[
         styles.WhyFairshopImage,
@@ -326,8 +333,8 @@ const MyComponent = (props) => {
         showsHorizontalScrollIndicator={false}
         nestedScrollEnabled={true}
       >
+        <View style={{ height: Size.FindSize(10) }} />
         <SliderBox
-          style={{ marginTop: Size.FindSize(10) }}
           images={bannerImages}
           resizeMode="contain"
           resizeMethod="auto"

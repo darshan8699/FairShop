@@ -27,4 +27,5 @@ export const Route = {
   PopularProduct: "PopularProduct",
   AllBrowseCategory: "AllBrowseCategory",
   NewProducts: "NewProducts",
+  OrderSuccess: "OrderSuccess",
 };

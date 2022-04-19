@@ -41,6 +41,8 @@ import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import { isTextNotEmpty } from "../../../Utility/Validation";
 import styles from "./styles";
+import Navigator from "../../../Utility/Navigator";
+import { Route } from "../../../Navigation/Routes";
 
 // create a component
 const PaymentOrder = (props) => {
@@ -219,7 +221,8 @@ const PaymentOrder = (props) => {
     payment_status,
     razorpay_order_id,
     razorpay_payment_id,
-    razorpay_signature
+    razorpay_signature,
+    tracking_number
   ) => {
     setLoader(true);
     const apiClass = new APICallService(PAYMENT_VERIFY, {
@@ -240,7 +243,11 @@ const PaymentOrder = (props) => {
           const list = [];
           AsyncStorageLib.setItem(ALL_CART, JSON.stringify(list));
           EventRegister.emit(UPDATE_CART_COUNT, 0);
-          props.navigation.goBack();
+          //props.navigation.goBack();
+          Navigator.navigate(Route.OrderSuccess, {
+            order_id: order_id,
+            tracking_number: tracking_number,
+          });
         }
       })
       .catch((err) => {
@@ -399,11 +406,16 @@ const PaymentOrder = (props) => {
             const list = [];
             AsyncStorageLib.setItem(ALL_CART, JSON.stringify(list));
             EventRegister.emit(UPDATE_CART_COUNT, 0);
-            props.navigation.goBack();
+            //props.navigation.goBack();
+            Navigator.navigate(Route.OrderSuccess, {
+              order_id: res?.data?.item?.id,
+              tracking_number: res?.data?.item?.tracking_number,
+            });
           } else {
             proceedToPayment(
               res?.data?.item?.id,
-              res?.data?.item?.razorpay_order_id
+              res?.data?.item?.razorpay_order_id,
+              res?.data?.item?.tracking_number
             );
           }
         }
@@ -414,7 +426,7 @@ const PaymentOrder = (props) => {
       });
   };
 
-  const proceedToPayment = (order_id, razorpay_order_id) => {
+  const proceedToPayment = (order_id, razorpay_order_id, tracking_number) => {
     var options = {
       name: "FairShop",
       // description: "PSO WHOLE WHEAT CHAKKI ATTA- POUCH 2Kg",
@@ -444,7 +456,8 @@ const PaymentOrder = (props) => {
           "success",
           data?.razorpay_order_id,
           data?.razorpay_payment_id,
-          data?.razorpay_signature
+          data?.razorpay_signature,
+          tracking_number
         );
       })
       .catch((error) => {
