@@ -157,5 +157,14 @@ export const Strings = {
 
   VEG: "Pure Veg.",
   NON_VEG: "NonVeg.",
+
+  Delete_address_alert: "Are you sure you want to delete address",
+  Disclaimer: "Disclaimer",
+  disclaimerSentence:
+    "Despite our attempts to provide you with the most accurate information possible, the actual packaging, ingredients and colour of the product may sometimes vary. Please read the label, directions and warnings carefully before use.",
+  BuyNow: "Buy Now",
+  Facebook: "Facebook",
+  Twitter: "Twitter",
+  WhatsApp: "WhatsApp",
 };
 export default Strings;

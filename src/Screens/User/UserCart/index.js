@@ -159,7 +159,8 @@ const MyComponent = (props) => {
         <View style={{ flexDirection: "row", flex: 1 }}>
           <Image
             resizeMode="contain"
-            source={{ uri: item.image ? item.image : NO_IMAGE_URL }}
+            // source={{ uri: item.image ? item.image : NO_IMAGE_URL }}
+            source={{ uri: item?.images ? item?.images[0].url : NO_IMAGE_URL }}
             style={styles.icon}
           />
           <View style={styles.textView}>

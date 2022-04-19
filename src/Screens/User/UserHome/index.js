@@ -152,7 +152,12 @@ const MyComponent = (props) => {
               whyShop.push(element[0].thumbnail);
             }
           }
+          console.log("bannerImage:-", bannerImage);
           setBannerImages(bannerImage);
+          console.log(
+            "popular category:-",
+            res.data?.item?.content?.popular_category
+          );
           setPopularCategory(res.data?.item?.content?.popular_category);
           setWhyFairshop(whyShop);
         }
@@ -322,6 +327,7 @@ const MyComponent = (props) => {
         nestedScrollEnabled={true}
       >
         <SliderBox
+          style={{ marginTop: Size.FindSize(10) }}
           images={bannerImages}
           resizeMode="contain"
           resizeMethod="auto"

@@ -51,7 +51,8 @@ const MyComponent = (props) => {
 
   return (
     <View style={styles.container}>
-      <Header navigation={props.navigation} isRightIcon={false} isBack />
+      <Header navigation={props.navigation} isBack />
+      {/* <Header navigation={props.navigation} isRightIcon={false} isBack /> */}
       <Text style={styles.headerText}>
         {props.route.params.categoryDetail.name}
       </Text>

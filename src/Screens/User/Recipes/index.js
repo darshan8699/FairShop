@@ -9,7 +9,8 @@ import styles from "./styles";
 const Recipes = (props) => {
   return (
     <View style={styles.container}>
-      <Header navigation={props.navigation} isBack isRightIcon={false} />
+      <Header navigation={props.navigation} isBack />
+      {/* <Header navigation={props.navigation} isBack isRightIcon={false} /> */}
       <Text style={styles.headerText}>{Strings.Recipes}</Text>
     </View>
   );

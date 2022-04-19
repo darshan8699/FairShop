@@ -211,7 +211,9 @@ const CustomItemView = (props) => {
           ) : null}
           {props.item.veg_non_veg && (
             <Image
-              source={props.item.veg_non_veg ? Images.nonveg : Images.veg}
+              source={
+                props.item.veg_non_veg == "Veg" ? Images.veg : Images.nonveg
+              }
               resizeMode="contain"
               style={styles.veg}
             />

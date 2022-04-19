@@ -153,7 +153,7 @@ const MyComponent = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           showSuccessMessage(res.message);
-          props?.route?.params?.onRefresh();
+          // props?.route?.params?.onRefresh();
           props.navigation.goBack();
         }
       })
@@ -183,7 +183,7 @@ const MyComponent = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           showSuccessMessage(res.message);
-          props?.route?.params?.onRefresh();
+          // props?.route?.params?.onRefresh();
           props.navigation.goBack();
         }
       })
@@ -194,7 +194,8 @@ const MyComponent = (props) => {
   };
   return (
     <View style={styles.container}>
-      <Header navigation={props.navigation} isBack isRightIcon={false} />
+      <Header navigation={props.navigation} isBack />
+      {/* <Header navigation={props.navigation} isBack isRightIcon={false} /> */}
       <Loader2 modalVisible={isShowLoader} />
       <ScrollView
         style={{

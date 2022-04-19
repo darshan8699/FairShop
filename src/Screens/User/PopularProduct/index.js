@@ -50,7 +50,8 @@ const MyComponent = (props) => {
 
   return (
     <View style={styles.container}>
-      <Header navigation={props.navigation} isRightIcon={false} isBack />
+      <Header navigation={props.navigation} isBack />
+      {/* <Header navigation={props.navigation} isRightIcon={false} isBack /> */}
       <Text style={styles.headerText}>{Strings.Popular_product}</Text>
       <Loader2 modalVisible={isShowLoader} />
       <FlatList

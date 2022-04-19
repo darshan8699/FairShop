@@ -1,6 +1,14 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+  Alert,
+} from "react-native";
+import { clockRunning, log } from "react-native-reanimated";
 import APICallService from "../../../API/APICallService";
 import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
@@ -95,7 +103,12 @@ const AddressListing = (props) => {
           >
             {item.name}
           </Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
             <TouchableOpacity
               onPress={() =>
                 Navigator.navigate(Route.Address, { updateDetails: item.id })
@@ -104,10 +117,25 @@ const AddressListing = (props) => {
               <Image
                 source={Images.pencil}
                 resizeMode={"contain"}
-                style={styles.icon}
+                style={styles.editIcon}
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => deleteAddress(item.id)}>
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert(Strings.Delete_address_alert, null, [
+                  {
+                    text: Strings.Ok,
+                    onPress: () => {
+                      deleteAddress(item.id);
+                    },
+                  },
+                  {
+                    text: Strings.Cancel,
+                    onPress: () => {},
+                  },
+                ]);
+              }}
+            >
               <Image
                 source={Images.delete}
                 resizeMode={"contain"}
@@ -148,7 +176,8 @@ const AddressListing = (props) => {
   };
   return (
     <View style={styles.container}>
-      <Header navigation={props.navigation} isBack isRightIcon={false} />
+      <Header navigation={props.navigation} isBack />
+      {/* <Header navigation={props.navigation} isBack isRightIcon={false} /> */}
       <Loader2 modalVisible={isShowLoader} />
       <View style={styles.headerView}>
         <Text style={styles.headerText}>{Strings.Addresses}</Text>

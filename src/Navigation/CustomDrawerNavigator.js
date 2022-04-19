@@ -8,6 +8,8 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ScrollView,
+  LogBox,
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -27,6 +29,7 @@ import Strings from "../Utility/Strings";
 // create a component
 const MyComponent = (props) => {
   const [listview, setlistview] = useState(false);
+  const [subCat, setSubCat] = useState(null);
   const [isShowLoader, setLoader] = useState(false);
   const [loginInfo, setLoginInfo] = useState("");
   const [data, setData] = useState([]);
@@ -35,6 +38,7 @@ const MyComponent = (props) => {
     initialCalls();
     APICall();
     getSelectedStore();
+    LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
   }, []);
 
   const initialCalls = async () => {
@@ -60,6 +64,7 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
+          console.log("res:---", res);
           setData(res.data.items);
         }
       })
@@ -115,92 +120,168 @@ const MyComponent = (props) => {
         </TouchableOpacity>
       </View>
       <View style={styles.lineView} />
+
       <View style={styles.body}>
-        <TouchableOpacity
-          onPress={() => setlistview(!listview)}
-          style={[
-            styles.categoryButton,
-            { backgroundColor: listview ? Colors.pinkBack : Colors.white },
-          ]}
+        <ScrollView
+          overScrollMode="never"
+          bounces={false}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          nestedScrollEnabled={true}
         >
-          <Text
+          <TouchableOpacity
+            onPress={() => setlistview(!listview)}
             style={[
-              styles.textToggleView,
-              { color: listview ? Colors.Background : Colors.forgotText },
+              styles.categoryButton,
+              { backgroundColor: listview ? Colors.pinkBack : Colors.white },
             ]}
           >
-            {Strings.ShopbyCategories}
-          </Text>
-          <TouchableOpacity onPress={() => setlistview(!listview)}>
-            <MaterialIcons
-              name={listview ? "keyboard-arrow-up" : "keyboard-arrow-down"}
-              color={listview ? Colors.Background : Colors.forgotText}
-              size={20}
+            <Text
+              style={[
+                styles.textToggleView,
+                { color: listview ? Colors.Background : Colors.forgotText },
+              ]}
+            >
+              {Strings.ShopbyCategories}
+            </Text>
+            <TouchableOpacity onPress={() => setlistview(!listview)}>
+              <MaterialIcons
+                name={listview ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+                color={listview ? Colors.Background : Colors.forgotText}
+                size={20}
+              />
+            </TouchableOpacity>
+          </TouchableOpacity>
+          {/* {listview ? (
+            <FlatList
+              data={data}
+              renderItem={renderItem}
+              // showsVerticalScrollIndicator={false}
+              // nestedScrollEnabled={false}
+              // style={{ height: Size.FindSize(250) }}
+              bounces={false}
             />
+          ) : null} */}
+          {listview
+            ? data.map((item) => (
+                <View>
+                  <TouchableOpacity
+                    onPress={() => {
+                      Navigator.navigate(Route.ShopCategoryWise, {
+                        categoryDetail: item,
+                      });
+                    }}
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginHorizontal: Size.FindSize(20),
+                    }}
+                  >
+                    <Text style={[styles.textView]}>{item.name}</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        if (subCat == item.name) {
+                          setSubCat(null);
+                        } else {
+                          setSubCat(item.name);
+                        }
+                      }}
+                    >
+                      <MaterialIcons
+                        name={
+                          subCat == item.name
+                            ? "keyboard-arrow-up"
+                            : "keyboard-arrow-down"
+                        }
+                        color={
+                          subCat == item.name
+                            ? Colors.Background
+                            : Colors.forgotText
+                        }
+                        size={20}
+                      />
+                    </TouchableOpacity>
+                  </TouchableOpacity>
+                  {item.children.length > 0 && subCat == item.name
+                    ? item.children.map((subItem) => (
+                        <TouchableOpacity
+                          onPress={() => {
+                            Navigator.navigate(Route.ShopCategoryWise, {
+                              categoryDetail: subItem,
+                            });
+                          }}
+                        >
+                          <Text
+                            style={[
+                              styles.textView,
+                              { marginLeft: Size.FindSize(50) },
+                            ]}
+                          >
+                            {subItem.name}
+                          </Text>
+                        </TouchableOpacity>
+                      ))
+                    : null}
+                </View>
+              ))
+            : null}
+
+          <TouchableOpacity onPress={() => Navigator.navigate(Route.Recipes)}>
+            <Text style={styles.textView}>{Strings.Recipes}</Text>
           </TouchableOpacity>
-        </TouchableOpacity>
-        {listview ? (
-          <FlatList
-            data={data}
-            renderItem={renderItem}
-            showsVerticalScrollIndicator={false}
-            // style={{ height: Size.FindSize(250) }}
-            bounces={false}
-          />
-        ) : null}
-        <TouchableOpacity onPress={() => Navigator.navigate(Route.Recipes)}>
-          <Text style={styles.textView}>{Strings.Recipes}</Text>
-        </TouchableOpacity>
-        {loginInfo ? (
-          <TouchableOpacity onPress={() => Navigator.navigate(Route.Offers)}>
-            <Text style={styles.textView}>{Strings.Offers}</Text>
+          {loginInfo ? (
+            <TouchableOpacity onPress={() => Navigator.navigate(Route.Offers)}>
+              <Text style={styles.textView}>{Strings.Offers}</Text>
+            </TouchableOpacity>
+          ) : null}
+          <TouchableOpacity
+            onPress={() => Navigator.navigate(Route.StoreLocator)}
+          >
+            <Text style={styles.textView}>{Strings.StoreLocator}</Text>
           </TouchableOpacity>
-        ) : null}
-        <TouchableOpacity
-          onPress={() => Navigator.navigate(Route.StoreLocator)}
-        >
-          <Text style={styles.textView}>{Strings.StoreLocator}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => Navigator.navigate(Route.AboutUs, { type: 1 })}
-        >
-          <Text style={styles.textView}>{Strings.AboutUs}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-        //onPress={() => Navigator.navigate(Route.AboutUs, { type: 1 })}
-        >
-          <Text style={styles.textView}>{Strings.ContactUs}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+          <TouchableOpacity
+            onPress={() => Navigator.navigate(Route.AboutUs, { type: 1 })}
+          >
+            <Text style={styles.textView}>{Strings.AboutUs}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+          //onPress={() => Navigator.navigate(Route.AboutUs, { type: 1 })}
+          >
+            <Text style={styles.textView}>{Strings.ContactUs}</Text>
+          </TouchableOpacity>
+          {/* <TouchableOpacity
         //onPress={() => Navigator.navigate(Route.AboutUs, { type: 2 })}
         >
           <Text style={styles.textView}>{Strings.CorporateInquiry}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => Navigator.navigate(Route.AboutUs, { type: 3 })}
-        >
-          <Text style={styles.textView}>{Strings.Careers}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => Navigator.navigate(Route.AboutUs, { type: 4 })}
-        >
-          <Text style={styles.textView}>{Strings.ReturnRefund}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => Navigator.navigate(Route.AboutUs, { type: 5 })}
-        >
-          <Text style={styles.textView}>{Strings.ShippingPolicy}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => Navigator.navigate(Route.AboutUs, { type: 6 })}
-        >
-          <Text style={styles.textView}>{Strings.TermsConditions}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => Navigator.navigate(Route.AboutUs, { type: 7 })}
-        >
-          <Text style={styles.textView}>{Strings.PrivacyPolicy}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
+          <TouchableOpacity
+            onPress={() => Navigator.navigate(Route.AboutUs, { type: 3 })}
+          >
+            <Text style={styles.textView}>{Strings.Careers}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => Navigator.navigate(Route.AboutUs, { type: 4 })}
+          >
+            <Text style={styles.textView}>{Strings.ReturnRefund}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => Navigator.navigate(Route.AboutUs, { type: 5 })}
+          >
+            <Text style={styles.textView}>{Strings.ShippingPolicy}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => Navigator.navigate(Route.AboutUs, { type: 6 })}
+          >
+            <Text style={styles.textView}>{Strings.TermsConditions}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => Navigator.navigate(Route.AboutUs, { type: 7 })}
+          >
+            <Text style={styles.textView}>{Strings.PrivacyPolicy}</Text>
+          </TouchableOpacity>
+        </ScrollView>
       </View>
     </View>
   );

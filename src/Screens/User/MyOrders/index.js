@@ -48,7 +48,8 @@ const MyOrder = (props) => {
 
   return (
     <View style={styles.container}>
-      <Header navigation={props.navigation} isBack isRightIcon={false} />
+      <Header navigation={props.navigation} isBack  />
+      {/* <Header navigation={props.navigation} isBack isRightIcon={false} /> */}
       <Loader2 modalVisible={isShowLoader} />
       <Text style={styles.headerText}>{Strings.My_Order}</Text>
       <FlatList
