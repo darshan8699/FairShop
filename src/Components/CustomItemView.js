@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import APICallService from "../API/APICallService";
-import { Regular } from "../Assets/fonts";
+import { Regular, SemiBold } from "../Assets/fonts";
 import { Images } from "../Assets/images";
 import { Route } from "../Navigation/Routes";
 import Colors from "../Utility/Colors";
@@ -31,6 +31,7 @@ import Navigator from "../Utility/Navigator";
 import { Size } from "../Utility/sizes";
 import Strings from "../Utility/Strings";
 import { EventRegister } from "react-native-event-listeners";
+import CountryFlag from "react-native-country-flag";
 
 // create a component
 const CustomItemView = (props) => {
@@ -154,7 +155,10 @@ const CustomItemView = (props) => {
         showErrorMessage(err.message);
       });
   };
-
+  console.log("props.item", props.item);
+  function percentage(partialValue, totalValue) {
+    return Math.round(100 - (100 * partialValue) / totalValue);
+  }
   return (
     <TouchableOpacity
       style={[styles.list, props.listView]}
@@ -200,14 +204,34 @@ const CustomItemView = (props) => {
             />
           )}
         </TouchableOpacity>
-
+        {props.item.rsp < props.item.mrp && (
+          <TouchableOpacity
+            style={{
+              height: Size.FindSize(20),
+              width: Size.FindSize(60),
+              backgroundColor: Colors.green,
+              marginLeft: Size.FindSize(15),
+              position: "absolute",
+              top: Size.FindSize(135),
+              borderRadius: Size.FindSize(5),
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: Colors.white,
+                fontSize: Size.FindSize(12),
+                fontFamily: SemiBold,
+              }}
+            >
+              {percentage(props.item.rsp, props.item.mrp) + "% off"}
+            </Text>
+          </TouchableOpacity>
+        )}
         <View style={styles.flagView}>
           {props?.item?.country_of_origin ? (
-            <Image
-              source={Images.flag}
-              resizeMode="contain"
-              style={styles.flag}
-            />
+            <CountryFlag isoCode={props?.item?.country_of_origin} size={13} />
           ) : null}
           {props.item.veg_non_veg && (
             <Image
@@ -223,7 +247,12 @@ const CustomItemView = (props) => {
         <Text style={styles.name} numberOfLines={1} ellipsizeMode={"tail"}>
           {props.item.item_name}
         </Text>
-        <Text style={styles.price}>₹{props.item.mrp}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Text style={styles.price}>₹{props.item.rsp}</Text>
+          {props.item.rsp < props.item.mrp && (
+            <Text style={styles.price1}>₹{props.item.mrp}</Text>
+          )}
+        </View>
         <TouchableOpacity
           style={styles.cartView}
           onPress={() => addToCart(props.item)}
@@ -262,8 +291,10 @@ const styles = StyleSheet.create({
     shadowRadius: Platform.OS == "ios" ? 2 : 1,
   },
   item: {
-    height: Size.FindSize(100),
-    width: Size.FindSize(180),
+    // height: Size.FindSize(100),
+    // width: Size.FindSize(180),
+    height: Size.FindSize(120),
+    width: Size.FindSize(200),
     alignSelf: "center",
     borderTopLeftRadius: Size.FindSize(10),
     borderTopRightRadius: Size.FindSize(10),
@@ -287,6 +318,7 @@ const styles = StyleSheet.create({
     marginLeft: Size.FindSize(7),
   },
   flagView: {
+    alignItems: "center",
     justifyContent: "flex-end",
     flexDirection: "row",
     paddingRight: Size.FindSize(7),
@@ -328,6 +360,12 @@ const styles = StyleSheet.create({
     fontFamily: Regular,
     fontSize: Size.FindSize(16),
     alignSelf: "center",
+  },
+  price1: {
+    textDecorationLine: "line-through",
+    color: Colors.forgotText,
+    fontSize: Size.FindSize(15),
+    fontFamily: Regular,
   },
 });
 

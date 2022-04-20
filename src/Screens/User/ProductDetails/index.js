@@ -8,6 +8,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  ImageBackground,
 } from "react-native";
 import { EventRegister } from "react-native-event-listeners";
 import APICallService from "../../../API/APICallService";
@@ -34,7 +35,7 @@ import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
-
+import CountryFlag from "react-native-country-flag";
 // create a component
 const MyComponent = (props) => {
   const [currentindex, setcurrentindex] = useState(0);
@@ -340,12 +341,28 @@ const MyComponent = (props) => {
             )}
             {productData.country_of_origin && (
               <View style={styles.flagView}>
-                <Image
+                {/* <Image
                   source={Images.circleFlag}
                   style={styles.circleFlag}
                   resizeMode={"contain"}
-                />
-                <Text style={styles.flagText}>Origin : {"India"}</Text>
+                /> */}
+                <ImageBackground
+                  source={Images.flagCircle}
+                  style={{
+                    height: Size.FindSize(58),
+                    width: Size.FindSize(58),
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <CountryFlag
+                    isoCode={productData.country_of_origin}
+                    size={18}
+                  />
+                </ImageBackground>
+                <Text style={styles.flagText}>
+                  Origin : {productData.country_of_origin}
+                </Text>
               </View>
             )}
           </View>

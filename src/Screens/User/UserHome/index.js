@@ -27,6 +27,7 @@ import {
   NO_IMAGE_URL,
   OFFERS,
   WHISHLIST,
+  CATEGORY_DETAILS,
 } from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
@@ -277,12 +278,32 @@ const MyComponent = (props) => {
     </TouchableOpacity>
   );
 
+  const clickOnPopularCategory = (item) => {
+    setLoader(true);
+    const apiClass = new APICallService(CATEGORY_DETAILS, item);
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          Navigator.navigate(Route.ShopCategoryWise, {
+            categoryDetail: { slug: item, name: res.data.item.name },
+          });
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        // showErrorMessage(err.message);
+      });
+  };
   const renderPopularCategory = ({ item, index }) => (
-    <Image
-      key={index}
-      source={{ uri: item?.image[0]?.url }}
-      style={styles.popularCatImage}
-    />
+    <TouchableOpacity onPress={() => clickOnPopularCategory(item.id)}>
+      <Image
+        key={index}
+        source={{ uri: item?.image[0]?.url }}
+        style={styles.popularCatImage}
+      />
+    </TouchableOpacity>
   );
 
   const renderWhereShop = ({ item, index }) => (
