@@ -169,5 +169,7 @@ export const Strings = {
 
   OrderPlacedSuccessfully: "Order Placed Successfully",
   ContinueShopping: "Continue Shopping",
+  TopPickYou: "Top Picks for You",
+  TopSellProduct: "Top Selling Products",
 };
 export default Strings;

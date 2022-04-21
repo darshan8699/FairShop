@@ -142,7 +142,7 @@ export default styles = StyleSheet.create({
   buyText: {
     color: Colors.black,
     fontFamily: Regular,
-    fontSize: Size.FindSize(22),
+    fontSize: Size.FindSize(20),
     alignSelf: "center",
   },
   cart: {
@@ -154,7 +154,7 @@ export default styles = StyleSheet.create({
     marginLeft: Size.FindSize(5),
     color: Colors.white,
     fontFamily: Regular,
-    fontSize: Size.FindSize(22),
+    fontSize: Size.FindSize(20),
     alignSelf: "center",
   },
   favView: {

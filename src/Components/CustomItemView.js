@@ -155,7 +155,6 @@ const CustomItemView = (props) => {
         showErrorMessage(err.message);
       });
   };
-  console.log("props.item", props.item);
   function percentage(partialValue, totalValue) {
     return Math.round(100 - (100 * partialValue) / totalValue);
   }

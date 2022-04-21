@@ -47,10 +47,13 @@ export const SETTING_REFUND_POLICY =
 export const SETTING_TERMSANDCONDITIONS =
   "/settings/pages/terms-and-conditions" + " " + GET;
 export const SETTING_CAREERS = "/settings/pages/careers" + " " + GET;
-export const HOMEPAGE_NEW_PRODUCT = "/product-homepage-new" + " " + GET;
-export const HOMEPAGE_POPULAR_PRODUCT = "/product-homepage-popular" + " " + GET;
+export const HOMEPAGE_NEW_PRODUCT =
+  "/product-homepage-new" + " " + GET_URL_PARAMS;
+export const HOMEPAGE_POPULAR_PRODUCT =
+  "/product-homepage-popular" + " " + GET_URL_PARAMS;
 export const CATEGORY = "/category" + " " + GET_URL_PARAMS;
-export const HOMEPAGE_TOP_PICK = "/product-homepage-top-pick" + " " + GET;
+export const HOMEPAGE_TOP_PICK =
+  "/product-homepage-top-pick" + " " + GET_URL_PARAMS;
 export const PRODUCT_DETAILS = "/product" + " " + GET_ID_PARAMS;
 export const STORE_LOCATOR = "/store" + " " + GET_URL_PARAMS;
 export const WHISHLIST = "/wishlist" + " " + GET_URL_PARAMS;
