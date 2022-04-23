@@ -171,5 +171,8 @@ export const Strings = {
   ContinueShopping: "Continue Shopping",
   TopPickYou: "Top Picks for You",
   TopSellProduct: "Top Selling Products",
+  Summary: "Summary",
+  youSave: "You save",
+  Apply: "Apply",
 };
 export default Strings;

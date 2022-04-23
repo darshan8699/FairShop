@@ -211,7 +211,7 @@ const CustomItemView = (props) => {
               backgroundColor: Colors.green,
               marginLeft: Size.FindSize(15),
               position: "absolute",
-              top: Size.FindSize(135),
+              top: Size.FindSize(145),
               borderRadius: Size.FindSize(5),
               justifyContent: "center",
               alignItems: "center",

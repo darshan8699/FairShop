@@ -79,7 +79,6 @@ const MyComponent = (props) => {
           setProductData(res.data.item);
           setImageArr(res.data.item.images);
           if (res.data.item.images) {
-            console.log("inner");
             setcurrentImage(res.data.item.images[0].url);
           }
         }
@@ -228,6 +227,9 @@ const MyComponent = (props) => {
       }
     });
   };
+  function percentage(partialValue, totalValue) {
+    return Math.round(100 - (100 * partialValue) / totalValue);
+  }
 
   return (
     <View style={styles.container}>
@@ -376,10 +378,10 @@ const MyComponent = (props) => {
               <Text style={styles.discountPrice}>%</Text>
               <View>
                 <Text style={styles.flatDiscountText}>
-                  {productData.offer.description}
+                  {"Flat " + productData.offer.discount + " off"}
                 </Text>
                 <Text style={styles.flatDiscountText1}>
-                  {productData.offer.description}
+                  {"Flat " + productData.offer.discount + " off"}
                 </Text>
               </View>
             </View>

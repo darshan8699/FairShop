@@ -10,6 +10,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  TextInput,
 } from "react-native";
 import { EventRegister } from "react-native-event-listeners";
 import { ScrollView } from "react-native-gesture-handler";
@@ -43,11 +44,14 @@ import { isTextNotEmpty } from "../../../Utility/Validation";
 import styles from "./styles";
 import Navigator from "../../../Utility/Navigator";
 import { Route } from "../../../Navigation/Routes";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Images } from "../../../Assets/images";
 
 // create a component
 const PaymentOrder = (props) => {
   const [loginData, setLoginData] = useState("");
   const [totalPrice, setTotalPrice] = useState(0);
+  const [totalrsp, setTotalrsp] = useState(0);
   const [isShowLoader, setLoader] = useState(false);
   const [cartList, setCartList] = useState([]);
   const [addressList, setAddressList] = useState([]);
@@ -69,6 +73,7 @@ const PaymentOrder = (props) => {
   const [billingCity, setBillingCity] = useState("");
   const [billingState, setBillingState] = useState("");
   const [billingPincode, setBillingPincode] = useState("");
+  const [promoCode, setPromocode] = useState("");
   const isFirstRun = useRef(true);
 
   useEffect(() => {
@@ -112,11 +117,14 @@ const PaymentOrder = (props) => {
 
   function updateCartTotal(cartList) {
     let cartTotal = 0;
+    let rspTotal = 0;
     Logger.log("updateCartTotal=>", cartList);
     cartList.map((item) => {
       cartTotal = cartTotal + item.mrp * item.quantity;
+      rspTotal = rspTotal + item.rsp * item.quantity;
     });
     setTotalPrice(cartTotal);
+    setTotalrsp(rspTotal);
   }
 
   const APICallGetAddressData = () => {
@@ -127,6 +135,7 @@ const PaymentOrder = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
+          console.log("address res.data:-", res.data);
           setAddressList(res.data.items);
         }
       })
@@ -263,7 +272,7 @@ const PaymentOrder = (props) => {
         showErrorMessage(Strings.error_Address);
         return;
       } else if (billingAddressIndex == null) {
-        showErrorMessage(Strings.error_Address);
+        showErrorMessage(Strings.error_BillingAddress);
         return;
       }
     } else {
@@ -292,7 +301,7 @@ const PaymentOrder = (props) => {
         showErrorMessage(Strings.error_contact_no);
         return;
       } else if (!isTextNotEmpty(billingAddress)) {
-        showErrorMessage(Strings.error_address);
+        showErrorMessage(Strings.error_BillingAddress);
         return;
       } else if (!isTextNotEmpty(billingCity)) {
         showErrorMessage(Strings.error_city);
@@ -480,7 +489,14 @@ const PaymentOrder = (props) => {
           <View style={styles.textView}>
             <Text style={styles.item}>{item.item_name}</Text>
             {/* <Text style={styles.quantityText}>{item.quantity}</Text> */}
-            <Text style={styles.priceText}>₹{item.mrp}</Text>
+            {item.rsp < item.mrp ? (
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={styles.priceText}>₹{item.rsp}</Text>
+                <Text style={styles.priceText1}>₹{item.mrp}</Text>
+              </View>
+            ) : (
+              <Text style={styles.priceText}>₹{item.mrp}</Text>
+            )}
           </View>
         </View>
       </View>
@@ -508,7 +524,7 @@ const PaymentOrder = (props) => {
             <Text style={styles.plusText}>+</Text>
           </TouchableOpacity>
         </View>
-        <Text style={styles.priceText2}>₹{item.mrp * item.quantity}</Text>
+        <Text style={styles.priceText2}>₹{item.rsp * item.quantity}</Text>
       </View>
       <View style={styles.line} />
     </View>
@@ -516,19 +532,21 @@ const PaymentOrder = (props) => {
 
   const renderAddressList = ({ item, index }) => (
     <TouchableOpacity
-      activeOpacity={1}
       style={[
         styles.addressItemView,
         {
           borderColor:
-            addressIndex == index ? Colors.Background : Colors.border,
+            addressIndex == index ? Colors.Background : Colors.button,
           backgroundColor:
             addressIndex == index ? Colors.pinkBack : Colors.white,
         },
       ]}
       onPress={() => setAddressIndex(index)}
     >
-      <View>
+      <View style={styles.nameView}>
+        <View style={styles.backView}>
+          <Text style={styles.typeText}>{item.type}</Text>
+        </View>
         <Text
           style={styles.addressameText}
           numberOfLines={1}
@@ -536,16 +554,103 @@ const PaymentOrder = (props) => {
         >
           {item.name}
         </Text>
-        <Text style={styles.addressText1}>{item.full_name}</Text>
-        <Text style={styles.addressText1}>
-          {item.address_line_1 + ", " + item.address_line_2}
-        </Text>
-        <Text style={styles.addressText1}>{item.landmark}</Text>
-        <Text style={styles.addressText1}>
-          {item.city + ", " + item.state + "-" + item.pincode}
-        </Text>
+        {/* <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <TouchableOpacity
+            onPress={() =>
+              Navigator.navigate(Route.Address, { updateDetails: item.id })
+            }
+          >
+            <Image
+              source={Images.pencil}
+              resizeMode={"contain"}
+              style={styles.editIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              Alert.alert(Strings.Delete_address_alert, null, [
+                {
+                  text: Strings.Ok,
+                  onPress: () => {
+                    deleteAddress(item.id);
+                  },
+                },
+                {
+                  text: Strings.Cancel,
+                  onPress: () => {},
+                },
+              ]);
+            }}
+          >
+            <Image
+              source={Images.delete}
+              resizeMode={"contain"}
+              style={styles.icon1}
+            />
+          </TouchableOpacity>
+        </View> */}
       </View>
+      <View style={styles.infoView}>
+        <View style={styles.userView}>
+          <Image
+            source={Images.profile}
+            resizeMode={"contain"}
+            style={styles.usericon}
+          />
+          <Text style={styles.text1}>{item.full_name}</Text>
+        </View>
+        <View style={styles.userView}>
+          <Image
+            source={Images.call}
+            resizeMode={"contain"}
+            style={styles.usericon}
+          />
+          <Text style={styles.text1}>{item.phone}</Text>
+        </View>
+      </View>
+      <Text style={styles.text1}>{item.address_line_1}</Text>
+      <Text style={styles.text1}>{item.address_line_2}</Text>
+      <Text style={styles.text1}>{item.landmark}</Text>
+      <Text style={styles.text1}>
+        {item.city + ", " + item.state + "-" + item.pincode}
+      </Text>
     </TouchableOpacity>
+    // <TouchableOpacity
+    //   activeOpacity={1}
+    //   style={[
+    //     styles.addressItemView,
+    //     {
+    //       borderColor:
+    //         addressIndex == index ? Colors.Background : Colors.border,
+    //       backgroundColor:
+    //         addressIndex == index ? Colors.pinkBack : Colors.white,
+    //     },
+    //   ]}
+    //   onPress={() => setAddressIndex(index)}
+    // >
+    //   <View>
+    //     <Text
+    //       style={styles.addressameText}
+    //       numberOfLines={1}
+    //       ellipsizeMode={"tail"}
+    //     >
+    //       {item.name}
+    //     </Text>
+    //     <Text style={styles.addressText1}>{item.full_name}</Text>
+    //     <Text style={styles.addressText1}>
+    //       {item.address_line_1 + ", " + item.address_line_2}
+    //     </Text>
+    //     <Text style={styles.addressText1}>{item.landmark}</Text>
+    //     <Text style={styles.addressText1}>
+    //       {item.city + ", " + item.state + "-" + item.pincode}
+    //     </Text>
+    //   </View>
+    // </TouchableOpacity>
   );
 
   const renderBillingAddressList = ({ item, index }) => (
@@ -562,7 +667,43 @@ const PaymentOrder = (props) => {
       ]}
       onPress={() => setBillingAddressIndex(index)}
     >
-      <View>
+      <View style={styles.nameView}>
+        <View style={styles.backView}>
+          <Text style={styles.typeText}>{item.type}</Text>
+        </View>
+        <Text
+          style={styles.addressameText}
+          numberOfLines={1}
+          ellipsizeMode={"tail"}
+        >
+          {item.name}
+        </Text>
+      </View>
+      <View style={styles.infoView}>
+        <View style={styles.userView}>
+          <Image
+            source={Images.profile}
+            resizeMode={"contain"}
+            style={styles.usericon}
+          />
+          <Text style={styles.text1}>{item.full_name}</Text>
+        </View>
+        <View style={styles.userView}>
+          <Image
+            source={Images.call}
+            resizeMode={"contain"}
+            style={styles.usericon}
+          />
+          <Text style={styles.text1}>{item.phone}</Text>
+        </View>
+      </View>
+      <Text style={styles.text1}>{item.address_line_1}</Text>
+      <Text style={styles.text1}>{item.address_line_2}</Text>
+      <Text style={styles.text1}>{item.landmark}</Text>
+      <Text style={styles.text1}>
+        {item.city + ", " + item.state + "-" + item.pincode}
+      </Text>
+      {/* <View>
         <Text
           style={styles.addressameText}
           numberOfLines={1}
@@ -578,7 +719,7 @@ const PaymentOrder = (props) => {
         <Text style={styles.addressText1}>
           {item.city + ", " + item.state + "-" + item.pincode}
         </Text>
-      </View>
+      </View> */}
     </TouchableOpacity>
   );
 
@@ -605,7 +746,6 @@ const PaymentOrder = (props) => {
         placeHolder={"+91"}
         isPhone
       />
-
       <CustomText name={Strings.Address} marginTop={Size.FindSize(25)} />
       <CustomInput
         onChangeText={(text) => setShippingAddress(text)}
@@ -702,14 +842,14 @@ const PaymentOrder = (props) => {
       <Header navigation={props.navigation} isBack />
       {/* <Header navigation={props.navigation} isRightIcon={false} isBack /> */}
       <Loader2 modalVisible={isShowLoader} />
-
-      <ScrollView
+      <KeyboardAwareScrollView
         overScrollMode="never"
         bounces={false}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
         nestedScrollEnabled={true}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          overflow: "hidden",
+        }}
       >
         <View style={{}}>
           <Text style={styles.headerText}>{Strings.CheckOut}</Text>
@@ -852,6 +992,14 @@ const PaymentOrder = (props) => {
               <Text style={styles.subTotalPrice}>₹{totalPrice}</Text>
             </View>
             <View style={styles.subTotalView}>
+              <Text style={styles.subTotalText}>{Strings.youSave}</Text>
+              <Text style={styles.discountText}>
+                {totalPrice != totalrsp
+                  ? " - ₹" + (totalPrice - totalrsp)
+                  : "₹0"}
+              </Text>
+            </View>
+            <View style={styles.subTotalView}>
               <Text style={styles.subTotalText}>{Strings.TaxableAmount}</Text>
               <Text style={styles.subTotalPrice}>₹{totalPrice}</Text>
             </View>
@@ -867,6 +1015,23 @@ const PaymentOrder = (props) => {
               <Text style={styles.subTotalText}>{Strings.IGST}</Text>
               <Text style={styles.subTotalPrice}>₹{0}</Text>
             </View>
+            <View
+              style={{
+                flexDirection: "row",
+                marginHorizontal: Size.FindSize(15),
+                marginVertical: Size.FindSize(10),
+              }}
+            >
+              <TextInput
+                style={styles.promocodeInput}
+                placeholder={"Enter Promocode"}
+                onChangeText={(text) => setPromocode(text)}
+                value={promoCode}
+              />
+              <TouchableOpacity style={styles.applyButton}>
+                <Text style={styles.applyText}>{Strings.Apply}</Text>
+              </TouchableOpacity>
+            </View>
             <View style={styles.line} />
             <View style={styles.subTotalView}>
               <Text
@@ -874,7 +1039,7 @@ const PaymentOrder = (props) => {
               >
                 {Strings.TotalAmount}
               </Text>
-              <Text style={styles.TotalPrice}>₹{totalPrice}</Text>
+              <Text style={styles.TotalPrice}>₹{totalrsp}</Text>
             </View>
             <TouchableOpacity
               style={styles.checkOutView}
@@ -884,7 +1049,7 @@ const PaymentOrder = (props) => {
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </View>
   );
 };

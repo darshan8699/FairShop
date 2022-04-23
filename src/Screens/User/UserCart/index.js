@@ -21,12 +21,16 @@ import Navigator from "../../../Utility/Navigator";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
+import { ScrollView } from "react-native-gesture-handler";
+
 // create a component
 const MyComponent = (props) => {
   const [loginData, setLoginData] = useState("");
   const [totalPrice, setTotalPrice] = useState(0);
   const [isShowLoader, setLoader] = useState(false);
   const [cartList, setCartList] = useState([]);
+  const [totalrsp, setTotalrsp] = useState(0);
+
   const isFirstRun = useRef(true);
 
   useEffect(() => {
@@ -91,10 +95,13 @@ const MyComponent = (props) => {
 
   function updateCartTotal(cartList) {
     let cartTotal = 0;
+    let rspTotal = 0;
     Logger.log("updateCartTotal=>", cartList);
     cartList.map((item) => {
+      rspTotal = rspTotal + item.rsp * item.quantity;
       cartTotal = cartTotal + item.mrp * item.quantity;
     });
+    setTotalrsp(rspTotal);
     setTotalPrice(cartTotal);
   }
 
@@ -166,7 +173,14 @@ const MyComponent = (props) => {
           <View style={styles.textView}>
             <Text style={styles.item}>{item.item_name}</Text>
             <Text style={styles.quantityText}>{item.quantity}</Text>
-            <Text style={styles.priceText}>₹{item.mrp}</Text>
+            {item.rsp < item.mrp ? (
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text style={styles.priceText}>₹{item.rsp}</Text>
+                <Text style={styles.priceText1}>₹{item.mrp}</Text>
+              </View>
+            ) : (
+              <Text style={styles.priceText}>₹{item.mrp}</Text>
+            )}
           </View>
         </View>
         <View style={styles.countPanelView}>
@@ -195,19 +209,70 @@ const MyComponent = (props) => {
     <View style={styles.container}>
       <Header navigation={props.navigation} />
       <Loader2 modalVisible={isShowLoader} />
-      <Text style={styles.headerText}>{Strings.My_Cart}</Text>
-      <FlatList
+      <ScrollView
+        overScrollMode="never"
+        bounces={false}
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        data={cartList}
-        renderItem={renderCartItem}
-      />
-      <NoDataView
-        isVisible={cartList.length == 0}
-        title={Strings.No_cart_found}
-        containerStyle={{ height: Size.height / 2.5 }}
-        isLoader={isShowLoader}
-      />
-      {cartList.length > 0 && (
+        showsHorizontalScrollIndicator={false}
+        nestedScrollEnabled={true}
+      >
+        <Text style={styles.headerText}>{Strings.My_Cart}</Text>
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          data={cartList}
+          renderItem={renderCartItem}
+        />
+        <NoDataView
+          isVisible={cartList.length == 0}
+          title={Strings.No_cart_found}
+          containerStyle={{ height: Size.height / 2.5 }}
+          isLoader={isShowLoader}
+        />
+        <Text style={styles.summaryText}>{Strings.Summary}</Text>
+        <View style={styles.line} />
+        <View style={styles.subTotalView}>
+          <Text style={styles.subTotalText}>{Strings.Subtotal}</Text>
+          <Text style={styles.subTotalPrice}>₹{totalPrice}</Text>
+        </View>
+        <View style={styles.subTotalView}>
+          <Text style={styles.subTotalText}>{Strings.youSave}</Text>
+          <Text style={styles.discountText}>
+            {totalPrice != totalrsp ? " - ₹" + (totalPrice - totalrsp) : "₹0"}
+          </Text>
+        </View>
+        <View style={styles.subTotalView}>
+          <Text style={styles.subTotalText}>{Strings.TaxableAmount}</Text>
+          <Text style={styles.subTotalPrice}>₹{totalPrice}</Text>
+        </View>
+        <View style={styles.subTotalView}>
+          <Text style={styles.subTotalText}>{Strings.CGST}</Text>
+          <Text style={styles.subTotalPrice}>₹{0}</Text>
+        </View>
+        <View style={styles.subTotalView}>
+          <Text style={styles.subTotalText}>{Strings.SGST}</Text>
+          <Text style={styles.subTotalPrice}>₹{0}</Text>
+        </View>
+        <View style={styles.subTotalView}>
+          <Text style={styles.subTotalText}>{Strings.IGST}</Text>
+          <Text style={styles.subTotalPrice}>₹{0}</Text>
+        </View>
+        <View style={styles.line} />
+        <View style={styles.subTotalView}>
+          <Text style={[styles.subTotalText, { fontSize: Size.FindSize(20) }]}>
+            {Strings.TotalAmount}
+          </Text>
+          <Text style={styles.TotalPrice}>₹{totalrsp}</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.checkOutView}
+          // onPress={() => checkOutButton()}
+          onPress={() => Navigator.navigate(Route.PaymentOrder)}
+        >
+          <Text style={styles.checkOutText}>{Strings.CheckOut}</Text>
+        </TouchableOpacity>
+      </ScrollView>
+      {/* {cartList.length > 0 && (
         <View>
           <View style={styles.subTotalView}>
             <Text style={styles.subTotalText}>{Strings.Subtotal}</Text>
@@ -221,7 +286,7 @@ const MyComponent = (props) => {
             <Text style={styles.checkOutText}>{Strings.CheckOut}</Text>
           </TouchableOpacity>
         </View>
-      )}
+      )} */}
     </View>
   );
 };

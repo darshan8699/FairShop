@@ -68,19 +68,16 @@ const MyComponent = (props) => {
       APICallOffers();
       APICallBanner();
       GetTopPickData();
+      getTopPickTitle();
     }
-    getTopPickTitle();
   });
   const getTopPickTitle = async () => {
     const jsonValue = await AsyncStorage.getItem(PREF_LOGIN_INFO);
     const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
-    console.log("loginInfo:--", loginInfo);
     setLoginStatus(loginInfo);
   };
   const GetTopPickData = async () => {
     const id = await AsyncStorage.getItem(PREF_STORE_ID);
-    console.log("store id :--", id);
-
     setLoader(true);
     const apiClass = new APICallService(HOMEPAGE_TOP_PICK, {
       store_id: id,
@@ -88,7 +85,6 @@ const MyComponent = (props) => {
     apiClass
       .callAPI()
       .then(async function (res) {
-        console.log("Top Pick Product res:-", res);
         setLoader(false);
         if (validateResponse(res)) {
           setTopPickData(res.data.items);
@@ -102,8 +98,6 @@ const MyComponent = (props) => {
 
   const GetPopularProductData = async () => {
     const id = await AsyncStorage.getItem(PREF_STORE_ID);
-    console.log("store id :--", id);
-
     setLoader(true);
     const apiClass = new APICallService(HOMEPAGE_POPULAR_PRODUCT, {
       store_id: id,
@@ -124,7 +118,6 @@ const MyComponent = (props) => {
   };
   const GetNewProductData = async () => {
     const id = await AsyncStorage.getItem(PREF_STORE_ID);
-    console.log("store id :--", id);
     setLoader(true);
     const apiClass = new APICallService(HOMEPAGE_NEW_PRODUCT, {
       store_id: id,

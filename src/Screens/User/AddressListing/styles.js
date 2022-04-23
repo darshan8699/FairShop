@@ -104,4 +104,11 @@ export default styles = StyleSheet.create({
     marginRight: Size.FindSize(7),
     tintColor: Colors.button,
   },
+  listView1: {
+    paddingVertical: Size.FindSize(20),
+    paddingHorizontal: Size.FindSize(15),
+    borderRadius: Size.FindSize(10),
+    borderWidth: Size.FindSize(1),
+    marginBottom: Size.FindSize(15),
+  },
 });

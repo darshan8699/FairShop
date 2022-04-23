@@ -35,6 +35,7 @@ export default styles = StyleSheet.create({
     color: Colors.headerText,
     fontFamily: Regular,
     fontSize: Size.FindSize(14),
+    width: Size.FindSize(175),
   },
   quantityText: {
     color: Colors.cookBorder,
@@ -45,6 +46,13 @@ export default styles = StyleSheet.create({
     color: Colors.Background,
     fontFamily: Regular,
     fontSize: Size.FindSize(16),
+  },
+  priceText1: {
+    textDecorationLine: "line-through",
+    color: Colors.forgotText,
+    fontSize: Size.FindSize(14),
+    fontFamily: Regular,
+    marginLeft: Size.FindSize(5),
   },
   textView: {
     marginLeft: Size.FindSize(15),
@@ -108,13 +116,32 @@ export default styles = StyleSheet.create({
   },
   subTotalText: {
     fontFamily: Regular,
-    fontSize: Size.FindSize(16),
+    // fontSize: Size.FindSize(16),
+    fontSize: Size.FindSize(14),
     color: Colors.headerText,
   },
   subTotalPrice: {
     fontFamily: Regular,
+    // fontSize: Size.FindSize(24),
+    fontSize: Size.FindSize(14),
+    color: Colors.Background,
+  },
+  TotalPrice: {
+    fontFamily: Regular,
     fontSize: Size.FindSize(24),
     color: Colors.Background,
+  },
+  discountText: {
+    fontFamily: Regular,
+    fontSize: Size.FindSize(14),
+    color: Colors.green,
+  },
+  summaryText: {
+    fontFamily: Regular,
+    fontSize: Size.FindSize(16),
+    color: Colors.black,
+    marginHorizontal: Size.FindSize(15),
+    marginTop: Size.FindSize(20),
   },
   checkOutView: {
     marginHorizontal: Size.FindSize(15),
