@@ -23,18 +23,18 @@ const Loader2 = (props) => {
           backgroundColor: "rgba(0,0,0,0.3)",
         }}
       >
-        {/* <ActivityIndicator size="large" color={Colors.Background} /> */}
+        <ActivityIndicator size="large" color={Colors.Background} />
         {/* <LottieView
           source={{
             uri: "https://assets5.lottiefiles.com/packages/lf20_bxovyc6c.json",
           }}
         /> */}
-        <LottieView
+        {/* <LottieView
           source={require("../Assets/imageuploading.json")}
           loop={true}
           autoPlay={true}
           style={{ backgroundColor: "rgba(0,0,0,0.3)" }}
-        />
+        /> */}
       </View>
     </Modal>
   );

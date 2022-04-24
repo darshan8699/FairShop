@@ -1,22 +1,22 @@
-import {StyleSheet} from 'react-native';
-import {Size} from '../../../Utility/sizes';
-import Colors from '../../../Utility/Colors';
+import { StyleSheet } from "react-native";
+import { Size } from "../../../Utility/sizes";
+import Colors from "../../../Utility/Colors";
 
 export default styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.Background,
-    alignItems: 'center',
+    alignItems: "center",
   },
   logo: {
-    height: Size.FindSize(200),
-    width: Size.FindSize(300),
-    marginTop: Size.FindSize(200),
+    // height: Size.FindSize(200),
+    // width: Size.FindSize(300),
+    marginTop: -Size.FindSize(60),
   },
   fruits: {
     width: Size.width + Size.FindSize(80),
     height: Size.FindSize(250),
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
   },
 });

@@ -50,15 +50,11 @@ const MyComponent = (props) => {
   const [isShowLoader, setLoader] = useState(false);
   const [topPickData, setTopPickData] = useState([]);
   const [loginStatus, setLoginStatus] = useState(null);
+  const [prefStoreId, setPrefStoreId] = useState("");
 
-  const BrowseCategory = [
-    Images.test3,
-    Images.test3,
-    Images.test3,
-    Images.test3,
-  ];
   const isFirstRun = useRef(true);
   useEffect(() => {
+    getPrefId();
     if (isFirstRun.current) {
       isFirstRun.current = false;
       APICallWishList();
@@ -70,17 +66,35 @@ const MyComponent = (props) => {
       GetTopPickData();
       getTopPickTitle();
     }
+
+    const _unsubscribe = props.navigation.addListener("focus", () => {
+      // do something
+      getPrefId();
+      GetPopularProductData();
+      GetNewProductData();
+      GetBrowseCategory();
+      APICallOffers();
+      APICallBanner();
+      GetTopPickData();
+      getTopPickTitle();
+    });
+    return _unsubscribe;
   });
+
+  async function getPrefId() {
+    const id = await AsyncStorage.getItem(PREF_STORE_ID);
+    setPrefStoreId(id);
+  }
+
   const getTopPickTitle = async () => {
     const jsonValue = await AsyncStorage.getItem(PREF_LOGIN_INFO);
     const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
     setLoginStatus(loginInfo);
   };
   const GetTopPickData = async () => {
-    const id = await AsyncStorage.getItem(PREF_STORE_ID);
     setLoader(true);
     const apiClass = new APICallService(HOMEPAGE_TOP_PICK, {
-      store_id: id,
+      store_id: prefStoreId,
     });
     apiClass
       .callAPI()
@@ -91,16 +105,16 @@ const MyComponent = (props) => {
         }
       })
       .catch((err) => {
+        setTopPickData([]);
         setLoader(false);
         showErrorMessage(err.message);
       });
   };
 
   const GetPopularProductData = async () => {
-    const id = await AsyncStorage.getItem(PREF_STORE_ID);
     setLoader(true);
     const apiClass = new APICallService(HOMEPAGE_POPULAR_PRODUCT, {
-      store_id: id,
+      store_id: prefStoreId,
     });
     apiClass
       .callAPI()
@@ -112,15 +126,15 @@ const MyComponent = (props) => {
         }
       })
       .catch((err) => {
+        setPopularData([]);
         setLoader(false);
         showErrorMessage(err.message);
       });
   };
   const GetNewProductData = async () => {
-    const id = await AsyncStorage.getItem(PREF_STORE_ID);
     setLoader(true);
     const apiClass = new APICallService(HOMEPAGE_NEW_PRODUCT, {
-      store_id: id,
+      store_id: prefStoreId,
     });
     apiClass
       .callAPI()
@@ -133,11 +147,16 @@ const MyComponent = (props) => {
       .catch((err) => {
         setLoader(false);
         showErrorMessage(err.message);
+        setNewData([]);
       });
   };
   const GetBrowseCategory = () => {
     setLoader(true);
-    const apiClass = new APICallService(CATEGORY, { limit: -1 });
+
+    const apiClass = new APICallService(CATEGORY, {
+      limit: -1,
+      store_id: prefStoreId,
+    });
     apiClass
       .callAPI()
       .then(async function (res) {
@@ -150,6 +169,7 @@ const MyComponent = (props) => {
       .catch((err) => {
         setLoader(false);
         showErrorMessage(err.message);
+        setCategory([]);
       });
   };
   const APICallOffers = () => {
@@ -166,6 +186,7 @@ const MyComponent = (props) => {
       .catch((err) => {
         setLoader(false);
         // showErrorMessage(err.message);
+        setBestValueOffers([]);
       });
   };
   const APICallBanner = () => {
@@ -335,7 +356,10 @@ const MyComponent = (props) => {
       });
   };
   const renderPopularCategory = ({ item, index }) => (
-    <TouchableOpacity onPress={() => clickOnPopularCategory(item.id)}>
+    <TouchableOpacity
+      activeOpacity={1}
+      onPress={() => clickOnPopularCategory(item.id)}
+    >
       <Image
         key={index}
         source={{ uri: item?.image[0]?.url }}
@@ -427,11 +451,26 @@ const MyComponent = (props) => {
             />
           </ImageBackground>
         )}
-        <View style={styles.BrowseView}>
-          <View style={styles.BrowseTextView}>
-            <Text style={styles.BrowseText}>
-              {loginStatus ? Strings.TopPickYou : Strings.TopSellProduct}
-            </Text>
+
+        {topPickData?.length > 0 && (
+          <View style={styles.BrowseView}>
+            <View style={styles.BrowseTextView}>
+              <Text style={styles.BrowseText}>
+                {loginStatus ? Strings.TopPickYou : Strings.TopSellProduct}
+              </Text>
+            </View>
+            <FlatList
+              data={topPickData.slice(0, 8)}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingRight: Size.FindSize(15),
+                paddingTop: Size.FindSize(5),
+              }}
+              numColumns={2}
+              renderItem={({ item }) => (
+                <CustomItemView item={item} listView={styles.shadow} />
+              )}
+            />
             {topPickData?.length > 8 && (
               <TouchableOpacity
                 style={{ flexDirection: "row" }}
@@ -441,22 +480,23 @@ const MyComponent = (props) => {
               </TouchableOpacity>
             )}
           </View>
-          <FlatList
-            data={topPickData.slice(0, 8)}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingRight: Size.FindSize(15),
-              paddingTop: Size.FindSize(5),
-            }}
-            numColumns={2}
-            renderItem={({ item }) => (
-              <CustomItemView item={item} listView={styles.shadow} />
-            )}
-          />
-        </View>
-        <View style={styles.BrowseView}>
-          <View style={styles.BrowseTextView}>
-            <Text style={styles.BrowseText}>{Strings.BrowseText}</Text>
+        )}
+        {category?.length > 0 && (
+          <View style={styles.BrowseView}>
+            <View style={styles.BrowseTextView}>
+              <Text style={styles.BrowseText}>{Strings.BrowseText}</Text>
+            </View>
+            <FlatList
+              data={category.slice(0, 8)}
+              // horizontal={true}
+              contentContainerStyle={{
+                paddingRight: Size.FindSize(15),
+                marginTop: Size.FindSize(5),
+              }}
+              numColumns={2}
+              renderItem={renderBrowseCategory}
+              showsHorizontalScrollIndicator={false}
+            />
             {category?.length > 8 && (
               <TouchableOpacity
                 style={{ flexDirection: "row" }}
@@ -465,33 +505,37 @@ const MyComponent = (props) => {
                 }}
               >
                 <Text style={styles.viewAll}>{Strings.ViewAll}</Text>
-                {/* <Image
-                source={Images.rightArrow}
-                resizeMode="contain"
-                style={styles.browserightIcon}
-              /> */}
               </TouchableOpacity>
             )}
           </View>
-          <FlatList
-            data={category.slice(0, 8)}
-            // horizontal={true}
-            contentContainerStyle={{
-              paddingRight: Size.FindSize(15),
-              marginTop: Size.FindSize(5),
-            }}
-            numColumns={2}
-            renderItem={renderBrowseCategory}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-        <ImageBackground
-          source={Images.back1}
-          resizeMode="stretch"
-          style={styles.Popularback}
-        >
-          <View style={styles.bestView}>
-            <Text style={styles.bestText}>{Strings.Popular_product}</Text>
+        )}
+
+        {popularData?.length > 0 && (
+          <ImageBackground
+            source={Images.back1}
+            resizeMode="stretch"
+            style={styles.Popularback}
+          >
+            <View style={styles.bestView}>
+              <Text style={styles.bestText}>{Strings.Popular_product}</Text>
+            </View>
+            <FlatList
+              // horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingRight: Size.FindSize(15),
+                marginTop: Size.FindSize(15),
+                // height: Size.FindSize(280),
+              }}
+              numColumns={2}
+              data={popularData.slice(0, 8)}
+              renderItem={({ item }) => (
+                <CustomItemView
+                  item={item}
+                  listView={{ width: Size.width / 2 - Size.FindSize(25) }}
+                />
+              )}
+            />
             {popularData?.length > 8 && (
               <TouchableOpacity
                 onPress={() => {
@@ -501,35 +545,33 @@ const MyComponent = (props) => {
                 <Text style={[styles.viewAll, { color: Colors.white }]}>
                   {Strings.ViewAll}
                 </Text>
-                {/* <Image
-                source={Images.rightArrow}
-                resizeMode="contain"
-                style={styles.rightIcon}
-              /> */}
               </TouchableOpacity>
             )}
-          </View>
-          <FlatList
-            // horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingRight: Size.FindSize(15),
-              marginTop: Size.FindSize(15),
-              // height: Size.FindSize(280),
-            }}
-            numColumns={2}
-            data={popularData.slice(0, 8)}
-            renderItem={({ item }) => (
-              <CustomItemView
-                item={item}
-                listView={{ width: Size.width / 2 - Size.FindSize(25) }}
-              />
-            )}
-          />
-        </ImageBackground>
-        <View style={styles.Popularback}>
-          <View style={styles.BrowseTextView}>
-            <Text style={styles.BrowseText}>{Strings.NewProduct}</Text>
+          </ImageBackground>
+        )}
+
+        {newData?.length > 0 && (
+          <View style={styles.Popularback}>
+            <View style={styles.BrowseTextView}>
+              <Text style={styles.BrowseText}>{Strings.NewProduct}</Text>
+            </View>
+            <FlatList
+              // horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingRight: Size.FindSize(15),
+                paddingTop: Size.FindSize(5),
+              }}
+              numColumns={2}
+              data={newData.slice(0, 8)}
+              renderItem={({ item }) => (
+                <CustomItemView
+                  item={item}
+                  listView={styles.shadow}
+                  // addToWishList={(id) => addToWishList(id)}
+                />
+              )}
+            />
             {newData?.length > 8 && (
               <TouchableOpacity
                 onPress={() => {
@@ -537,56 +579,37 @@ const MyComponent = (props) => {
                 }}
               >
                 <Text style={styles.viewAll}>{Strings.ViewAll}</Text>
-                {/* <Image
-                source={Images.rightArrow}
-                resizeMode="contain"
-                style={styles.browserightIcon}
-              /> */}
               </TouchableOpacity>
             )}
           </View>
-          <FlatList
-            // horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingRight: Size.FindSize(15),
-              paddingTop: Size.FindSize(5),
-            }}
-            numColumns={2}
-            data={newData.slice(0, 8)}
-            renderItem={({ item }) => (
-              <CustomItemView
-                item={item}
-                listView={styles.shadow}
-                // addToWishList={(id) => addToWishList(id)}
-              />
-            )}
-          />
-        </View>
-        <ImageBackground
-          source={Images.redBack}
-          resizeMode="stretch"
-          style={styles.back2}
-        >
-          <View style={styles.bestView}>
-            <Text style={styles.bestText}>{Strings.Popular_category}</Text>
-            <TouchableOpacity>
-              <Image
-                source={Images.rightArrow}
-                resizeMode="contain"
-                style={styles.rightIcon}
-              />
-            </TouchableOpacity>
-          </View>
-          <FlatList
-            data={popularCategory}
-            style={{ paddingTop: Size.FindSize(30) }}
-            renderItem={renderPopularCategory}
-            showsVerticalScrollIndicator={false}
-            nestedScrollEnabled={false}
-            bounces={false}
-          />
-        </ImageBackground>
+        )}
+        {popularCategory?.length > 0 && (
+          <ImageBackground
+            source={Images.redBack}
+            resizeMode="stretch"
+            style={styles.back2}
+          >
+            <View style={styles.bestView}>
+              <Text style={styles.bestText}>{Strings.Popular_category}</Text>
+              {/* <TouchableOpacity>
+                <Image
+                  source={Images.rightArrow}
+                  resizeMode="contain"
+                  style={styles.rightIcon}
+                />
+              </TouchableOpacity> */}
+            </View>
+            <FlatList
+              data={popularCategory}
+              style={{ paddingTop: Size.FindSize(30) }}
+              renderItem={renderPopularCategory}
+              showsVerticalScrollIndicator={false}
+              nestedScrollEnabled={false}
+              bounces={false}
+            />
+          </ImageBackground>
+        )}
+
         <View style={styles.fairshopView}>
           <View style={styles.BrowseTextView}>
             <Text style={styles.BrowseText}>{Strings.Why_Fairshop}</Text>

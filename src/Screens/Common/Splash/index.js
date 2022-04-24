@@ -1,12 +1,11 @@
 //import liraries
-import React, { useEffect, useRef } from "react";
-import { View, Image } from "react-native";
-import styles from "./styles";
+import React, { useEffect } from "react";
+import { Image, View } from "react-native";
+import { Images } from "../../../Assets/images";
 import { Route } from "../../../Navigation/Routes";
 import Navigator from "../../../Utility/Navigator";
-import { Images } from "../../../Assets/images";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Logger from "../../../Utility/Logger";
+import styles from "./styles";
+import LottieView from "lottie-react-native";
 
 // create a component
 const MyComponent = (props) => {
@@ -29,7 +28,13 @@ const MyComponent = (props) => {
   };
   return (
     <View style={styles.container}>
-      <Image source={Images.logo} resizeMode={"contain"} style={styles.logo} />
+      {/* <Image source={Images.logo} resizeMode={"contain"} style={styles.logo} /> */}
+      <LottieView
+        source={require("../../../Assets/imageuploading.json")}
+        loop={false}
+        autoPlay={true}
+        style={styles.logo}
+      />
       <Image
         source={Images.fruits}
         resizeMode={"contain"}
