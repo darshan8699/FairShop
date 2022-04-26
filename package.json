@@ -26,7 +26,7 @@
     "react-native": "0.66.4",
     "react-native-country-flag": "^1.1.6",
     "react-native-date-picker": "^4.1.3",
-    "react-native-element-dropdown": "^1.5.9",
+    "react-native-element-dropdown": "^1.8.10",
     "react-native-event-listeners": "^1.0.7",
     "react-native-exit-app": "^1.1.0",
     "react-native-fast-image": "^8.5.11",
