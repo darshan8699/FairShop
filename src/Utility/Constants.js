@@ -7,7 +7,8 @@ export const ALL_WISHLIST = "ALL_WISHLIST";
 export const ALL_CART = "ALL_CART";
 export const BASE_URL = "https://dev.fairshop.co.in/backend/public/api";
 export const NO_IMAGE_URL =
-  "https://dev.fairshop.co.in/_next/static/image/images/imgfallback.b48a540a7337fb7c68443ab63b361162.png";
+  // "https://dev.fairshop.co.in/_next/static/image/images/imgfallback.b48a540a7337fb7c68443ab63b361162.png";
+  "https://dev.fairshop.co.in/_next/static/image/images/imgfallback.da7fe96822d8a04e72641b35113ca728.png";
 export const GET = "GET";
 export const GET_URL_PARAMS = "GET_URL_PARAMS";
 export const GET_ID_PARAMS = "GET_ID_PARAMS";

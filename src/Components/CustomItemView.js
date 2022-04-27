@@ -111,7 +111,34 @@ const CustomItemView = (props) => {
       props.onRefresh && props.onRefresh();
     });
   };
-
+  const addToCartStorage = (product) => {
+    console.log("check:-----");
+    AsyncStorage.getItem(ALL_CART, (err, result) => {
+      if (result && JSON.parse(result).length > 0) {
+        let saveList = JSON.parse(result);
+        for (const key in saveList) {
+          if (saveList.hasOwnProperty(key)) {
+            const element = saveList[key];
+            if (element.item_code == product.item_code) {
+              saveList[key].quantity = element.quantity + 1;
+            }
+          }
+        }
+        AsyncStorage.setItem(ALL_CART, JSON.stringify(saveList));
+        let productList = [];
+        for (const key in saveList) {
+          if (saveList.hasOwnProperty(key)) {
+            const element = saveList[key];
+            productList.push({
+              product_item_code: element.item_code,
+              quantity: element.quantity,
+            });
+          }
+        }
+        APICallAddToCart(productList);
+      }
+    });
+  };
   const addToCart = (product) => {
     AsyncStorage.getItem(ALL_CART, (err, result) => {
       product.quantity = 1;
@@ -119,15 +146,28 @@ const CustomItemView = (props) => {
       var prefList = [];
       if (result && JSON.parse(result).length > 0) {
         const saveList = JSON.parse(result);
-        prefList = [...saveList, ...cartList];
+        // prefList = [...saveList, ...cartList];
+        for (const key in saveList) {
+          if (saveList.hasOwnProperty(key)) {
+            const element = saveList[key];
+            if (element.item_code == product.item_code) {
+              addToCartStorage(product);
+            } else {
+              prefList = [...saveList, ...cartList];
+            }
+          }
+        }
       } else {
         prefList = [...cartList];
       }
+
       AsyncStorage.setItem(ALL_CART, JSON.stringify(prefList));
       let productList = [];
       for (const key in prefList) {
         if (prefList.hasOwnProperty(key)) {
           const element = prefList[key];
+          console.log("element", element);
+          console.log();
           productList.push({
             product_item_code: element.item_code,
             quantity: element.quantity,

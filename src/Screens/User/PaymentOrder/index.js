@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
   TextInput,
+  Platform,
 } from "react-native";
 import { EventRegister } from "react-native-event-listeners";
 import { ScrollView } from "react-native-gesture-handler";
@@ -471,8 +472,12 @@ const PaymentOrder = (props) => {
       })
       .catch((error) => {
         // handle failure
-        Logger.log(error);
-        Alert.alert("", `${error.description}`);
+        Logger.log("error:-", error);
+        if (Platform.OS == "ios") {
+          Alert.alert("", `${error.description}`);
+        } else {
+          Alert.alert("","Payment cancelled by user")
+        }
       });
   };
 
