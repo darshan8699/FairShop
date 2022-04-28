@@ -473,7 +473,7 @@ const MyComponent = (props) => {
             />
             {topPickData?.length > 8 && (
               <TouchableOpacity
-                style={{ flexDirection: "row" }}
+                // style={{ flexDirection: "row" }}
                 onPress={() => {}}
               >
                 <Text style={styles.viewAll}>{Strings.ViewAll}</Text>
@@ -499,7 +499,7 @@ const MyComponent = (props) => {
             />
             {category?.length > 8 && (
               <TouchableOpacity
-                style={{ flexDirection: "row" }}
+                // style={{ flexDirection: "row" }}
                 onPress={() => {
                   Navigator.navigate(Route.AllBrowseCategory, {});
                 }}

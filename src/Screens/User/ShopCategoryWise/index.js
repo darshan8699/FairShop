@@ -80,53 +80,74 @@ const MyComponent = (props) => {
     <View style={styles.container}>
       <Header navigation={props.navigation} isBack />
       {/* <Header navigation={props.navigation} isRightIcon={false} isBack /> */}
-      <Text style={styles.headerText}>
-        {props.route.params.categoryDetail.name}
-      </Text>
-      <Dropdown
-        ref={dropdownRef}
+      <View
         style={{
-          height: Size.FindSize(30),
-          borderColor: Colors.button,
-          borderWidth: Size.FindSize(1),
-          borderRadius: Size.FindSize(5),
-          paddingHorizontal: Size.FindSize(8),
-          marginRight: Size.FindSize(20),
-          marginBottom: Size.FindSize(20),
-          width: selectedFilter ? Size.FindSize(140) : Size.FindSize(100),
-          alignSelf: "flex-end",
+          flexDirection: "row",
+          justifyContent: "space-between",
         }}
-        placeholderStyle={{
-          fontSize: Size.FindSize(12),
-          color: Colors.button,
-        }}
-        showsVerticalScrollIndicator={false}
-        selectedTextStyle={{ fontSize: Size.FindSize(12) }}
-        iconStyle={{ width: Size.FindSize(20), height: Size.FindSize(20) }}
-        data={data}
-        search={false}
-        maxHeight={Size.FindSize(200)}
-        labelField="label"
-        valueField="value"
-        placeholder={"Sort by"}
-        value={selectedFilter}
-        onChange={(item) => {
-          setSelectedFilter(item.value);
-        }}
-        renderRightIcon={() => (
-          <AntDesign
-            style={styles.icon}
-            color={Colors.button}
-            name={selectedFilter ? "close" : "down"}
-            size={10}
-            onPress={() => {
-              if (selectedFilter) {
-                setSelectedFilter("");
-              } else dropdownRef.current.open();
-            }}
-          />
-        )}
-      />
+      >
+        <View>
+          <Text
+            style={[
+              styles.headerText,
+              {
+                width: selectedFilter
+                  ? Size.width - Size.FindSize(155)
+                  : Size.width - Size.FindSize(115),
+              },
+            ]}
+          >
+            {props.route.params.categoryDetail.name}
+          </Text>
+        </View>
+        <Dropdown
+          ref={dropdownRef}
+          style={{
+            height: Size.FindSize(30),
+            borderColor: Colors.button,
+            borderWidth: Size.FindSize(1),
+            borderRadius: Size.FindSize(5),
+            paddingHorizontal: Size.FindSize(8),
+            marginRight: Size.FindSize(20),
+            marginVertical: Size.FindSize(20),
+            width: selectedFilter ? Size.FindSize(140) : Size.FindSize(100),
+            color: Colors.button,
+          }}
+          placeholderStyle={{
+            fontSize: Size.FindSize(12),
+            color: Colors.button,
+          }}
+          showsVerticalScrollIndicator={false}
+          selectedTextStyle={{
+            fontSize: Size.FindSize(12),
+            color: Colors.button,
+          }}
+          iconStyle={{ width: Size.FindSize(20), height: Size.FindSize(20) }}
+          data={data}
+          search={false}
+          maxHeight={Size.FindSize(200)}
+          labelField="label"
+          valueField="value"
+          placeholder={"Sort by"}
+          value={selectedFilter}
+          onChange={(item) => {
+            setSelectedFilter(item.value);
+          }}
+          renderRightIcon={() => (
+            <AntDesign
+              style={styles.icon}
+              color={Colors.button}
+              name={selectedFilter ? "close" : "down"}
+              size={10}
+              onPress={() => {
+                if (selectedFilter != "") {
+                  setSelectedFilter("");
+                } else dropdownRef.current.open();
+              }}
+            />
+          )}
+        />
+      </View>
 
       <Loader2 modalVisible={isShowLoader} />
       <FlatList
