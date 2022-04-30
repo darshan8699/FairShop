@@ -6,6 +6,7 @@ import APICallService from "../../../API/APICallService";
 import CustomItemView from "../../../Components/CustomItemView";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
+import NoDataView from "../../../Components/NoDataView";
 import { ALL_WISHLIST, WHISHLIST } from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
@@ -50,7 +51,7 @@ const Wishlist = (props) => {
               array.push(element.item_code);
             }
           }
-          AsyncStorageLib.setItem(ALL_WISHLIST, JSON.stringify(array));
+          await AsyncStorageLib.setItem(ALL_WISHLIST, JSON.stringify(array));
         }
       })
       .catch((err) => {
@@ -130,6 +131,12 @@ const Wishlist = (props) => {
             // addToWishList={(id) => addToWishList(id)}
           />
         )}
+      />
+      <NoDataView
+        isVisible={whishList.length == 0}
+        title={Strings.No_data_found}
+        containerStyle={{ height: Size.height / 2 }}
+        isLoader={isShowLoader}
       />
     </View>
   );

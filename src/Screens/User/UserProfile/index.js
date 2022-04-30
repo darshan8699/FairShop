@@ -36,7 +36,6 @@ const MyComponent = (props) => {
   const initialCalls = async () => {
     const jsonValue = await AsyncStorageLib.getItem("loginInfo");
     const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
-    Logger.log({ loginInfo });
     setLoginInfo(loginInfo);
   };
 

@@ -29,12 +29,21 @@ const MyComponent = (props) => {
   const isFirstRun = useRef(true);
   const dropdownRef = useRef();
   const [selectedFilter, setSelectedFilter] = useState("");
+  const [loginInfo, setLoginInfo] = useState("");
+
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
+      getLoginData();
       GetNewProductData();
     }
   });
+
+  async function getLoginData() {
+    const jsonValue = await AsyncStorageLib.getItem("loginInfo");
+    const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
+    setLoginInfo(loginInfo);
+  }
   const GetNewProductData = async () => {
     const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     setLoader(true);
@@ -163,6 +172,7 @@ const MyComponent = (props) => {
           <CustomItemView
             item={item}
             listView={styles.listView}
+            loginInfo={loginInfo ? true : false}
             // addToWishList={(id) => addToWishList(id)}
           />
         )}

@@ -41,7 +41,7 @@ import {
 import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
-import { isTextNotEmpty } from "../../../Utility/Validation";
+import { isTextNotEmpty, validateEmail } from "../../../Utility/Validation";
 import styles from "./styles";
 import Navigator from "../../../Utility/Navigator";
 import { Route } from "../../../Navigation/Routes";
@@ -64,6 +64,7 @@ const PaymentOrder = (props) => {
   const [shippingAddress, setShippingAddress] = useState("");
   const [shippingFullName, setShippingFullName] = useState("");
   const [shippingContact, setShippingContact] = useState("");
+  const [shippingEmail, setShippingEmail] = useState("");
   const [shippingCity, setShippingCity] = useState("");
   const [shippingState, setShippingState] = useState("");
   const [shippingPincode, setShippingPincode] = useState("");
@@ -71,6 +72,7 @@ const PaymentOrder = (props) => {
   const [billingAddress, setBillingAddress] = useState("");
   const [billingFullName, setBillingFullName] = useState("");
   const [billingContact, setBillingContact] = useState("");
+  const [billingEmail, setBillingEmail] = useState("");
   const [billingCity, setBillingCity] = useState("");
   const [billingState, setBillingState] = useState("");
   const [billingPincode, setBillingPincode] = useState("");
@@ -283,6 +285,12 @@ const PaymentOrder = (props) => {
       } else if (!isTextNotEmpty(shippingContact)) {
         showErrorMessage(Strings.error_contact_no);
         return;
+      } else if (!isTextNotEmpty(shippingEmail)) {
+        showErrorMessage(Strings.error_email);
+        return;
+      } else if (!validateEmail(shippingEmail)) {
+        showErrorMessage(Strings.error_valid_email);
+        return;
       } else if (!isTextNotEmpty(shippingAddress)) {
         showErrorMessage(Strings.error_address);
         return;
@@ -300,6 +308,12 @@ const PaymentOrder = (props) => {
         return;
       } else if (!isTextNotEmpty(billingContact)) {
         showErrorMessage(Strings.error_contact_no);
+        return;
+      } else if (!isTextNotEmpty(billingEmail)) {
+        showErrorMessage(Strings.error_email);
+        return;
+      } else if (!validateEmail(billingEmail)) {
+        showErrorMessage(Strings.error_valid_email);
         return;
       } else if (!isTextNotEmpty(billingAddress)) {
         showErrorMessage(Strings.error_BillingAddress);
@@ -345,6 +359,8 @@ const PaymentOrder = (props) => {
         ", " +
         shippingContact +
         ", " +
+        shippingEmail +
+        ", " +
         shippingAddress +
         ", " +
         shippingCity +
@@ -376,6 +392,8 @@ const PaymentOrder = (props) => {
         billingFullName +
         ", " +
         billingContact +
+        ", " +
+        billingEmail +
         ", " +
         billingAddress +
         ", " +
@@ -476,7 +494,7 @@ const PaymentOrder = (props) => {
         if (Platform.OS == "ios") {
           Alert.alert("", `${error.description}`);
         } else {
-          Alert.alert("","Payment cancelled by user")
+          Alert.alert("", "Payment cancelled by user");
         }
       });
   };
@@ -751,6 +769,13 @@ const PaymentOrder = (props) => {
         placeHolder={"+91"}
         isPhone
       />
+      <CustomText name={Strings.Email} marginTop={Size.FindSize(25)} />
+      <CustomInput
+        onChangeText={(text) => setShippingEmail(text)}
+        keyboardType={"email-address"}
+        autoCapitalize={"none"}
+        value={shippingEmail}
+      />
       <CustomText name={Strings.Address} marginTop={Size.FindSize(25)} />
       <CustomInput
         onChangeText={(text) => setShippingAddress(text)}
@@ -807,7 +832,13 @@ const PaymentOrder = (props) => {
         placeHolder={"+91"}
         isPhone
       />
-
+      <CustomText name={Strings.Email} marginTop={Size.FindSize(25)} />
+      <CustomInput
+        onChangeText={(text) => setBillingEmail(text)}
+        keyboardType={"email-address"}
+        autoCapitalize={"none"}
+        value={billingEmail}
+      />
       <CustomText name={Strings.Address} marginTop={Size.FindSize(25)} />
       <CustomInput
         onChangeText={(text) => setBillingAddress(text)}

@@ -10,11 +10,12 @@ import Loader2 from "../../../Components/Loader2";
 import Colors from "../../../Utility/Colors";
 import {
   SETTING_ABOUT,
+  SETTING_CAREERS,
+  SETTING_CONTACT_US,
+  SETTING_PRIVACY_POLICY,
   SETTING_REFUND_POLICY,
   SETTING_SHIPPING_POLICY,
-  SETTING_PRIVACY_POLICY,
   SETTING_TERMSANDCONDITIONS,
-  SETTING_CAREERS,
 } from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
@@ -79,6 +80,8 @@ const AboutUs = (props) => {
         ? SETTING_TERMSANDCONDITIONS
         : type == 7
         ? SETTING_PRIVACY_POLICY
+        : type == 8
+        ? SETTING_CONTACT_US
         : SETTING_ABOUT
     );
     apiClass

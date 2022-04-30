@@ -21,14 +21,23 @@ const MyComponent = (props) => {
   const [searchData, setSearchData] = useState([]);
   const [isShowLoader, setLoader] = useState(false);
   const [isSearching, setSearching] = useState(false);
+  const [loginInfo, setLoginInfo] = useState("");
   const isFirstRun = useRef(true);
 
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
+      getLoginData();
       GetNewProductData("");
     }
   });
+
+  async function getLoginData() {
+    const jsonValue = await AsyncStorageLib.getItem("loginInfo");
+    const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
+    setLoginInfo(loginInfo);
+  }
+
   const GetNewProductData = async (search, isLoader = true) => {
     const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     setLoader(isLoader);
@@ -108,6 +117,7 @@ const MyComponent = (props) => {
           <CustomItemView
             item={item}
             listView={styles.listView}
+            loginInfo={loginInfo ? true : false}
             // addToWishList={(id) => addToWishList(id)}
           />
         )}

@@ -1,12 +1,13 @@
 //import liraries
+import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
-import { ScrollView, Text, View, FlatList, Image } from "react-native";
-import { Size } from "../../../Utility/sizes";
-import Strings from "../../../Utility/Strings";
-import styles from "./styles";
+import { FlatList, Image, ScrollView, Text, View } from "react-native";
 import Header2 from "../../../Components/Header2";
 import { NO_IMAGE_URL } from "../../../Utility/Constants";
 import Logger from "../../../Utility/Logger";
+import { Size } from "../../../Utility/sizes";
+import Strings from "../../../Utility/Strings";
+import styles from "./styles";
 
 // create a component
 const MyComponent = (props) => {
@@ -53,7 +54,34 @@ const MyComponent = (props) => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.childContainer}>
-          <Text style={styles.boldText}>{Strings.ShippingAddress}</Text>
+          <Text
+            style={[
+              styles.boldText,
+              { marginTop: Size.FindSize(10), marginBottom: 0 },
+            ]}
+          >
+            {"Order Placed"}
+          </Text>
+          <Text style={styles.normalText}>
+            {moment(orderDetails?.created_at).format("YYYY-MM-DD hh:mm:ss A")}
+          </Text>
+          <Text
+            style={[
+              styles.boldText,
+              { marginTop: Size.FindSize(20), marginBottom: 0 },
+            ]}
+          >
+            {"Store"}
+          </Text>
+          <Text style={styles.normalText}>{orderDetails?.store?.name}</Text>
+          <Text
+            style={[
+              styles.boldText,
+              { marginTop: Size.FindSize(20), marginBottom: 0 },
+            ]}
+          >
+            {Strings.ShippingAddress}
+          </Text>
           <Text style={styles.greyText}>{orderDetails?.shipping_address}</Text>
           <Text style={[styles.boldText, { marginTop: Size.FindSize(20) }]}>
             {Strings.BillingAddress}
@@ -107,6 +135,18 @@ const MyComponent = (props) => {
         <View
           style={[styles.childContainer, { paddingBottom: Size.FindSize(35) }]}
         >
+          {orderDetails?.order_notes && (
+            <Text
+              style={[
+                styles.boldText,
+                { marginTop: Size.FindSize(20), marginBottom: 0 },
+              ]}
+            >
+              {"Notes\n"}
+              <Text style={styles.normalText}>{orderDetails?.order_notes}</Text>
+            </Text>
+          )}
+
           <Text
             style={[
               styles.boldText,
@@ -115,17 +155,35 @@ const MyComponent = (props) => {
           >
             {Strings.PaymentMethod}
           </Text>
-          <Text style={styles.normalText}>{Strings.Razorpay}</Text>
-          <Text style={styles.smallText}>
-            {Strings.Order_id + orderDetails?.razorpay_order_id}
+          <Text style={styles.normalText}>
+            {orderDetails?.payment_gateway == "cod"
+              ? "Cash on Delivery"
+              : Strings.Razorpay}
           </Text>
-          <Text style={styles.smallText}>
-            {Strings.Payment_id +
-              "" +
-              (orderDetails?.razorpay_payment_id
-                ? orderDetails?.razorpay_payment_id
-                : "")}
+          {orderDetails?.razorpay_order_id && (
+            <Text style={styles.smallText}>
+              {Strings.Order_id + orderDetails?.razorpay_order_id}
+            </Text>
+          )}
+          {orderDetails?.razorpay_payment_id && (
+            <Text style={styles.smallText}>
+              {Strings.Payment_id +
+                "" +
+                (orderDetails?.razorpay_payment_id
+                  ? orderDetails?.razorpay_payment_id
+                  : "")}
+            </Text>
+          )}
+          <Text
+            style={[
+              styles.boldText,
+              { marginTop: Size.FindSize(20), marginBottom: 0 },
+            ]}
+          >
+            {Strings.OtherDetails}
           </Text>
+          <Text style={styles.normalText}>{"Order Using"}</Text>
+          <Text style={styles.smallText}>{orderDetails?.order_using}</Text>
         </View>
       </ScrollView>
     </View>

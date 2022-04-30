@@ -23,7 +23,7 @@ export default styles = StyleSheet.create({
     fontFamily: SemiBold,
     fontSize: Size.FindSize(16),
     marginBottom: Size.FindSize(3),
-    color: Colors.headerText,
+    color: Colors.black,
   },
   greyText: {
     color: Colors.orderText,
@@ -39,7 +39,7 @@ export default styles = StyleSheet.create({
     color: Colors.orderText,
     fontFamily: Regular,
     fontSize: Size.FindSize(14),
-    marginBottom: Size.FindSize(20),
+    // marginBottom: Size.FindSize(20),
   },
   smallText: {
     color: Colors.orderText,

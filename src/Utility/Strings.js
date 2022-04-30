@@ -19,7 +19,7 @@ export const Strings = {
   My_Order: "My Orders",
   ChangePassoword: "Change Passoword",
   Logout: "Logout",
-  Logout_Msg: "Are you sure you want to logout?",
+  Logout_Msg: "Are you sure want to logout?",
   Select_store: "Select Store",
   Enter_pincode: "Enter Pincode",
   My_Cart: "My Cart",
@@ -127,6 +127,7 @@ export const Strings = {
   ShippingAddress: "Shipping Address",
   BillingAddress: "Billing Address",
   PaymentMethod: "Payment Method",
+  OtherDetails: "Other Details",
   Razorpay: "Razorpay",
   CardUPIWallet: "Card/UPI/Wallet",
   COD: "Cash on Delivery",
@@ -158,7 +159,7 @@ export const Strings = {
   VEG: "Pure Veg.",
   NON_VEG: "NonVeg.",
 
-  Delete_address_alert: "Are you sure you want to delete address",
+  Delete_address_alert: "Are you sure want to delete address?",
   Disclaimer: "Disclaimer",
   disclaimerSentence:
     "Despite our attempts to provide you with the most accurate information possible, the actual packaging, ingredients and colour of the product may sometimes vary. Please read the label, directions and warnings carefully before use.",

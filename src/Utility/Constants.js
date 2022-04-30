@@ -5,8 +5,9 @@ export const PREF_STORE_ID = "PREF_STORE_ID";
 export const PREF_LOGIN_INFO = "loginInfo";
 export const ALL_WISHLIST = "ALL_WISHLIST";
 export const ALL_CART = "ALL_CART";
-// export const BASE_URL = "https://dev.fairshop.co.in/backend/public/api";
-export const BASE_URL = "https://app.fairshop.co.in/backend/public/api";
+export const BASE_URL = "https://dev.fairshop.co.in/backend/public/api";
+// export const BASE_URL = "https://app.fairshop.co.in/backend/public/api";
+export const SHARE_URL = "https://dev.fairshop.co.in/product/";
 export const NO_IMAGE_URL =
   // "https://dev.fairshop.co.in/_next/static/image/images/imgfallback.b48a540a7337fb7c68443ab63b361162.png";
   "https://dev.fairshop.co.in/_next/static/image/images/imgfallback.da7fe96822d8a04e72641b35113ca728.png";
@@ -42,6 +43,7 @@ export const ATTACHMENTS = "/attachments" + " " + MULTI_PART;
 export const SETTING_ABOUT = "/settings/pages/about" + " " + GET;
 export const SETTING_PRIVACY_POLICY =
   "/settings/pages/privacy-policy" + " " + GET;
+export const SETTING_CONTACT_US = "/settings/pages/contact" + " " + GET;
 export const SETTING_SHIPPING_POLICY =
   "/settings/pages/shipping-policy" + " " + GET;
 export const SETTING_REFUND_POLICY =

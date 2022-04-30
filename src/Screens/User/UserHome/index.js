@@ -51,39 +51,46 @@ const MyComponent = (props) => {
   const [topPickData, setTopPickData] = useState([]);
   const [loginStatus, setLoginStatus] = useState(null);
   const [prefStoreId, setPrefStoreId] = useState("");
+  const [loginInfo, setLoginInfo] = useState("");
 
   const isFirstRun = useRef(true);
   useEffect(() => {
-    getPrefId();
     if (isFirstRun.current) {
       isFirstRun.current = false;
       APICallWishList();
-      GetPopularProductData();
-      GetNewProductData();
-      GetBrowseCategory();
-      APICallOffers();
-      APICallBanner();
-      GetTopPickData();
-      getTopPickTitle();
+      firstAPICall();
     }
 
-    const _unsubscribe = props.navigation.addListener("focus", () => {
+    const _unsubscribe = props.navigation.addListener("focus", async () => {
       // do something
-      getPrefId();
-      GetPopularProductData();
-      GetNewProductData();
-      GetBrowseCategory();
-      APICallOffers();
+      const id = await AsyncStorage.getItem(PREF_STORE_ID);
+      if (id) {
+        GetPopularProductData(id);
+        GetNewProductData(id);
+        GetBrowseCategory(id);
+        GetTopPickData(id);
+      }
       APICallBanner();
-      GetTopPickData();
+      APICallOffers();
       getTopPickTitle();
     });
     return _unsubscribe;
   });
 
-  async function getPrefId() {
+  async function firstAPICall() {
     const id = await AsyncStorage.getItem(PREF_STORE_ID);
-    setPrefStoreId(id);
+    if (id) {
+      GetPopularProductData(id);
+      GetNewProductData(id);
+      GetBrowseCategory(id);
+      GetTopPickData(id);
+    }
+    APICallOffers();
+    APICallBanner();
+    getTopPickTitle();
+    const jsonValue = await AsyncStorage.getItem("loginInfo");
+    const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
+    setLoginInfo(loginInfo);
   }
 
   const getTopPickTitle = async () => {
@@ -91,10 +98,10 @@ const MyComponent = (props) => {
     const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
     setLoginStatus(loginInfo);
   };
-  const GetTopPickData = async () => {
+  const GetTopPickData = async (id) => {
     setLoader(true);
     const apiClass = new APICallService(HOMEPAGE_TOP_PICK, {
-      store_id: prefStoreId,
+      store_id: id ? id : prefStoreId,
     });
     apiClass
       .callAPI()
@@ -102,6 +109,8 @@ const MyComponent = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           setTopPickData(res.data.items);
+        } else {
+          setTopPickData([]);
         }
       })
       .catch((err) => {
@@ -111,10 +120,10 @@ const MyComponent = (props) => {
       });
   };
 
-  const GetPopularProductData = async () => {
+  const GetPopularProductData = async (id) => {
     setLoader(true);
     const apiClass = new APICallService(HOMEPAGE_POPULAR_PRODUCT, {
-      store_id: prefStoreId,
+      store_id: id ? id : prefStoreId,
     });
     apiClass
       .callAPI()
@@ -123,6 +132,8 @@ const MyComponent = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           setPopularData(res.data.items);
+        } else {
+          setPopularData([]);
         }
       })
       .catch((err) => {
@@ -131,10 +142,10 @@ const MyComponent = (props) => {
         showErrorMessage(err.message);
       });
   };
-  const GetNewProductData = async () => {
+  const GetNewProductData = async (id) => {
     setLoader(true);
     const apiClass = new APICallService(HOMEPAGE_NEW_PRODUCT, {
-      store_id: prefStoreId,
+      store_id: id ? id : prefStoreId,
     });
     apiClass
       .callAPI()
@@ -142,6 +153,8 @@ const MyComponent = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           setNewData(res.data.items);
+        } else {
+          setNewData([]);
         }
       })
       .catch((err) => {
@@ -150,12 +163,12 @@ const MyComponent = (props) => {
         setNewData([]);
       });
   };
-  const GetBrowseCategory = () => {
+  const GetBrowseCategory = (id) => {
     setLoader(true);
 
     const apiClass = new APICallService(CATEGORY, {
       limit: -1,
-      store_id: prefStoreId,
+      store_id: id ? id : prefStoreId,
     });
     apiClass
       .callAPI()
@@ -164,6 +177,8 @@ const MyComponent = (props) => {
         if (validateResponse(res)) {
           Logger.log("category data is---", res.data.items);
           setCategory(res.data.items);
+        } else {
+          setCategory([]);
         }
       })
       .catch((err) => {
@@ -181,6 +196,8 @@ const MyComponent = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           setBestValueOffers(res.data?.values[0]?.couponsNew);
+        } else {
+          setBestValueOffers([]);
         }
       })
       .catch((err) => {
@@ -431,7 +448,7 @@ const MyComponent = (props) => {
             Logger.log(`current pos is: ${index}`)
           }
         />
-        {bestValueOffers.length > 0 && (
+        {bestValueOffers.length > 0 ? (
           <ImageBackground source={Images.homeBG} style={styles.back}>
             <View style={styles.bestView}>
               <Text style={styles.bestText}>{Strings.Best_value}</Text>
@@ -450,9 +467,8 @@ const MyComponent = (props) => {
               showsHorizontalScrollIndicator={false}
             />
           </ImageBackground>
-        )}
-
-        {topPickData?.length > 0 && (
+        ) : null}
+        {topPickData?.length > 0 ? (
           <View style={styles.BrowseView}>
             <View style={styles.BrowseTextView}>
               <Text style={styles.BrowseText}>
@@ -468,7 +484,11 @@ const MyComponent = (props) => {
               }}
               numColumns={2}
               renderItem={({ item }) => (
-                <CustomItemView item={item} listView={styles.shadow} />
+                <CustomItemView
+                  item={item}
+                  listView={styles.shadow}
+                  loginInfo={loginInfo ? true : false}
+                />
               )}
             />
             {topPickData?.length > 8 && (
@@ -480,8 +500,8 @@ const MyComponent = (props) => {
               </TouchableOpacity>
             )}
           </View>
-        )}
-        {category?.length > 0 && (
+        ) : null}
+        {category?.length > 0 ? (
           <View style={styles.BrowseView}>
             <View style={styles.BrowseTextView}>
               <Text style={styles.BrowseText}>{Strings.BrowseText}</Text>
@@ -497,7 +517,7 @@ const MyComponent = (props) => {
               renderItem={renderBrowseCategory}
               showsHorizontalScrollIndicator={false}
             />
-            {category?.length > 8 && (
+            {category?.length > 8 ? (
               <TouchableOpacity
                 // style={{ flexDirection: "row" }}
                 onPress={() => {
@@ -506,11 +526,10 @@ const MyComponent = (props) => {
               >
                 <Text style={styles.viewAll}>{Strings.ViewAll}</Text>
               </TouchableOpacity>
-            )}
+            ) : null}
           </View>
-        )}
-
-        {popularData?.length > 0 && (
+        ) : null}
+        {popularData?.length > 0 ? (
           <ImageBackground
             source={Images.back1}
             resizeMode="stretch"
@@ -533,6 +552,7 @@ const MyComponent = (props) => {
                 <CustomItemView
                   item={item}
                   listView={{ width: Size.width / 2 - Size.FindSize(25) }}
+                  loginInfo={loginInfo ? true : false}
                 />
               )}
             />
@@ -548,9 +568,8 @@ const MyComponent = (props) => {
               </TouchableOpacity>
             )}
           </ImageBackground>
-        )}
-
-        {newData?.length > 0 && (
+        ) : null}
+        {newData?.length > 0 ? (
           <View style={styles.Popularback}>
             <View style={styles.BrowseTextView}>
               <Text style={styles.BrowseText}>{Strings.NewProduct}</Text>
@@ -568,6 +587,7 @@ const MyComponent = (props) => {
                 <CustomItemView
                   item={item}
                   listView={styles.shadow}
+                  loginInfo={loginInfo ? true : false}
                   // addToWishList={(id) => addToWishList(id)}
                 />
               )}
@@ -582,8 +602,9 @@ const MyComponent = (props) => {
               </TouchableOpacity>
             )}
           </View>
-        )}
-        {popularCategory?.length > 0 && (
+        ) : null}
+
+        {popularCategory?.length > 0 ? (
           <ImageBackground
             source={Images.redBack}
             resizeMode="stretch"
@@ -608,8 +629,7 @@ const MyComponent = (props) => {
               bounces={false}
             />
           </ImageBackground>
-        )}
-
+        ) : null}
         <View style={styles.fairshopView}>
           <View style={styles.BrowseTextView}>
             <Text style={styles.BrowseText}>{Strings.Why_Fairshop}</Text>

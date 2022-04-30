@@ -4,12 +4,15 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   FlatList,
   Image,
+  ImageBackground,
+  Linking,
   ScrollView,
+  Share,
   Text,
   TouchableOpacity,
   View,
-  ImageBackground,
 } from "react-native";
+import CountryFlag from "react-native-country-flag";
 import { EventRegister } from "react-native-event-listeners";
 import APICallService from "../../../API/APICallService";
 import { Images } from "../../../Assets/images";
@@ -24,6 +27,7 @@ import {
   NO_IMAGE_URL,
   PREF_LOGIN_INFO,
   PRODUCT_DETAILS,
+  SHARE_URL,
   UPDATE_CART_COUNT,
 } from "../../../Utility/Constants";
 import {
@@ -35,7 +39,6 @@ import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
-import CountryFlag from "react-native-country-flag";
 // create a component
 const MyComponent = (props) => {
   const [currentindex, setcurrentindex] = useState(0);
@@ -412,30 +415,38 @@ const MyComponent = (props) => {
           <TouchableOpacity style={styles.BuycartView} onPress={() => {}}>
             <Text style={styles.buyText}>{Strings.BuyNow}</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.favView}
-            onPress={() => {
-              addToWishList(productData.item_code);
-            }}
-          >
-            {favarray.indexOf(productData.item_code) !== -1 ? (
-              <Image
-                source={Images.heart}
-                resizeMode="contain"
-                style={styles.fav}
-              />
-            ) : (
-              <Image
-                source={Images.fav}
-                resizeMode="contain"
-                style={styles.fav}
-              />
-            )}
-          </TouchableOpacity>
+          {loginData ? (
+            <TouchableOpacity
+              style={styles.favView}
+              onPress={() => {
+                addToWishList(productData.item_code);
+              }}
+            >
+              {favarray.indexOf(productData.item_code) !== -1 ? (
+                <Image
+                  source={Images.heart}
+                  resizeMode="contain"
+                  style={styles.fav}
+                />
+              ) : (
+                <Image
+                  source={Images.fav}
+                  resizeMode="contain"
+                  style={styles.fav}
+                />
+              )}
+            </TouchableOpacity>
+          ) : null}
         </View>
         <View style={styles.socialButton}>
           <TouchableOpacity
+            activeOpacity={1}
             style={[styles.fbButton, { backgroundColor: "#3351A3" }]}
+            onPress={() => {
+              Share.share({
+                message: SHARE_URL + productData?.slug,
+              });
+            }}
           >
             <Image
               style={styles.fbIcon}
@@ -445,7 +456,13 @@ const MyComponent = (props) => {
             <Text style={styles.fbText}>{Strings.Facebook}</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            activeOpacity={1}
             style={[styles.fbButton, { backgroundColor: Colors.tweet }]}
+            onPress={() => {
+              Share.share({
+                message: SHARE_URL + productData?.slug,
+              });
+            }}
           >
             <Image
               style={styles.fbIcon}
@@ -455,7 +472,13 @@ const MyComponent = (props) => {
             <Text style={styles.fbText}>{Strings.Twitter}</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            activeOpacity={1}
             style={[styles.fbButton, { backgroundColor: Colors.wt }]}
+            onPress={() => {
+              Linking.openURL(
+                "whatsapp://send?text=:" + SHARE_URL + productData?.slug
+              );
+            }}
           >
             <Image
               style={styles.fbIcon}
@@ -465,7 +488,11 @@ const MyComponent = (props) => {
             <Text style={styles.fbText}>{Strings.WhatsApp}</Text>
           </TouchableOpacity>
           <TouchableOpacity
+            activeOpacity={1}
             style={[styles.fbButton, { backgroundColor: Colors.mail }]}
+            onPress={() => {
+              Linking.openURL("mailto:?body=" + SHARE_URL + productData?.slug);
+            }}
           >
             <Image
               style={[styles.fbIcon, { tintColor: Colors.white }]}

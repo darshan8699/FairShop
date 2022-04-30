@@ -265,9 +265,12 @@ const MyComponent = (props) => {
           <Text style={styles.TotalPrice}>₹{totalrsp}</Text>
         </View>
         <TouchableOpacity
+          activeOpacity={1}
           style={styles.checkOutView}
           // onPress={() => checkOutButton()}
-          onPress={() => Navigator.navigate(Route.PaymentOrder)}
+          onPress={() => {
+            if (totalrsp > 0) Navigator.navigate(Route.PaymentOrder);
+          }}
         >
           <Text style={styles.checkOutText}>{Strings.CheckOut}</Text>
         </TouchableOpacity>

@@ -20,14 +20,23 @@ import styles from "./styles";
 const MyComponent = (props) => {
   const [newData, setNewData] = useState([]);
   const [isShowLoader, setLoader] = useState(false);
+  const [loginInfo, setLoginInfo] = useState("");
   const isFirstRun = useRef(true);
 
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
+      getLoginData();
       GetNewProductData();
     }
   });
+
+  async function getLoginData() {
+    const jsonValue = await AsyncStorageLib.getItem("loginInfo");
+    const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
+    setLoginInfo(loginInfo);
+  }
+
   const GetNewProductData = async () => {
     const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     setLoader(true);
@@ -64,7 +73,11 @@ const MyComponent = (props) => {
         data={newData}
         style={styles.list}
         renderItem={({ item }) => (
-          <CustomItemView item={item} listView={styles.listView} />
+          <CustomItemView
+            item={item}
+            listView={styles.listView}
+            loginInfo={loginInfo ? true : false}
+          />
         )}
         nestedScrollEnabled={false}
       />

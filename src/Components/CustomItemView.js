@@ -91,7 +91,6 @@ const CustomItemView = (props) => {
         }
       } else {
         AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(id));
-        setLoader(true);
         const apiClass = new APICallService(ADD_WISHLIST, {
           product_item_code: id,
         });
@@ -225,24 +224,26 @@ const CustomItemView = (props) => {
           resizeMode="contain"
           style={styles.item}
         />
-        <TouchableOpacity
-          style={styles.favView}
-          onPress={() => addToWishList(props.item.item_code)}
-        >
-          {favarray.indexOf(props.item.item_code) !== -1 ? (
-            <Image
-              source={Images.heart}
-              resizeMode="contain"
-              style={styles.fav}
-            />
-          ) : (
-            <Image
-              source={Images.fav}
-              resizeMode="contain"
-              style={styles.fav}
-            />
-          )}
-        </TouchableOpacity>
+        {props?.loginInfo ? (
+          <TouchableOpacity
+            style={styles.favView}
+            onPress={() => addToWishList(props.item.item_code)}
+          >
+            {favarray.indexOf(props.item.item_code) !== -1 ? (
+              <Image
+                source={Images.heart}
+                resizeMode="contain"
+                style={styles.fav}
+              />
+            ) : (
+              <Image
+                source={Images.fav}
+                resizeMode="contain"
+                style={styles.fav}
+              />
+            )}
+          </TouchableOpacity>
+        ) : null}
         {props.item.rsp < props.item.mrp && (
           <TouchableOpacity
             style={{

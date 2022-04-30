@@ -92,9 +92,6 @@ const MyComponent = (props) => {
         }}
         data={newData}
         style={styles.list}
-        // renderItem={({ item }) => (
-        //   <CustomItemView item={item} listView={styles.listView} />
-        // )}
         renderItem={renderBrowseCategory}
         nestedScrollEnabled={false}
       />

@@ -50,7 +50,6 @@ const MyComponent = (props) => {
 
   async function getSelectedStore() {
     const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
-    Logger.log({ store_id });
     if (store_id == null) {
       Navigator.navigate(Route.StoreLocator);
     }
@@ -247,7 +246,7 @@ const MyComponent = (props) => {
             <Text style={styles.textView}>{Strings.AboutUs}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-          //onPress={() => Navigator.navigate(Route.AboutUs, { type: 1 })}
+          //onPress={() => Navigator.navigate(Route.AboutUs, { type: 8 })}
           >
             <Text style={styles.textView}>{Strings.ContactUs}</Text>
           </TouchableOpacity>

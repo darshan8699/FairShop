@@ -1,3 +1,4 @@
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, Text, View } from "react-native";
@@ -16,14 +17,23 @@ import styles from "./styles";
 const MyComponent = (props) => {
   const [newData, setNewData] = useState([]);
   const [isShowLoader, setLoader] = useState(false);
+  const [loginInfo, setLoginInfo] = useState("");
   const isFirstRun = useRef(true);
 
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
+      getLoginData();
       GetNewProductData();
     }
   });
+
+  async function getLoginData() {
+    const jsonValue = await AsyncStorageLib.getItem("loginInfo");
+    const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
+    setLoginInfo(loginInfo);
+  }
+
   const GetNewProductData = async () => {
     setLoader(true);
     const apiClass = new APICallService(HOMEPAGE_NEW_PRODUCT, {});
@@ -58,7 +68,11 @@ const MyComponent = (props) => {
         data={newData}
         style={styles.list}
         renderItem={({ item }) => (
-          <CustomItemView item={item} listView={styles.listView} />
+          <CustomItemView
+            item={item}
+            listView={styles.listView}
+            loginInfo={loginInfo ? true : false}
+          />
         )}
         nestedScrollEnabled={false}
       />
