@@ -1,10 +1,11 @@
+import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, Image, Text, View } from "react-native";
 import APICallService from "../../../API/APICallService";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
-import { OFFERS } from "../../../Utility/Constants";
+import { OFFERS, PREF_STORE_ID } from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
@@ -22,9 +23,12 @@ const Offers = (props) => {
     }
   });
 
-  const APICallOfferList = () => {
+  const APICallOfferList = async () => {
     setLoader(true);
-    const apiClass = new APICallService(OFFERS, {});
+    const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    const apiClass = new APICallService(OFFERS, {
+      store_id: id,
+    });
     apiClass
       .callAPI()
       .then(async function (res) {

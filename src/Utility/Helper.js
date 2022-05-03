@@ -13,6 +13,7 @@ export function validateResponse(res) {
   if (res.code === 0) {
     return true;
   } else if (res.code == 260) {
+  } else if (res.code == 250) {
   } else if (res.code == 401) {
     if (res.message == "Unauthorized") {
       showErrorMessage(Strings.Token_expired);

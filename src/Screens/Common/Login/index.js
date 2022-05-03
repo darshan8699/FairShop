@@ -70,11 +70,11 @@ const Login = (props) => {
       .callAPI()
       .then(async function (res) {
         if (validateResponse(res)) {
-          showSuccessMessage(res.message);
           const jsonValue = JSON.stringify(res.data);
           await AsyncStorage.setItem(PREF_TOKEN, res.data?.token);
           await AsyncStorage.setItem("loginInfo", jsonValue);
           setLoader(false);
+          showSuccessMessage(res.message);
           Navigator.resetFrom(Route.DrawerApp);
         } else {
           setLoader(false);

@@ -33,13 +33,28 @@ const MyComponent = (props) => {
   });
   const GetNewProductData = async () => {
     setLoader(true);
-    const apiClass = new APICallService(CATEGORY, { limit: -1 });
+    const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    const apiClass = new APICallService(CATEGORY, {
+      limit: -1,
+      store_id: id,
+    });
     apiClass
       .callAPI()
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          setNewData(res.data.items);
+          var tList = [];
+          const temp = res.data.items;
+          for (const key in temp) {
+            if (temp.hasOwnProperty(key)) {
+              const element = temp[key].children;
+              for (const key in element) {
+                const element2 = element[key];
+                tList.push(element2);
+              }
+            }
+          }
+          setNewData(tList);
         } else {
           setNewData([]);
         }
@@ -94,6 +109,7 @@ const MyComponent = (props) => {
         style={styles.list}
         renderItem={renderBrowseCategory}
         nestedScrollEnabled={false}
+        showsHorizontalScrollIndicator={false}
       />
       <NoDataView
         isVisible={newData.length == 0}

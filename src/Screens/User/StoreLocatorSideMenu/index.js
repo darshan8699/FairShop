@@ -68,7 +68,7 @@ const MyComponent = (props) => {
           }
 
           setStoreListing(tempList);
-          //setSearchStoreListing(tempList);
+          setSearchStoreListing(tempList);
           let pinList = [];
           for (const key in tempList) {
             if (tempList.hasOwnProperty(key)) {
@@ -102,11 +102,12 @@ const MyComponent = (props) => {
 
   const renderStoreItem = ({ item, index }) => {
     let isActive = false;
-    if (storeIndex != null) {
-      isActive = storeIndex == item?.id;
-    }
+    // if (storeIndex != null) {
+    //   isActive = storeIndex == item?.id;
+    // }
     return (
       <TouchableOpacity
+        activeOpacity={1}
         style={[
           styles.listView,
           {
@@ -114,20 +115,42 @@ const MyComponent = (props) => {
             backgroundColor: isActive ? Colors.pinkBack : Colors.white,
           },
         ]}
-        onPress={async () => {
-          setStoreIndex(item?.id);
-          await AsyncStorageLib.setItem(
-            PREF_STORE_ID,
-            JSON.stringify(item?.id)
-          );
-          props.navigation.goBack();
-        }}
+        // onPress={async () => {
+        //   setStoreIndex(item?.id);
+        //   await AsyncStorageLib.setItem(
+        //     PREF_STORE_ID,
+        //     JSON.stringify(item?.id)
+        //   );
+        //   props.navigation.goBack();
+        // }}
       >
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.ShopNameText}>{item.name}</Text>
+        <Image
+          source={{ uri: item.image[0].thumbnail }}
+          style={{
+            height: Size.FindSize(150),
+            width: "100%",
+            marginBottom: Size.FindSize(10),
+          }}
+        />
+
+        <Text style={styles.ShopNameText}>{item.name}</Text>
+        <Text style={styles.text1}>
+          {item.address_line_1 + ", " + item.address_line_2}
+        </Text>
+        <Text style={styles.text1}>
+          {item.city + ", " + item.state + "-" + item.pincode}
+        </Text>
+        <Text style={styles.text1}></Text>
+
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
           <TouchableOpacity
             onPress={() => {
               Linking.openURL(`tel:${item.phone}`);
+            }}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              alignSelf: "center",
             }}
           >
             <Image
@@ -135,40 +158,64 @@ const MyComponent = (props) => {
               resizeMode={"contain"}
               style={styles.usericon}
             />
+            <Text
+              style={[
+                styles.text1,
+                { fontSize: Size.FindSize(18), color: Colors.Background },
+              ]}
+            >
+              {item.phone}
+            </Text>
           </TouchableOpacity>
+          {item.tollfree_number ? (
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(`tel:${item.tollfree_number}`);
+              }}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                alignSelf: "center",
+              }}
+            >
+              <Image
+                source={Images.call}
+                resizeMode={"contain"}
+                style={styles.usericon}
+              />
+              <Text
+                style={[
+                  styles.text1,
+                  { fontSize: Size.FindSize(18), color: Colors.Background },
+                ]}
+              >
+                {item.tollfree_number}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
-        <Text style={styles.text1}>
-          {item.address_line_1 + ", " + item.address_line_2}
-        </Text>
-        <Text style={styles.text1}>{item.city}</Text>
-        <Text style={styles.text1}>{item.state}</Text>
       </TouchableOpacity>
     );
   };
   return (
     <View style={styles.container}>
-      <Header
-        navigation={props.navigation}
-        isBack
-        isBackVisible={storeIndex != null}
-        isLocation
-      />
+      <Header navigation={props.navigation} isBack isRightIcon={false} />
       <Loader2 modalVisible={isShowLoader} />
       <View style={styles.childContainer}>
-        <Text style={styles.headerText}>{Strings.Select_Store}</Text>
-        <View style={styles.pincodeView}>
+        <Text style={styles.headerText}>{Strings.StoreLocator}</Text>
+        {/* <View style={styles.pincodeView}>
           <Image
             source={Images.pincode}
             resizeMode="contain"
             style={styles.pincodeImage}
           />
           <Text style={styles.text}>{Strings.Enter_pincode}</Text>
-        </View>
-        <CustomInput
+        </View> */}
+        {/* <CustomInput
           input={styles.input}
           keyboardType={"numeric"}
           onChangeText={(text) => searchFilter(text)}
-        />
+        /> */}
         {searchStoreListing.length > 0 ? (
           <FlatList
             showsVerticalScrollIndicator={false}

@@ -68,7 +68,7 @@ export default styles = StyleSheet.create({
     marginTop: Size.FindSize(10),
   },
   price: {
-    marginVertical: Size.FindSize(25),
+    marginVertical: Size.FindSize(10),
     color: Colors.Background,
     fontSize: Size.FindSize(41),
     fontFamily: Regular,

@@ -31,6 +31,7 @@ export default styles = StyleSheet.create({
     shadowRadius: Platform.OS == "ios" ? 2 : 1,
     elevation: 2,
     width: Size.width / 2 - Size.FindSize(25),
+    flex: 1,
   },
 
   browseCardView: {

@@ -111,7 +111,6 @@ const CustomItemView = (props) => {
     });
   };
   const addToCartStorage = (product) => {
-    console.log("check:-----");
     AsyncStorage.getItem(ALL_CART, (err, result) => {
       if (result && JSON.parse(result).length > 0) {
         let saveList = JSON.parse(result);
@@ -150,7 +149,15 @@ const CustomItemView = (props) => {
           if (saveList.hasOwnProperty(key)) {
             const element = saveList[key];
             if (element.item_code == product.item_code) {
-              addToCartStorage(product);
+              console.log(product.inventory[0].stock_quantity);
+              console.log(element.quantity);
+              if (
+                element.quantity < parseInt(product.inventory[0].stock_quantity)
+              ) {
+                addToCartStorage(product);
+              } else {
+                showErrorMessage("Stock limit over");
+              }
             } else {
               prefList = [...saveList, ...cartList];
             }
@@ -159,21 +166,21 @@ const CustomItemView = (props) => {
       } else {
         prefList = [...cartList];
       }
+      if (prefList.length > 0) {
+        AsyncStorage.setItem(ALL_CART, JSON.stringify(prefList));
+        let productList = [];
+        for (const key in prefList) {
+          if (prefList.hasOwnProperty(key)) {
+            const element = prefList[key];
 
-      AsyncStorage.setItem(ALL_CART, JSON.stringify(prefList));
-      let productList = [];
-      for (const key in prefList) {
-        if (prefList.hasOwnProperty(key)) {
-          const element = prefList[key];
-          console.log("element", element);
-          console.log();
-          productList.push({
-            product_item_code: element.item_code,
-            quantity: element.quantity,
-          });
+            productList.push({
+              product_item_code: element.item_code,
+              quantity: element.quantity,
+            });
+          }
         }
+        if (productList.length > 0) APICallAddToCart(productList);
       }
-      APICallAddToCart(productList);
     });
   };
 
@@ -187,7 +194,7 @@ const CustomItemView = (props) => {
       .then(async function (res) {
         if (validateResponse(res)) {
           EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
-          showSuccessMessage("item added in cart");
+          showSuccessMessage("Cart updated successfully!");
         }
       })
       .catch((err) => {

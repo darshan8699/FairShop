@@ -232,6 +232,10 @@ function RootNavigation() {
           name={Route.StoreLocator}
           component={screen.StoreLocator}
         />
+        <Stack.Screen
+          name={Route.StoreLocatorSideMenu}
+          component={screen.StoreLocatorSideMenu}
+        />
         <Stack.Screen name={Route.AboutUs} component={screen.AboutUs} />
         <Stack.Screen name={Route.Address} component={screen.Address} />
         <Stack.Screen

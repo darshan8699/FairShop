@@ -42,16 +42,18 @@ const Wishlist = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          const wishListArr = res.data.items[0].products;
-          let array = [];
-          setWhishList(wishListArr);
-          for (const key in wishListArr) {
-            if (wishListArr.hasOwnProperty(key)) {
-              const element = wishListArr[key];
-              array.push(element.item_code);
+          if (res.data.items.length > 0) {
+            const wishListArr = res.data.items[0].products;
+            let array = [];
+            setWhishList(wishListArr);
+            for (const key in wishListArr) {
+              if (wishListArr.hasOwnProperty(key)) {
+                const element = wishListArr[key];
+                array.push(element.item_code);
+              }
             }
+            await AsyncStorageLib.setItem(ALL_WISHLIST, JSON.stringify(array));
           }
-          await AsyncStorageLib.setItem(ALL_WISHLIST, JSON.stringify(array));
         }
       })
       .catch((err) => {

@@ -45,10 +45,10 @@ const MyComponent = (props) => {
     setLoginInfo(loginInfo);
   }
   const GetNewProductData = async () => {
-    const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     setLoader(true);
+    const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     const apiClass = new APICallService(PRODUCT_LIST, {
-      limit: -1,
+      page: 1,
       categories: props.route.params.categoryDetail.slug,
       store_id: store_id,
     });
@@ -57,7 +57,7 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          setNewData(res.data.items);
+          setNewData(res.data.data);
         } else {
           setNewData([]);
         }
@@ -176,7 +176,7 @@ const MyComponent = (props) => {
             // addToWishList={(id) => addToWishList(id)}
           />
         )}
-        nestedScrollEnabled={false}
+        
       />
       <NoDataView
         isVisible={newData.length == 0}

@@ -69,9 +69,9 @@ const MyComponent = (props) => {
         GetNewProductData(id);
         GetBrowseCategory(id);
         GetTopPickData(id);
+        APICallBanner(id);
+        APICallOffers(id);
       }
-      APICallBanner();
-      APICallOffers();
       getTopPickTitle();
     });
     return _unsubscribe;
@@ -84,9 +84,10 @@ const MyComponent = (props) => {
       GetNewProductData(id);
       GetBrowseCategory(id);
       GetTopPickData(id);
+      APICallBanner(id);
+      APICallOffers(id);
     }
-    APICallOffers();
-    APICallBanner();
+
     getTopPickTitle();
     const jsonValue = await AsyncStorage.getItem("loginInfo");
     const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
@@ -175,8 +176,18 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          Logger.log("category data is---", res.data.items);
-          setCategory(res.data.items);
+          var tList = [];
+          const temp = res.data.items;
+          for (const key in temp) {
+            if (temp.hasOwnProperty(key)) {
+              const element = temp[key].children;
+              for (const key in element) {
+                const element2 = element[key];
+                tList.push(element2);
+              }
+            }
+          }
+          setCategory(tList);
         } else {
           setCategory([]);
         }
@@ -187,9 +198,11 @@ const MyComponent = (props) => {
         setCategory([]);
       });
   };
-  const APICallOffers = () => {
+  const APICallOffers = (id) => {
     setLoader(true);
-    const apiClass = new APICallService(OFFERS, {});
+    const apiClass = new APICallService(OFFERS, {
+      store_id: id ? id : prefStoreId,
+    });
     apiClass
       .callAPI()
       .then(async function (res) {
@@ -206,9 +219,11 @@ const MyComponent = (props) => {
         setBestValueOffers([]);
       });
   };
-  const APICallBanner = () => {
+  const APICallBanner = (id) => {
     setLoader(true);
-    const apiClass = new APICallService(HOME_BANNER, {});
+    const apiClass = new APICallService(HOME_BANNER, {
+      store_id: id ? id : prefStoreId,
+    });
     apiClass
       .callAPI()
       .then(async function (res) {
@@ -229,14 +244,13 @@ const MyComponent = (props) => {
               whyShop.push(element[0].thumbnail);
             }
           }
-          console.log("bannerImage:-", bannerImage);
+
           setBannerImages(bannerImage);
-          console.log(
-            "popular category:-",
-            JSON.stringify(res.data?.item?.content?.popular_category)
-          );
           setPopularCategory(res.data?.item?.content?.popular_category);
           setWhyFairshop(whyShop);
+        } else {
+          setBannerImages([]);
+          setWhyFairshop([]);
         }
       })
       .catch((err) => {
@@ -493,8 +507,13 @@ const MyComponent = (props) => {
             />
             {topPickData?.length > 8 && (
               <TouchableOpacity
-                // style={{ flexDirection: "row" }}
-                onPress={() => {}}
+                style={{ marginTop: Size.FindSize(10) }}
+                onPress={() => {
+                  Navigator.navigate(Route.PopularProduct, {
+                    topPickList: topPickData,
+                    isTopPickList: true,
+                  });
+                }}
               >
                 <Text style={styles.viewAll}>{Strings.ViewAll}</Text>
               </TouchableOpacity>
@@ -519,7 +538,7 @@ const MyComponent = (props) => {
             />
             {category?.length > 8 ? (
               <TouchableOpacity
-                // style={{ flexDirection: "row" }}
+                style={{ marginTop: Size.FindSize(10) }}
                 onPress={() => {
                   Navigator.navigate(Route.AllBrowseCategory, {});
                 }}
@@ -530,44 +549,52 @@ const MyComponent = (props) => {
           </View>
         ) : null}
         {popularData?.length > 0 ? (
-          <ImageBackground
-            source={Images.back1}
-            resizeMode="stretch"
-            style={styles.Popularback}
-          >
-            <View style={styles.bestView}>
-              <Text style={styles.bestText}>{Strings.Popular_product}</Text>
-            </View>
-            <FlatList
-              // horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{
-                paddingRight: Size.FindSize(15),
-                marginTop: Size.FindSize(15),
-                // height: Size.FindSize(280),
-              }}
-              numColumns={2}
-              data={popularData.slice(0, 8)}
-              renderItem={({ item }) => (
-                <CustomItemView
-                  item={item}
-                  listView={{ width: Size.width / 2 - Size.FindSize(25) }}
-                  loginInfo={loginInfo ? true : false}
-                />
-              )}
-            />
-            {popularData?.length > 8 && (
-              <TouchableOpacity
-                onPress={() => {
-                  Navigator.navigate(Route.PopularProduct, {});
+          <View>
+            <ImageBackground
+              source={Images.back1}
+              resizeMode="stretch"
+              style={{ height: Size.FindSize(250) }}
+            >
+              <View style={[styles.bestView, {}]}>
+                <Text style={styles.bestText}>{Strings.Popular_product}</Text>
+              </View>
+            </ImageBackground>
+            <ImageBackground
+              source={Images.popularProduct}
+              resizeMode="stretch"
+              style={[styles.Popularback, { marginTop: -Size.FindSize(170) }]}
+            >
+              <FlatList
+                // horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  paddingRight: Size.FindSize(15),
+                  marginTop: Size.FindSize(15),
+                  // height: Size.FindSize(280),
                 }}
-              >
-                <Text style={[styles.viewAll, { color: Colors.white }]}>
-                  {Strings.ViewAll}
-                </Text>
-              </TouchableOpacity>
-            )}
-          </ImageBackground>
+                numColumns={2}
+                data={popularData.slice(0, 8)}
+                renderItem={({ item }) => (
+                  <CustomItemView
+                    item={item}
+                    listView={{ width: Size.width / 2 - Size.FindSize(25) }}
+                    loginInfo={loginInfo ? true : false}
+                  />
+                )}
+              />
+              {popularData?.length > 8 && (
+                <TouchableOpacity
+                  onPress={() => {
+                    Navigator.navigate(Route.PopularProduct, {});
+                  }}
+                >
+                  <Text style={[styles.viewAll, { color: Colors.white }]}>
+                    {Strings.ViewAll}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </ImageBackground>
+          </View>
         ) : null}
         {newData?.length > 0 ? (
           <View style={styles.Popularback}>

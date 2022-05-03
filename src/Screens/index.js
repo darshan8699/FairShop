@@ -9,6 +9,7 @@ export { default as ShopCategoryWise } from "./User/ShopCategoryWise";
 export { default as Recipes } from "./User/Recipes";
 export { default as Offers } from "./User/Offers";
 export { default as StoreLocator } from "./User/StoreLocator";
+export { default as StoreLocatorSideMenu } from "./User/StoreLocatorSideMenu";
 export { default as AboutUs } from "./Common/AboutUs";
 export { default as UserCart } from "./User/UserCart";
 export { default as UserHome } from "./User/UserHome";

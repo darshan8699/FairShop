@@ -76,12 +76,14 @@ const MyComponent = (props) => {
               <View style={styles.goldView}>
                 <TouchableOpacity style={styles.goldButton}>
                   <Text style={styles.goldText}>
-                    {loyaltyData?.membership?.nextTierName}
+                    {loyaltyData?.membership?.tierName}
                   </Text>
                 </TouchableOpacity>
                 <Text style={[styles.tierText, { justifyContent: "center" }]}>
-                  {parseInt(loyaltyData?.membership?.nextTierMilestone)} points
-                  to go
+                  {loyaltyData?.membership?.nextTierMilestone
+                    ? parseInt(loyaltyData?.membership?.nextTierMilestone)
+                    : 0}{" "}
+                  points to go
                 </Text>
               </View>
             </View>

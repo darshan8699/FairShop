@@ -9,6 +9,7 @@ export const Route = {
   Recipes: "Recipes",
   ShopCategoryWise: "ShopCategoryWise",
   StoreLocator: "StoreLocator",
+  StoreLocatorSideMenu: "StoreLocatorSideMenu",
   DrawerApp: "DrawerApp",
   UserCart: "UserCart",
   UserHome: "UserHome",

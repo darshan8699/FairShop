@@ -18,14 +18,17 @@ import APICallService from "../../../API/APICallService";
 import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
+import { Route } from "../../../Navigation/Routes";
 import Colors from "../../../Utility/Colors";
 import {
   ADD_TO_CART,
   ADD_WISHLIST,
   ALL_CART,
   ALL_WISHLIST,
+  GET_URL_PARAMS,
   NO_IMAGE_URL,
   PREF_LOGIN_INFO,
+  PREF_STORE_ID,
   PRODUCT_DETAILS,
   SHARE_URL,
   UPDATE_CART_COUNT,
@@ -36,6 +39,7 @@ import {
   validateResponse,
 } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
+import Navigator from "../../../Utility/Navigator";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
@@ -70,9 +74,13 @@ const MyComponent = (props) => {
       setLoginData(loginInfo?.item);
     }
   }
-  const GetItemData = () => {
+  const GetItemData = async () => {
     setLoader(true);
-    const apiClass = new APICallService(PRODUCT_DETAILS, props.route.params.id);
+    const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    const apiClass = new APICallService(
+      "/product" + "/" + props.route.params.id + " " + GET_URL_PARAMS,
+      { store_id: id }
+    );
     apiClass
       .callAPI()
       .then(function (res) {
@@ -113,45 +121,123 @@ const MyComponent = (props) => {
     </TouchableOpacity>
   );
 
-  const addToCart = (product) => {
+  const addToCart = async (product, isBuyNow) => {
+    setLoader(true);
     AsyncStorageLib.getItem(ALL_CART, (err, result) => {
       product.quantity = 1;
       const cartList = [product];
       var prefList = [];
       if (result && JSON.parse(result).length > 0) {
         const saveList = JSON.parse(result);
-        prefList = [...saveList, ...cartList];
+
+        // prefList = [...saveList, ...cartList];
+        for (const key in saveList) {
+          if (saveList.hasOwnProperty(key)) {
+            const element = saveList[key];
+            if (element.item_code == product.item_code) {
+              if (
+                element.quantity < parseInt(product.inventory[0].stock_quantity)
+              ) {
+                addToCartStorage(product, isBuyNow);
+              } else {
+                showErrorMessage("Stock limit over");
+                setLoader(false);
+              }
+            } else {
+              prefList = [...saveList, ...cartList];
+            }
+          }
+        }
       } else {
         prefList = [...cartList];
       }
-      AsyncStorageLib.setItem(ALL_CART, JSON.stringify(prefList));
-      let productList = [];
-      for (const key in prefList) {
-        if (prefList.hasOwnProperty(key)) {
-          const element = prefList[key];
-          productList.push({
-            product_item_code: element.item_code,
-            quantity: element.quantity,
-          });
+
+      if (prefList.length > 0) {
+        AsyncStorageLib.setItem(ALL_CART, JSON.stringify(prefList));
+        let productList = [];
+        for (const key in prefList) {
+          if (prefList.hasOwnProperty(key)) {
+            const element = prefList[key];
+
+            productList.push({
+              product_item_code: element.item_code,
+              quantity: element.quantity,
+            });
+          }
         }
+        if (productList.length > 0) APICallAddToCart(productList, isBuyNow);
       }
-      APICallAddToCart(productList);
+    });
+
+    // AsyncStorageLib.getItem(ALL_CART, (err, result) => {
+    //   product.quantity = 1;
+    //   const cartList = [product];
+    //   var prefList = [];
+    //   if (result && JSON.parse(result).length > 0) {
+    //     const saveList = JSON.parse(result);
+    //     prefList = [...saveList, ...cartList];
+    //   } else {
+    //     prefList = [...cartList];
+    //   }
+    //   AsyncStorageLib.setItem(ALL_CART, JSON.stringify(prefList));
+    //   let productList = [];
+    //   for (const key in prefList) {
+    //     if (prefList.hasOwnProperty(key)) {
+    //       const element = prefList[key];
+    //       productList.push({
+    //         product_item_code: element.item_code,
+    //         quantity: element.quantity,
+    //       });
+    //     }
+    //   }
+    //   APICallAddToCart(productList, isBuyNow);
+    // });
+  };
+
+  const addToCartStorage = (product, isBuyNow) => {
+    AsyncStorageLib.getItem(ALL_CART, (err, result) => {
+      if (result && JSON.parse(result).length > 0) {
+        let saveList = JSON.parse(result);
+        for (const key in saveList) {
+          if (saveList.hasOwnProperty(key)) {
+            const element = saveList[key];
+            if (element.item_code == product.item_code) {
+              saveList[key].quantity = element.quantity + 1;
+            }
+          }
+        }
+        AsyncStorageLib.setItem(ALL_CART, JSON.stringify(saveList));
+        let productList = [];
+        for (const key in saveList) {
+          if (saveList.hasOwnProperty(key)) {
+            const element = saveList[key];
+            productList.push({
+              product_item_code: element.item_code,
+              quantity: element.quantity,
+            });
+          }
+        }
+        APICallAddToCart(productList, isBuyNow);
+      }
     });
   };
 
-  const APICallAddToCart = (product_list) => {
-    setLoader(true);
+  const APICallAddToCart = (product_list, isBuyNow) => {
+    // setLoader(true);
     const apiClass = new APICallService(ADD_TO_CART, {
       product: product_list,
-      order_using: "Web_store",
+      order_using: "mobile",
     });
     apiClass
       .callAPI()
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          showSuccessMessage("item added in cart");
+          showSuccessMessage("Cart updated successfully!");
           EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
+          if (isBuyNow) {
+            Navigator.navigate(Route.PaymentOrder);
+          }
         }
       })
       .catch((err) => {
@@ -315,18 +401,17 @@ const MyComponent = (props) => {
           <Text style={styles.brand}>Brand : {productData.brand}</Text>
         )}
         <View style={styles.priceView}>
-          {productData.offer ? (
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text style={styles.price}>
-                ₹{productData.mrp - productData.offer.discount}
-              </Text>
+          {/* {productData.offer ? ( */}
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text style={styles.price}>₹{productData.rsp}</Text>
+            {productData.rsp < productData.mrp && (
               <Text style={styles.totalprice}>₹{productData.mrp}</Text>
-            </View>
-          ) : (
-            <Text style={styles.price}>₹{productData.mrp}</Text>
-          )}
+            )}
+          </View>
+          {/*  ) : ( <Text style={styles.price}>₹{productData.mrp}</Text>
+           )} */}
           <View style={styles.horizontalView}>
-            {productData.veg_non_veg && (
+            {productData.veg_non_veg ? (
               <View style={{ justifyContent: "center", alignItems: "center" }}>
                 <Image
                   source={
@@ -343,8 +428,8 @@ const MyComponent = (props) => {
                     : Strings.NON_VEG}
                 </Text>
               </View>
-            )}
-            {productData.country_of_origin && (
+            ) : null}
+            {productData.country_of_origin ? (
               <View style={styles.flagView}>
                 {/* <Image
                   source={Images.circleFlag}
@@ -369,10 +454,10 @@ const MyComponent = (props) => {
                   Origin : {productData.country_of_origin}
                 </Text>
               </View>
-            )}
+            ) : null}
           </View>
         </View>
-        {productData.offer && (
+        {productData.offer ? (
           <View>
             <Text style={styles.discountPrice}>
               You save ₹{productData.offer.discount}
@@ -389,7 +474,7 @@ const MyComponent = (props) => {
               </View>
             </View>
           </View>
-        )}
+        ) : null}
         {/* <View style={styles.pointView}>
           <Image
             source={Images.Point}
@@ -403,7 +488,7 @@ const MyComponent = (props) => {
         <View style={styles.buttonView}>
           <TouchableOpacity
             style={styles.cartView}
-            onPress={() => addToCart(productData, 1)}
+            onPress={() => addToCart(productData, false)}
           >
             <Image
               source={Images.cart}
@@ -412,7 +497,12 @@ const MyComponent = (props) => {
             />
             <Text style={styles.add}>{Strings.AddToCart}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.BuycartView} onPress={() => {}}>
+          <TouchableOpacity
+            style={styles.BuycartView}
+            onPress={() => {
+              addToCart(productData, true);
+            }}
+          >
             <Text style={styles.buyText}>{Strings.BuyNow}</Text>
           </TouchableOpacity>
           {loginData ? (

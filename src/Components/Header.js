@@ -2,10 +2,9 @@
 import React from "react";
 import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Images } from "../Assets/images";
-import Colors from "../Utility/Colors";
-import Logger from "../Utility/Logger";
-import { Size } from "../Utility/sizes";
 import { Route } from "../Navigation/Routes";
+import Colors from "../Utility/Colors";
+import { Size } from "../Utility/sizes";
 
 // create a component
 const Header = (props) => {
@@ -19,11 +18,17 @@ const Header = (props) => {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={Images.headerLogo}
-        resizeMode={"contain"}
-        style={styles.logo}
-      />
+      <TouchableOpacity
+        style={styles.logoView}
+        activeOpacity={1}
+        onPress={() => navigation.navigate(Route.UserHome)}
+      >
+        <Image
+          source={Images.headerLogo}
+          resizeMode={"contain"}
+          style={styles.logo}
+        />
+      </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.iconView}
@@ -76,11 +81,14 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.headerline,
     borderBottomWidth: Size.FindSize(0.5),
   },
-  logo: {
+  logoView: {
     height: Size.FindSize(70),
     top: 0,
     position: "absolute",
     left: Size.FindSize(-135),
+  },
+  logo: {
+    height: Size.FindSize(70),
   },
   icon: {
     height: Size.FindSize(25),

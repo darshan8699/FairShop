@@ -7,7 +7,10 @@ import CustomItemView from "../../../Components/CustomItemView";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
 import NoDataView from "../../../Components/NoDataView";
-import { HOMEPAGE_NEW_PRODUCT } from "../../../Utility/Constants";
+import {
+  HOMEPAGE_NEW_PRODUCT,
+  PREF_STORE_ID,
+} from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
@@ -36,7 +39,10 @@ const MyComponent = (props) => {
 
   const GetNewProductData = async () => {
     setLoader(true);
-    const apiClass = new APICallService(HOMEPAGE_NEW_PRODUCT, {});
+    const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    const apiClass = new APICallService(HOMEPAGE_NEW_PRODUCT, {
+      store_id: store_id,
+    });
     apiClass
       .callAPI()
       .then(async function (res) {

@@ -95,6 +95,7 @@ export default styles = StyleSheet.create({
     // width: Size.FindSize(143),
     marginTop: Size.FindSize(5),
   },
+
   viewAll: {
     color: Colors.headerText,
     fontFamily: Medium,

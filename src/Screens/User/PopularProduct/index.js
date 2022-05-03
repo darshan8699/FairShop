@@ -27,7 +27,11 @@ const MyComponent = (props) => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       getLoginData();
-      GetNewProductData();
+      if (props.route.params.isTopPickList) {
+        setNewData(props.route.params.topPickList);
+      } else {
+        GetNewProductData();
+      }
     }
   });
 
@@ -38,9 +42,11 @@ const MyComponent = (props) => {
   }
 
   const GetNewProductData = async () => {
-    const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     setLoader(true);
-    const apiClass = new APICallService(HOMEPAGE_POPULAR_PRODUCT, {});
+    const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    const apiClass = new APICallService(HOMEPAGE_POPULAR_PRODUCT, {
+      store_id: store_id,
+    });
     apiClass
       .callAPI()
       .then(async function (res) {
@@ -61,7 +67,13 @@ const MyComponent = (props) => {
     <View style={styles.container}>
       <Header navigation={props.navigation} isBack />
       {/* <Header navigation={props.navigation} isRightIcon={false} isBack /> */}
-      <Text style={styles.headerText}>{Strings.Popular_product}</Text>
+      <Text style={styles.headerText}>
+        {props.route.params.isTopPickList
+          ? loginInfo
+            ? Strings.TopPickYou
+            : Strings.TopSellProduct
+          : Strings.Popular_product}
+      </Text>
       <Loader2 modalVisible={isShowLoader} />
       <FlatList
         numColumns={2}

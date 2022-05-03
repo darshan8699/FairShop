@@ -30,6 +30,7 @@ import Strings from "../Utility/Strings";
 const MyComponent = (props) => {
   const [listview, setlistview] = useState(false);
   const [subCat, setSubCat] = useState(null);
+  const [subCat2, setSubCat2] = useState(null);
   const [isShowLoader, setLoader] = useState(false);
   const [loginInfo, setLoginInfo] = useState("");
   const [data, setData] = useState([]);
@@ -183,6 +184,7 @@ const MyComponent = (props) => {
                       onPress={() => {
                         if (subCat == item.name) {
                           setSubCat(null);
+                          setSubCat2(null);
                         } else {
                           setSubCat(item.name);
                         }
@@ -205,38 +207,90 @@ const MyComponent = (props) => {
                   </TouchableOpacity>
                   {item.children.length > 0 && subCat == item.name
                     ? item.children.map((subItem) => (
-                        <TouchableOpacity
-                          onPress={() => {
-                            Navigator.navigate(Route.ShopCategoryWise, {
-                              categoryDetail: subItem,
-                            });
-                          }}
-                        >
-                          <Text
-                            style={[
-                              styles.textView,
-                              { marginLeft: Size.FindSize(50) },
-                            ]}
+                        <View>
+                          <TouchableOpacity
+                            onPress={() => {
+                              Navigator.navigate(Route.ShopCategoryWise, {
+                                categoryDetail: subItem,
+                              });
+                            }}
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              marginHorizontal: Size.FindSize(20),
+                            }}
                           >
-                            {subItem.name}
-                          </Text>
-                        </TouchableOpacity>
+                            <Text
+                              style={[
+                                styles.textView,
+                                { marginLeft: Size.FindSize(10) },
+                              ]}
+                            >
+                              {subItem.name}
+                            </Text>
+                            <TouchableOpacity
+                              onPress={() => {
+                                if (subCat2 == subItem.name) {
+                                  setSubCat2(null);
+                                } else {
+                                  setSubCat2(subItem.name);
+                                }
+                              }}
+                            >
+                              <MaterialIcons
+                                name={
+                                  subCat2 == subItem.name
+                                    ? "keyboard-arrow-up"
+                                    : "keyboard-arrow-down"
+                                }
+                                color={
+                                  subCat2 == subItem.name
+                                    ? Colors.Background
+                                    : Colors.forgotText
+                                }
+                                size={20}
+                              />
+                            </TouchableOpacity>
+                          </TouchableOpacity>
+                          {subItem.children.length > 0 &&
+                          subCat2 == subItem.name
+                            ? subItem.children.map((subItem) => (
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    Navigator.navigate(Route.ShopCategoryWise, {
+                                      categoryDetail: subItem,
+                                    });
+                                  }}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.textView,
+                                      { marginLeft: Size.FindSize(40) },
+                                    ]}
+                                  >
+                                    {subItem.name}
+                                  </Text>
+                                </TouchableOpacity>
+                              ))
+                            : null}
+                        </View>
                       ))
                     : null}
                 </View>
               ))
             : null}
 
-          <TouchableOpacity onPress={() => Navigator.navigate(Route.Recipes)}>
+          {/* <TouchableOpacity onPress={() => Navigator.navigate(Route.Recipes)}>
             <Text style={styles.textView}>{Strings.Recipes}</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           {loginInfo ? (
             <TouchableOpacity onPress={() => Navigator.navigate(Route.Offers)}>
               <Text style={styles.textView}>{Strings.Offers}</Text>
             </TouchableOpacity>
           ) : null}
           <TouchableOpacity
-            onPress={() => Navigator.navigate(Route.StoreLocator)}
+            onPress={() => Navigator.navigate(Route.StoreLocatorSideMenu)}
           >
             <Text style={styles.textView}>{Strings.StoreLocator}</Text>
           </TouchableOpacity>

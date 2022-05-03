@@ -5,6 +5,7 @@ import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
 import APICallService from "../../../API/APICallService";
 import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
+import Loader2 from "../../../Components/Loader2";
 import { Route } from "../../../Navigation/Routes";
 import { LOGOUT, PREF_STORE_ID } from "../../../Utility/Constants";
 import {
@@ -21,6 +22,7 @@ import styles from "./styles";
 const MyComponent = (props) => {
   const [loginInfo, setLoginInfo] = useState("");
   const isFirstRun = useRef(true);
+  const [isShowLoader, setLoader] = useState(false);
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
@@ -57,6 +59,7 @@ const MyComponent = (props) => {
   }
 
   async function callAPILogout() {
+    setLoader(true);
     const apiClass = new APICallService(LOGOUT, {});
     apiClass
       .callAPI()
@@ -66,10 +69,14 @@ const MyComponent = (props) => {
           const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
           await AsyncStorageLib.clear();
           await AsyncStorageLib.setItem(PREF_STORE_ID, id);
+          setLoader(false);
           Navigator.navigate(Route.Login);
+        } else {
+          setLoader(false);
         }
       })
       .catch((err) => {
+        setLoader(false);
         showErrorMessage(err.message);
       });
   }
@@ -77,6 +84,7 @@ const MyComponent = (props) => {
   return (
     <View style={styles.container}>
       <Header navigation={props.navigation} />
+      <Loader2 modalVisible={isShowLoader} />
       {loginInfo ? (
         <View>
           <Text style={styles.headerText}>{Strings.My_Profile}</Text>

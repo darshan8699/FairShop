@@ -152,7 +152,7 @@ const PaymentOrder = (props) => {
     setLoader(true);
     const apiClass = new APICallService(ADD_TO_CART, {
       user_id: loginData?.id,
-      order_using: "Web_store",
+      order_using: "mobile",
     });
     apiClass
       .callAPI()
@@ -212,7 +212,7 @@ const PaymentOrder = (props) => {
     setLoader(true);
     const apiClass = new APICallService(ADD_TO_CART, {
       product: product_list,
-      order_using: "Web_store",
+      order_using: "mobile",
     });
     apiClass
       .callAPI()
@@ -415,7 +415,7 @@ const PaymentOrder = (props) => {
     }
 
     const apiClass = new APICallService(CREATE_ORDER, {
-      order_using: "Web",
+      order_using: "mobile",
       store_id: id,
       customer_contact: loginData?.phone ? loginData?.phone : billingContact,
       payment_gateway: paymentMode == 1 ? "razorpay" : "cod",

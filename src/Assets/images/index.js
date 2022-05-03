@@ -47,4 +47,5 @@ export const Images = {
   test3: require("./test3.png"),
   videoTest: require("./videoTest.png"),
   flagCircle: require("./flagCircle.png"),
+  popularProduct: require("./popular_product.png"),
 };

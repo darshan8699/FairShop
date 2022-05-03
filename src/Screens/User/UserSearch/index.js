@@ -39,13 +39,14 @@ const MyComponent = (props) => {
   }
 
   const GetNewProductData = async (search, isLoader = true) => {
-    const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     setLoader(isLoader);
+    const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     setSearching(search.length > 0);
     const apiClass = new APICallService(PRODUCT_LIST, {
-      limit: -1,
+      // limit: -1,
       store_id: store_id,
       search: search,
+      page: 1,
     });
     apiClass
       .callAPI()
@@ -53,8 +54,8 @@ const MyComponent = (props) => {
         setLoader(false);
         setSearching(false);
         if (res.code === 0) {
-          setNewData(res.data.items);
-          setSearchData(res.data.items);
+          setNewData(res.data.data);
+          setSearchData(res.data.data);
         } else {
           setNewData([]);
           setSearchData([]);

@@ -72,7 +72,7 @@ const MyComponent = (props) => {
     setLoader(true);
     const apiClass = new APICallService(ADD_TO_CART, {
       user_id: loginData?.id,
-      order_using: "Web_store",
+      order_using: "mobile",
     });
     apiClass
       .callAPI()
@@ -109,7 +109,7 @@ const MyComponent = (props) => {
     setLoader(true);
     const apiClass = new APICallService(ADD_TO_CART, {
       product: product_list,
-      order_using: "Web_store",
+      order_using: "mobile",
     });
     apiClass
       .callAPI()
@@ -135,7 +135,12 @@ const MyComponent = (props) => {
           if (saveList.hasOwnProperty(key)) {
             const element = saveList[key];
             if (element.item_code == product.item_code) {
-              saveList[key].quantity = quantity;
+              if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
+                saveList[key].quantity = quantity;
+              } else {
+                showErrorMessage("Stock limit over");
+              }
+              //saveList[key].quantity = quantity;
             }
           }
         }
@@ -172,7 +177,7 @@ const MyComponent = (props) => {
           />
           <View style={styles.textView}>
             <Text style={styles.item}>{item.item_name}</Text>
-            <Text style={styles.quantityText}>{item.quantity}</Text>
+            {/* <Text style={styles.quantityText}>{item.quantity}</Text> */}
             {item.rsp < item.mrp ? (
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text style={styles.priceText}>₹{item.rsp}</Text>
