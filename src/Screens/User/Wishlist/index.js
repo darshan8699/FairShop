@@ -19,13 +19,16 @@ const Wishlist = (props) => {
   const [isShowLoader, setLoader] = useState(false);
   const [whishList, setWhishList] = useState([]);
   const [page, setPage] = useState(1);
+  const [prefStoreId, setPrefStoreId] = useState("");
   const isFirstRun = useRef(true);
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       APICallWishList();
     }
-    const unsubscribe = props.navigation.addListener("focus", () => {
+    const unsubscribe = props.navigation.addListener("focus", async () => {
+      const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+      setPrefStoreId(store_id);
       APICallWishList();
     });
     return () => unsubscribe();
@@ -61,52 +64,6 @@ const Wishlist = (props) => {
         showErrorMessage(err.message);
       });
   };
-  // const addToWishList = (product_item_code) => {
-  //   Logger.log("product_item_code", product_item_code);
-  //   AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
-  //     const id = [product_item_code];
-  //     if (result !== null && result != product_item_code) {
-  //       var newIds = JSON.parse(result).concat(id);
-  //       AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(newIds));
-  //       setLoader(true);
-  //       const apiClass = new APICallService(ADD_WISHLIST, {
-  //         product_item_code: newIds,
-  //       });
-  //       apiClass
-  //         .callAPI()
-  //         .then(async function (res) {
-  //           setLoader(false);
-  //           if (validateResponse(res)) {
-  //             showSuccessMessage(res.message);
-  //           }
-  //         })
-  //         .catch((err) => {
-  //           setLoader(false);
-  //           showErrorMessage(err.message);
-  //         });
-  //       console.log("all wishlist---------", newIds);
-  //     } else {
-  //       AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(id));
-  //       setLoader(true);
-  //       const apiClass = new APICallService(ADD_WISHLIST, {
-  //         product_item_code: id,
-  //       });
-  //       apiClass
-  //         .callAPI()
-  //         .then(async function (res) {
-  //           setLoader(false);
-  //           if (validateResponse(res)) {
-  //             showSuccessMessage(res.message);
-  //           }
-  //         })
-  //         .catch((err) => {
-  //           setLoader(false);
-  //           showErrorMessage(err.message);
-  //         });
-  //       Logger.log("single wishlist--------");
-  //     }
-  //   });
-  // };
 
   return (
     <View style={styles.container}>
@@ -130,6 +87,7 @@ const Wishlist = (props) => {
             item={item}
             listView={styles.listView}
             onRefresh={() => APICallWishList()}
+            storeId={prefStoreId}
             // addToWishList={(id) => addToWishList(id)}
           />
         )}

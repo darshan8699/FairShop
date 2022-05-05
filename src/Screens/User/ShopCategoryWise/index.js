@@ -30,6 +30,7 @@ const MyComponent = (props) => {
   const dropdownRef = useRef();
   const [selectedFilter, setSelectedFilter] = useState("");
   const [loginInfo, setLoginInfo] = useState("");
+  const [prefStoreId, setPrefStoreId] = useState("");
 
   useEffect(() => {
     if (isFirstRun.current) {
@@ -47,6 +48,7 @@ const MyComponent = (props) => {
   const GetNewProductData = async () => {
     setLoader(true);
     const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    setPrefStoreId(store_id);
     const apiClass = new APICallService(PRODUCT_LIST, {
       page: 1,
       categories: props.route.params.categoryDetail.slug,
@@ -173,10 +175,10 @@ const MyComponent = (props) => {
             item={item}
             listView={styles.listView}
             loginInfo={loginInfo ? true : false}
+            storeId={prefStoreId}
             // addToWishList={(id) => addToWishList(id)}
           />
         )}
-        
       />
       <NoDataView
         isVisible={newData.length == 0}

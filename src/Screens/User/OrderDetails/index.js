@@ -3,6 +3,7 @@ import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, Image, ScrollView, Text, View } from "react-native";
 import Header2 from "../../../Components/Header2";
+import Colors from "../../../Utility/Colors";
 import { NO_IMAGE_URL } from "../../../Utility/Constants";
 import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
@@ -112,10 +113,25 @@ const MyComponent = (props) => {
               ₹{orderDetails?.igst ? orderDetails.igst : 0}
             </Text>
           </View>
+          {orderDetails.cart_offer ? (
+            <View style={styles.horizontalView}>
+              <Text style={styles.greyText}>{Strings.CartDiscount}</Text>
+              <Text style={[styles.greyText, { color: Colors.green }]}>
+                -₹{orderDetails?.cart_discount ? orderDetails.cart_discount : 0}{" "}
+                ({orderDetails.cart_offer.title})
+              </Text>
+            </View>
+          ) : null}
           <View style={styles.horizontalView}>
             <Text style={styles.boldText}>{Strings.Total}</Text>
             <Text style={styles.redText}>
               ₹{orderDetails?.total ? orderDetails.total : 0}
+            </Text>
+          </View>
+          <View style={styles.horizontalView}>
+            <Text style={styles.boldText}>{Strings.paidTotal}</Text>
+            <Text style={styles.redText}>
+              ₹{orderDetails?.paid_total ? orderDetails.paid_total : 0}
             </Text>
           </View>
         </View>
@@ -172,6 +188,7 @@ const MyComponent = (props) => {
                 (orderDetails?.razorpay_payment_id
                   ? orderDetails?.razorpay_payment_id
                   : "")}
+              {"\nPayment Status: " + orderDetails?.razorpay_payment_status}
             </Text>
           )}
           <Text

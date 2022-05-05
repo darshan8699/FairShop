@@ -106,13 +106,9 @@ export function getFormatedate(dateTime, format = "ddd, DD.MM.yyyy, hh.mm a") {
 
 export function checkFavItem(itemCode) {
   AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
-    console.log("result is :", JSON.parse(result));
-    console.log("item code is :", itemCode);
     if (JSON.parse(result).indexOf(itemCode) !== -1) {
-      console.log("true");
       return true;
     } else {
-      console.log("false");
       return false;
     }
   });

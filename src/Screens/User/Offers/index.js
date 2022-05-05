@@ -3,9 +3,14 @@ import AsyncStorageLib from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, Image, Text, View } from "react-native";
 import APICallService from "../../../API/APICallService";
+import CustomItemView from "../../../Components/CustomItemView";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
-import { OFFERS, PREF_STORE_ID } from "../../../Utility/Constants";
+import {
+  COMBO_OFFERS,
+  OFFERS,
+  PREF_STORE_ID,
+} from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
@@ -15,26 +20,38 @@ import styles from "./styles";
 const Offers = (props) => {
   const [isShowLoader, setLoader] = useState(false);
   const [offersList, setOffersList] = useState([]);
+  const [loginInfo, setLoginInfo] = useState("");
+  const [prefStoreId, setPrefStoreId] = useState("");
   const isFirstRun = useRef(true);
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
+      getLoginInfo();
       APICallOfferList();
     }
   });
 
+  async function getLoginInfo() {
+    const jsonValue = await AsyncStorageLib.getItem("loginInfo");
+    const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
+    setLoginInfo(loginInfo);
+  }
+
   const APICallOfferList = async () => {
     setLoader(true);
     const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
-    const apiClass = new APICallService(OFFERS, {
+    setPrefStoreId(id);
+    const apiClass = new APICallService(COMBO_OFFERS, {
       store_id: id,
+      categories: "combo",
+      page: 1,
     });
     apiClass
       .callAPI()
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          setOffersList(res.data?.values[0]?.couponsNew);
+          setOffersList(res.data?.data);
         }
       })
       .catch((err) => {
@@ -53,20 +70,30 @@ const Offers = (props) => {
         contentContainerStyle={{
           paddingRight: Size.FindSize(15),
           paddingBottom: Size.FindSize(20),
+          paddingTop: 5,
         }}
         data={offersList}
+        numColumns={2}
         renderItem={({ item }) => (
-          <View style={styles.listView}>
-            <Image
-              source={{ uri: item?.bannerImage }}
-              style={styles.bestImage}
-            />
-            <View style={{ flex: 1, marginStart: Size.FindSize(10) }}>
-              <Text style={styles.ShopNameText}>{item.couponCode}</Text>
-              <Text style={styles.text1}>{item.description}</Text>
-            </View>
-          </View>
+          <CustomItemView
+            item={item}
+            listView={styles.shadow}
+            loginInfo={loginInfo ? true : false}
+            storeId={prefStoreId}
+          />
         )}
+        // renderItem={({ item }) => (
+        //   <View style={styles.listView}>
+        //     <Image
+        //       source={{ uri: item?.bannerImage }}
+        //       style={styles.bestImage}
+        //     />
+        //     <View style={{ flex: 1, marginStart: Size.FindSize(10) }}>
+        //       <Text style={styles.ShopNameText}>{item.couponCode}</Text>
+        //       <Text style={styles.text1}>{item.description}</Text>
+        //     </View>
+        //   </View>
+        // )}
         nestedScrollEnabled={false}
       />
     </View>

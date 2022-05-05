@@ -17,7 +17,7 @@ export default styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: Size.FindSize(10),
+    marginBottom: Size.FindSize(5),
   },
   boldText: {
     fontFamily: SemiBold,

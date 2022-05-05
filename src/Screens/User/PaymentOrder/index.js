@@ -31,7 +31,9 @@ import {
   PAYMENT_VERIFY,
   PREF_LOGIN_INFO,
   PREF_STORE_ID,
+  PROMOCODE_VERIFY,
   UPDATE_CART_COUNT,
+  STORE_DETAILS,
 } from "../../../Utility/Constants";
 import {
   showErrorMessage,
@@ -51,11 +53,22 @@ import { Images } from "../../../Assets/images";
 // create a component
 const PaymentOrder = (props) => {
   const [loginData, setLoginData] = useState("");
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [totalrsp, setTotalrsp] = useState(0);
+  const [storeId, setStoreId] = useState("");
+
+  const [subTotalPrice, setSubTotalPrice] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalCGST, setTotalCGST] = useState(0);
+  const [totalSGST, setTotalSGST] = useState(0);
+  const [totalIGST, setTotalIGST] = useState(0);
+  const [discountedSubtotal, setDiscountedSubtotal] = useState(0);
+  const [totalSavings, setTotalSavings] = useState(0);
+  const [offerDiscount, setOfferDiscount] = useState(0);
+
   const [isShowLoader, setLoader] = useState(false);
   const [cartList, setCartList] = useState([]);
   const [addressList, setAddressList] = useState([]);
+  const [servicablePincode, setServicablePincode] = useState([]);
+  const [shippingPinCodeError, setShippingPinCodeError] = useState(true);
   const [orderNotes, setOrderNotes] = useState("");
   const [addressIndex, setAddressIndex] = useState(null);
   const [billingAddressIndex, setBillingAddressIndex] = useState(null);
@@ -101,6 +114,9 @@ const PaymentOrder = (props) => {
       // APICallCartList(loginInfo?.item);
       APICallGetAddressData();
     }
+    const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    setStoreId(store_id);
+    APICallGetStoreInfo(store_id);
     getCartList();
   }
 
@@ -119,16 +135,64 @@ const PaymentOrder = (props) => {
   }
 
   function updateCartTotal(cartList) {
-    let cartTotal = 0;
-    let rspTotal = 0;
-    Logger.log("updateCartTotal=>", cartList);
+    let cartSubtotal = 0;
+    let discountedSubtotal = 0;
+    let totalCgst = 0;
+    let totalSgst = 0;
+    let totalIgst = 0;
+    let totalSavings = 0;
+    let totalAmount = 0;
+    let offerDiscount = 0;
+
     cartList.map((item) => {
-      cartTotal = cartTotal + item.mrp * item.quantity;
-      rspTotal = rspTotal + item.rsp * item.quantity;
+      Logger.log(item);
+      totalCgst =
+        totalCgst + (item.cgst_amount ? item.cgst_amount : 0) * item.quantity;
+      totalSgst =
+        totalSgst + (item.sgst_amount ? item.sgst_amount : 0) * item.quantity;
+      totalIgst =
+        totalIgst + (item.igst_amount ? item.igst_amount : 0) * item.quantity;
+
+      cartSubtotal = cartSubtotal + item.mrp * item.quantity;
+      discountedSubtotal = discountedSubtotal + item.net_price * item.quantity;
+      totalSavings =
+        totalSavings +
+        (item.mrp -
+          item.net_price +
+          item.cgst_amount +
+          item.sgst_amount +
+          (item.igst_amount ? item.igst_amount : 0)) *
+          item.quantity;
+      Logger.log(item.igst_amount + " " + item.quantity);
+      totalAmount = discountedSubtotal + totalCgst + totalSgst + totalIgst;
     });
-    setTotalPrice(cartTotal);
-    setTotalrsp(rspTotal);
+
+    setTotalAmount(totalAmount);
+    setSubTotalPrice(cartSubtotal);
+    setTotalCGST(totalCgst);
+    setTotalSGST(totalSgst);
+    setTotalIGST(totalIgst);
+    setTotalSavings(totalSavings);
+    setDiscountedSubtotal(discountedSubtotal);
+    setOfferDiscount(offerDiscount);
   }
+
+  const APICallGetStoreInfo = (store_id) => {
+    setLoader(true);
+    const apiClass = new APICallService(STORE_DETAILS, store_id);
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          setServicablePincode(res.data.item.servicable_pincodes);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
 
   const APICallGetAddressData = () => {
     setLoader(true);
@@ -138,7 +202,7 @@ const PaymentOrder = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          console.log("address res.data:-", res.data);
+          Logger.log("address res.data:-", res.data);
           setAddressList(res.data.items);
         }
       })
@@ -268,6 +332,35 @@ const PaymentOrder = (props) => {
       });
   };
 
+  const onSubmitPromocode = async () => {
+    Keyboard.dismiss();
+
+    const apiClass = new APICallService(PROMOCODE_VERIFY, {
+      store_id: storeId,
+      coupon_code: promoCode,
+      product: cartList.map((x) => {
+        return {
+          product_item_code: x.item_code,
+          quantity: x.quantity,
+        };
+      }),
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          showSuccessMessage(res.message);
+        } else {
+          showErrorMessage(res.message);
+        }
+      })
+      .catch((err) => {
+        setLoader(false);
+        showErrorMessage(err.message);
+      });
+  };
+
   const APICallCreateOrder = async () => {
     Keyboard.dismiss();
     if (loginData) {
@@ -329,11 +422,15 @@ const PaymentOrder = (props) => {
         return;
       }
     }
+    if (!shippingPinCodeError) {
+      showErrorMessage(Strings.error_store_pincode);
+      return;
+    }
     if (paymentMode == null) {
       showErrorMessage(Strings.error_paymentMode);
       return;
     }
-    const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+
     setLoader(true);
     let redAddress;
     if (loginData) {
@@ -416,7 +513,7 @@ const PaymentOrder = (props) => {
 
     const apiClass = new APICallService(CREATE_ORDER, {
       order_using: "mobile",
-      store_id: id,
+      store_id: storeId,
       customer_contact: loginData?.phone ? loginData?.phone : billingContact,
       payment_gateway: paymentMode == 1 ? "razorpay" : "cod",
       shipping_address: redAddress,
@@ -461,7 +558,7 @@ const PaymentOrder = (props) => {
       image: "https://fairshop.co.in/assets/images/fairshop-logo.svg",
       currency: "INR",
       key: "rzp_test_KcH2iILATfSbfc",
-      amount: totalPrice + "00",
+      amount: totalAmount + "00",
       // name: "ALF-FARMS CHICKEN BACON150gm",
       order_id: razorpay_order_id, //Replace this with an order_id created using Orders API.
       prefill: {
@@ -564,7 +661,10 @@ const PaymentOrder = (props) => {
             addressIndex == index ? Colors.pinkBack : Colors.white,
         },
       ]}
-      onPress={() => setAddressIndex(index)}
+      onPress={() => {
+        setAddressIndex(index);
+        setShippingPinCodeError(servicablePincode.includes("" + item.pincode));
+      }}
     >
       <View style={styles.nameView}>
         <View style={styles.backView}>
@@ -643,37 +743,6 @@ const PaymentOrder = (props) => {
         {item.city + ", " + item.state + "-" + item.pincode}
       </Text>
     </TouchableOpacity>
-    // <TouchableOpacity
-    //   activeOpacity={1}
-    //   style={[
-    //     styles.addressItemView,
-    //     {
-    //       borderColor:
-    //         addressIndex == index ? Colors.Background : Colors.border,
-    //       backgroundColor:
-    //         addressIndex == index ? Colors.pinkBack : Colors.white,
-    //     },
-    //   ]}
-    //   onPress={() => setAddressIndex(index)}
-    // >
-    //   <View>
-    //     <Text
-    //       style={styles.addressameText}
-    //       numberOfLines={1}
-    //       ellipsizeMode={"tail"}
-    //     >
-    //       {item.name}
-    //     </Text>
-    //     <Text style={styles.addressText1}>{item.full_name}</Text>
-    //     <Text style={styles.addressText1}>
-    //       {item.address_line_1 + ", " + item.address_line_2}
-    //     </Text>
-    //     <Text style={styles.addressText1}>{item.landmark}</Text>
-    //     <Text style={styles.addressText1}>
-    //       {item.city + ", " + item.state + "-" + item.pincode}
-    //     </Text>
-    //   </View>
-    // </TouchableOpacity>
   );
 
   const renderBillingAddressList = ({ item, index }) => (
@@ -726,23 +795,6 @@ const PaymentOrder = (props) => {
       <Text style={styles.text1}>
         {item.city + ", " + item.state + "-" + item.pincode}
       </Text>
-      {/* <View>
-        <Text
-          style={styles.addressameText}
-          numberOfLines={1}
-          ellipsizeMode={"tail"}
-        >
-          {item.name}
-        </Text>
-        <Text style={styles.addressText1}>{item.full_name}</Text>
-        <Text style={styles.addressText1}>
-          {item.address_line_1 + ", " + item.address_line_2}
-        </Text>
-        <Text style={styles.addressText1}>{item.landmark}</Text>
-        <Text style={styles.addressText1}>
-          {item.city + ", " + item.state + "-" + item.pincode}
-        </Text>
-      </View> */}
     </TouchableOpacity>
   );
 
@@ -801,10 +853,29 @@ const PaymentOrder = (props) => {
         <View style={{ flex: 1 }}>
           <CustomText name={Strings.Pincode} marginTop={Size.FindSize(25)} />
           <CustomInput
-            onChangeText={(text) => setShippingPincode(text)}
+            onChangeText={(text) => {
+              setShippingPincode(text);
+              if (text.trim().length == 6) {
+                setShippingPinCodeError(
+                  servicablePincode.includes(text.trim())
+                );
+              }
+            }}
             value={shippingPincode}
             keyboardType="numeric"
+            inputStyle={{
+              borderWidth: !shippingPinCodeError ? 1 : 0,
+              borderColor: Colors.red,
+            }}
           />
+          {!shippingPinCodeError ? (
+            <CustomText
+              color={Colors.red}
+              name={Strings.error_store_pincode}
+              marginTop={Size.FindSize(15)}
+              starText={false}
+            />
+          ) : null}
         </View>
       </View>
     </View>
@@ -889,7 +960,7 @@ const PaymentOrder = (props) => {
       >
         <View style={{}}>
           <Text style={styles.headerText}>{Strings.CheckOut}</Text>
-          <FlatList
+          {/* <FlatList
             showsVerticalScrollIndicator={false}
             data={cartList}
             renderItem={renderCartItem}
@@ -899,9 +970,9 @@ const PaymentOrder = (props) => {
             }}
             nestedScrollEnabled={false}
             bounces={false}
-          />
+          /> */}
 
-          <View>
+          <View style={{}}>
             <View style={styles.rowItem}>
               <CustomText
                 name={Strings.ShippingAddress}
@@ -911,16 +982,27 @@ const PaymentOrder = (props) => {
                 marginTop={Size.FindSize(25)}
               />
               {addressList.length > 0 && (
-                <FlatList
-                  showsHorizontalScrollIndicator={false}
-                  data={addressList}
-                  horizontal
-                  renderItem={renderAddressList}
-                  style={styles.addressList}
-                  nestedScrollEnabled={false}
-                  bounces={false}
-                />
+                <View>
+                  <FlatList
+                    showsHorizontalScrollIndicator={false}
+                    data={addressList}
+                    horizontal
+                    renderItem={renderAddressList}
+                    style={styles.addressList}
+                    nestedScrollEnabled={false}
+                    bounces={false}
+                  />
+                  {!shippingPinCodeError ? (
+                    <CustomText
+                      color={Colors.red}
+                      name={Strings.error_store_pincode}
+                      marginTop={Size.FindSize(15)}
+                      starText={false}
+                    />
+                  ) : null}
+                </View>
               )}
+
               {loginData ? null : renderShippingAddress()}
             </View>
             <View style={styles.rowItem}>
@@ -943,7 +1025,15 @@ const PaymentOrder = (props) => {
               )}
               {loginData ? null : renderBillingAddress()}
             </View>
-            <View style={[styles.cartItem, { marginTop: Size.FindSize(20) }]}>
+            <View
+              style={[
+                styles.cartItem,
+                {
+                  marginTop: Size.FindSize(20),
+                  marginHorizontal: Size.FindSize(5),
+                },
+              ]}
+            >
               {/* <Text style={styles.subTotalText}>{Strings.OrderNotes}</Text> */}
               <CustomText
                 name={Strings.OrderNotes}
@@ -955,7 +1045,9 @@ const PaymentOrder = (props) => {
                 value={orderNotes}
               />
             </View>
-            <View style={styles.cartItem}>
+            <View
+              style={[styles.cartItem, { marginHorizontal: Size.FindSize(5) }]}
+            >
               <CustomText
                 name={Strings.PaymentMethod}
                 customStyle={{
@@ -1025,31 +1117,34 @@ const PaymentOrder = (props) => {
             <View style={[styles.line, { marginTop: Size.FindSize(20) }]} />
             <View style={styles.subTotalView}>
               <Text style={styles.subTotalText}>{Strings.Subtotal}</Text>
-              <Text style={styles.subTotalPrice}>₹{totalPrice}</Text>
+              <Text style={styles.subTotalPrice}>
+                ₹{discountedSubtotal.toFixed(2)}
+              </Text>
             </View>
             <View style={styles.subTotalView}>
               <Text style={styles.subTotalText}>{Strings.youSave}</Text>
               <Text style={styles.discountText}>
-                {totalPrice != totalrsp
-                  ? " - ₹" + (totalPrice - totalrsp)
-                  : "₹0"}
+                ₹{totalSavings.toFixed(2)}
               </Text>
             </View>
             <View style={styles.subTotalView}>
               <Text style={styles.subTotalText}>{Strings.TaxableAmount}</Text>
-              <Text style={styles.subTotalPrice}>₹{totalPrice}</Text>
+              <Text style={styles.subTotalPrice}>
+                {" "}
+                ₹{(subTotalPrice - totalSavings).toFixed(2)}
+              </Text>
             </View>
             <View style={styles.subTotalView}>
               <Text style={styles.subTotalText}>{Strings.CGST}</Text>
-              <Text style={styles.subTotalPrice}>₹{0}</Text>
+              <Text style={styles.subTotalPrice}>₹{totalCGST.toFixed(2)}</Text>
             </View>
             <View style={styles.subTotalView}>
               <Text style={styles.subTotalText}>{Strings.SGST}</Text>
-              <Text style={styles.subTotalPrice}>₹{0}</Text>
+              <Text style={styles.subTotalPrice}>₹{totalSGST.toFixed(2)}</Text>
             </View>
             <View style={styles.subTotalView}>
               <Text style={styles.subTotalText}>{Strings.IGST}</Text>
-              <Text style={styles.subTotalPrice}>₹{0}</Text>
+              <Text style={styles.subTotalPrice}>₹{totalIGST.toFixed(2)}</Text>
             </View>
             <View
               style={{
@@ -1064,7 +1159,11 @@ const PaymentOrder = (props) => {
                 onChangeText={(text) => setPromocode(text)}
                 value={promoCode}
               />
-              <TouchableOpacity style={styles.applyButton}>
+              <TouchableOpacity
+                style={styles.applyButton}
+                disabled={promoCode.trim().length == 0}
+                onPress={() => onSubmitPromocode()}
+              >
                 <Text style={styles.applyText}>{Strings.Apply}</Text>
               </TouchableOpacity>
             </View>
@@ -1075,7 +1174,7 @@ const PaymentOrder = (props) => {
               >
                 {Strings.TotalAmount}
               </Text>
-              <Text style={styles.TotalPrice}>₹{totalrsp}</Text>
+              <Text style={styles.TotalPrice}>₹{totalAmount.toFixed(2)}</Text>
             </View>
             <TouchableOpacity
               style={styles.checkOutView}

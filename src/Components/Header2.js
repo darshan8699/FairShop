@@ -52,10 +52,10 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   text: {
-    fontFamily: Regular,
+    fontFamily: SemiBold,
     fontSize: Size.FindSize(16),
     lineHeight: Size.FindSize(60),
-    color: Colors.headerText,
+    color: Colors.black,
     alignSelf: "center",
   },
 });

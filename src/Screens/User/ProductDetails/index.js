@@ -51,6 +51,7 @@ const MyComponent = (props) => {
   const [productData, setProductData] = useState("");
   const [loginData, setLoginData] = useState("");
   const [imageArr, setImageArr] = useState([]);
+  const [prefStoreId, setPrefStoreId] = useState("");
   const flatListRef = useRef();
   const isFirstRun = useRef(true);
   const [favarray, setFavarray] = useState([]);
@@ -58,14 +59,17 @@ const MyComponent = (props) => {
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
-      GetItemData();
       setLoginInfo();
+
       AsyncStorageLib.getItem(ALL_WISHLIST, (err, result) => {
         if (result) setFavarray(JSON.parse(result));
       });
     }
   });
   async function setLoginInfo() {
+    const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    setPrefStoreId(id);
+    GetItemData(id);
     const jsonValue = await AsyncStorageLib.getItem(PREF_LOGIN_INFO);
     const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
     Logger.log({ loginInfo });
@@ -74,9 +78,9 @@ const MyComponent = (props) => {
       setLoginData(loginInfo?.item);
     }
   }
-  const GetItemData = async () => {
+
+  const GetItemData = async (id) => {
     setLoader(true);
-    const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     const apiClass = new APICallService(
       "/product" + "/" + props.route.params.id + " " + GET_URL_PARAMS,
       { store_id: id }
@@ -86,7 +90,6 @@ const MyComponent = (props) => {
       .then(function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          console.log("res:-----", res.data);
           setProductData(res.data.item);
           setImageArr(res.data.item.images);
           if (res.data.item.images) {
@@ -99,38 +102,13 @@ const MyComponent = (props) => {
         showErrorMessage(err.message);
       });
   };
-  const renderImages = ({ item, index }) => (
-    <TouchableOpacity
-      style={[
-        styles.slideImageView,
-        {
-          borderColor:
-            currentindex == index ? Colors.Background : Colors.cookBorder,
-        },
-      ]}
-      onPress={() => {
-        setcurrentindex(index);
-        setcurrentImage(item.url);
-      }}
-    >
-      <Image
-        source={{ uri: item.url ? item.url : NO_IMAGE_URL }}
-        resizeMode="contain"
-        style={styles.slideImage}
-      />
-    </TouchableOpacity>
-  );
 
   const addToCart = async (product, isBuyNow) => {
     setLoader(true);
     AsyncStorageLib.getItem(ALL_CART, (err, result) => {
-      product.quantity = 1;
-      const cartList = [product];
-      var prefList = [];
-      if (result && JSON.parse(result).length > 0) {
-        const saveList = JSON.parse(result);
-
-        // prefList = [...saveList, ...cartList];
+      const saveList = JSON.parse(result);
+      Logger.log({ saveList });
+      if (saveList && saveList.length > 0) {
         for (const key in saveList) {
           if (saveList.hasOwnProperty(key)) {
             const element = saveList[key];
@@ -138,113 +116,88 @@ const MyComponent = (props) => {
               if (
                 element.quantity < parseInt(product.inventory[0].stock_quantity)
               ) {
-                addToCartStorage(product, isBuyNow);
+                APICallAddToCart(
+                  {
+                    product_item_code: element.item_code,
+                    quantity: element.quantity + 1,
+                  },
+                  isBuyNow
+                );
               } else {
                 showErrorMessage("Stock limit over");
-                setLoader(false);
               }
             } else {
-              prefList = [...saveList, ...cartList];
+              APICallAddToCart(
+                {
+                  product_item_code: product.item_code,
+                  quantity: 1,
+                },
+                isBuyNow
+              );
             }
           }
         }
       } else {
-        prefList = [...cartList];
-      }
-
-      if (prefList.length > 0) {
-        AsyncStorageLib.setItem(ALL_CART, JSON.stringify(prefList));
-        let productList = [];
-        for (const key in prefList) {
-          if (prefList.hasOwnProperty(key)) {
-            const element = prefList[key];
-
-            productList.push({
-              product_item_code: element.item_code,
-              quantity: element.quantity,
-            });
-          }
-        }
-        if (productList.length > 0) APICallAddToCart(productList, isBuyNow);
-      }
-    });
-
-    // AsyncStorageLib.getItem(ALL_CART, (err, result) => {
-    //   product.quantity = 1;
-    //   const cartList = [product];
-    //   var prefList = [];
-    //   if (result && JSON.parse(result).length > 0) {
-    //     const saveList = JSON.parse(result);
-    //     prefList = [...saveList, ...cartList];
-    //   } else {
-    //     prefList = [...cartList];
-    //   }
-    //   AsyncStorageLib.setItem(ALL_CART, JSON.stringify(prefList));
-    //   let productList = [];
-    //   for (const key in prefList) {
-    //     if (prefList.hasOwnProperty(key)) {
-    //       const element = prefList[key];
-    //       productList.push({
-    //         product_item_code: element.item_code,
-    //         quantity: element.quantity,
-    //       });
-    //     }
-    //   }
-    //   APICallAddToCart(productList, isBuyNow);
-    // });
-  };
-
-  const addToCartStorage = (product, isBuyNow) => {
-    AsyncStorageLib.getItem(ALL_CART, (err, result) => {
-      if (result && JSON.parse(result).length > 0) {
-        let saveList = JSON.parse(result);
-        for (const key in saveList) {
-          if (saveList.hasOwnProperty(key)) {
-            const element = saveList[key];
-            if (element.item_code == product.item_code) {
-              saveList[key].quantity = element.quantity + 1;
-            }
-          }
-        }
-        AsyncStorageLib.setItem(ALL_CART, JSON.stringify(saveList));
-        let productList = [];
-        for (const key in saveList) {
-          if (saveList.hasOwnProperty(key)) {
-            const element = saveList[key];
-            productList.push({
-              product_item_code: element.item_code,
-              quantity: element.quantity,
-            });
-          }
-        }
-        APICallAddToCart(productList, isBuyNow);
+        APICallAddToCart(
+          {
+            product_item_code: product.item_code,
+            quantity: 1,
+          },
+          isBuyNow
+        );
       }
     });
   };
 
   const APICallAddToCart = (product_list, isBuyNow) => {
-    // setLoader(true);
     const apiClass = new APICallService(ADD_TO_CART, {
-      product: product_list,
+      product: [product_list],
       order_using: "mobile",
+      store_id: prefStoreId,
     });
     apiClass
       .callAPI()
       .then(async function (res) {
-        setLoader(false);
         if (validateResponse(res)) {
-          showSuccessMessage("Cart updated successfully!");
           EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
-          if (isBuyNow) {
-            Navigator.navigate(Route.PaymentOrder);
-          }
+          await AsyncStorageLib.getItem(ALL_CART, async (err, result) => {
+            const cartList = JSON.parse(result);
+            Logger.log({ cartList });
+            let saveList = [...cartList];
+            if (cartList && cartList.length > 0) {
+              if (
+                saveList.some(
+                  (item) => res.data.values[0].item_code == item.item_code
+                )
+              ) {
+                const index = saveList.findIndex(
+                  (e) => e.item_code == res.data.values[0].item_code
+                );
+                saveList[index].quantity = res.data.values[0].quantity;
+              } else {
+                saveList.push(res.data.values[0]);
+              }
+            } else {
+              saveList.push(res.data.values[0]);
+            }
+
+            const prefList = [...saveList];
+            Logger.log({ prefList });
+            await AsyncStorageLib.setItem(ALL_CART, JSON.stringify(prefList));
+            EventRegister.emit(UPDATE_CART_COUNT, prefList.length);
+            if (isBuyNow) {
+              Navigator.navigate(Route.PaymentOrder);
+            }
+            setLoader(false);
+          });
         }
       })
       .catch((err) => {
-        setLoader(false);
         showErrorMessage(err.message);
+        setLoader(false);
       });
   };
+
   const addToWishList = (product_item_code) => {
     AsyncStorageLib.getItem(ALL_WISHLIST, (err, result) => {
       const id = [product_item_code];
@@ -291,7 +244,7 @@ const MyComponent = (props) => {
                 showErrorMessage(err.message);
               });
           } catch (error) {
-            console.log(error);
+            Logger.log(error);
           }
         }
       } else {
@@ -316,9 +269,28 @@ const MyComponent = (props) => {
       }
     });
   };
-  function percentage(partialValue, totalValue) {
-    return Math.round(100 - (100 * partialValue) / totalValue);
-  }
+
+  const renderImages = ({ item, index }) => (
+    <TouchableOpacity
+      style={[
+        styles.slideImageView,
+        {
+          borderColor:
+            currentindex == index ? Colors.Background : Colors.cookBorder,
+        },
+      ]}
+      onPress={() => {
+        setcurrentindex(index);
+        setcurrentImage(item.url);
+      }}
+    >
+      <Image
+        source={{ uri: item.url ? item.url : NO_IMAGE_URL }}
+        resizeMode="contain"
+        style={styles.slideImage}
+      />
+    </TouchableOpacity>
+  );
 
   return (
     <View style={styles.container}>
@@ -401,15 +373,13 @@ const MyComponent = (props) => {
           <Text style={styles.brand}>Brand : {productData.brand}</Text>
         )}
         <View style={styles.priceView}>
-          {/* {productData.offer ? ( */}
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Text style={styles.price}>₹{productData.rsp}</Text>
             {productData.rsp < productData.mrp && (
               <Text style={styles.totalprice}>₹{productData.mrp}</Text>
             )}
           </View>
-          {/*  ) : ( <Text style={styles.price}>₹{productData.mrp}</Text>
-           )} */}
+
           <View style={styles.horizontalView}>
             {productData.veg_non_veg ? (
               <View style={{ justifyContent: "center", alignItems: "center" }}>
@@ -460,16 +430,16 @@ const MyComponent = (props) => {
         {productData.offer ? (
           <View>
             <Text style={styles.discountPrice}>
-              You save ₹{productData.offer.discount}
+              {"You save ₹" + productData.offer.discount}
             </Text>
             <View style={styles.discountBox}>
               <Text style={styles.discountPrice}>%</Text>
               <View>
                 <Text style={styles.flatDiscountText}>
-                  {"Flat " + productData.offer.discount + " off"}
+                  {productData.offer.title}
                 </Text>
                 <Text style={styles.flatDiscountText1}>
-                  {"Flat " + productData.offer.discount + " off"}
+                  {productData.offer.description}
                 </Text>
               </View>
             </View>
@@ -486,25 +456,40 @@ const MyComponent = (props) => {
           </Text>
         </View> */}
         <View style={styles.buttonView}>
-          <TouchableOpacity
-            style={styles.cartView}
-            onPress={() => addToCart(productData, false)}
-          >
-            <Image
-              source={Images.cart}
-              resizeMode="contain"
-              style={styles.cart}
-            />
-            <Text style={styles.add}>{Strings.AddToCart}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.BuycartView}
-            onPress={() => {
-              addToCart(productData, true);
-            }}
-          >
-            <Text style={styles.buyText}>{Strings.BuyNow}</Text>
-          </TouchableOpacity>
+          {productData && productData.inventory.length > 0 ? (
+            <View style={{ flexDirection: "row", flex: 1 }}>
+              <TouchableOpacity
+                style={styles.cartView}
+                onPress={() => addToCart(productData, false)}
+              >
+                <Image
+                  source={Images.cart}
+                  resizeMode="contain"
+                  style={styles.cart}
+                />
+                <Text style={styles.add}>{Strings.AddToCart}</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.BuycartView}
+                onPress={() => {
+                  addToCart(productData, true);
+                }}
+              >
+                <Text style={styles.buyText}>{Strings.BuyNow}</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View
+              style={styles.outStockView}
+              opacity={0.5}
+              needsOffscreenAlphaCompositing
+            >
+              <Text style={[styles.add, { color: Colors.Background }]}>
+                {Strings.OutOfStock}
+              </Text>
+            </View>
+          )}
           {loginData ? (
             <TouchableOpacity
               style={styles.favView}

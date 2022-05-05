@@ -10,10 +10,13 @@ const CustomText = (props) => {
     name,
     starText = true,
     customStyle,
+    color = Colors.text,
     marginTop = Size.FindSize(45),
   } = props;
   return (
-    <Text style={[styles.text, { customStyle, marginTop: marginTop }]}>
+    <Text
+      style={[styles.text, { customStyle, marginTop: marginTop, color: color }]}
+    >
       {name}
       {starText && <Text style={styles.innerText}> *</Text>}
     </Text>

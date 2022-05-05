@@ -60,11 +60,13 @@ export const HOMEPAGE_TOP_PICK =
   "/product-homepage-top-pick" + " " + GET_URL_PARAMS;
 export const PRODUCT_DETAILS = "/product" + " " + GET_ID_PARAMS;
 export const STORE_LOCATOR = "/store" + " " + GET_URL_PARAMS;
+export const STORE_DETAILS = "/store" + " " + GET_ID_PARAMS;
 export const WHISHLIST = "/wishlist" + " " + GET_URL_PARAMS;
 export const DELETE_ADDRESS = "/address" + " " + DELETE_ID_PARAMS;
 export const ADDRESS_IDWISE = "/address" + " " + GET_ID_PARAMS;
 export const ORDERS = "/order" + " " + GET_URL_PARAMS;
 export const OFFERS = "/discount/offers-list-optculture" + " " + GET_URL_PARAMS;
+export const COMBO_OFFERS = "/product-list" + " " + GET_URL_PARAMS;
 export const HOME_BANNER = "/settings/pages/home" + " " + GET_URL_PARAMS;
 export const ADD_TO_CART = "/cart" + " " + POST_FORM;
 export const ADD_WISHLIST = "/wishlist" + " " + POST_RAW;
@@ -73,3 +75,5 @@ export const CREATE_ORDER = "/order" + " " + POST_FORM;
 export const LOYALTY_INQUIRY = "/user/loyalty-inquiry" + " " + GET;
 export const PRODUCT_LIST = "/product-list" + " " + GET_URL_PARAMS;
 export const CATEGORY_DETAILS = "/category-details" + " " + GET_ID_PARAMS;
+export const PROMOCODE_VERIFY =
+  "/discount/coupon-verify-optculture" + " " + POST_FORM;

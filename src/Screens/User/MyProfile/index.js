@@ -223,7 +223,7 @@ const MyComponent = (props) => {
 
   return (
     <View style={styles.container}>
-      <Header isBack navigation={props.navigation}  />
+      <Header isBack navigation={props.navigation} />
       {/* <Header isBack navigation={props.navigation} isRightIcon={false} /> */}
       <Loader2 modalVisible={isShowLoader} />
       <ScrollView
@@ -387,7 +387,7 @@ const MyComponent = (props) => {
           maximumDate={new Date()}
           date={new Date()}
           onConfirm={(date) => {
-            console.log("date", moment(date).format("YYYY-MM_DD"));
+            Logger.log("date", moment(date).format("YYYY-MM_DD"));
             setOpen(false);
             setDate(moment(date).format("YYYY-MM-DD"));
           }}
@@ -402,7 +402,7 @@ const MyComponent = (props) => {
           maximumDate={new Date()}
           date={new Date()}
           onConfirm={(date) => {
-            console.log("date", moment(date).format("YYYY-MM_DD"));
+            Logger.log("date", moment(date).format("YYYY-MM_DD"));
             setOpendoa(false);
             setdoa(moment(date).format("YYYY-MM-DD"));
           }}

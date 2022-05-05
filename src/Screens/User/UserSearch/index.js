@@ -22,6 +22,7 @@ const MyComponent = (props) => {
   const [isShowLoader, setLoader] = useState(false);
   const [isSearching, setSearching] = useState(false);
   const [loginInfo, setLoginInfo] = useState("");
+  const [prefStoreId, setPrefStoreId] = useState("");
   const isFirstRun = useRef(true);
 
   useEffect(() => {
@@ -41,6 +42,7 @@ const MyComponent = (props) => {
   const GetNewProductData = async (search, isLoader = true) => {
     setLoader(isLoader);
     const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    setPrefStoreId(store_id);
     setSearching(search.length > 0);
     const apiClass = new APICallService(PRODUCT_LIST, {
       // limit: -1,
@@ -119,6 +121,7 @@ const MyComponent = (props) => {
             item={item}
             listView={styles.listView}
             loginInfo={loginInfo ? true : false}
+            storeId={prefStoreId}
             // addToWishList={(id) => addToWishList(id)}
           />
         )}

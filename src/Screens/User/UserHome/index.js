@@ -64,13 +64,14 @@ const MyComponent = (props) => {
     const _unsubscribe = props.navigation.addListener("focus", async () => {
       // do something
       const id = await AsyncStorage.getItem(PREF_STORE_ID);
+      setPrefStoreId(id);
       if (id) {
-        GetPopularProductData(id);
-        GetNewProductData(id);
-        GetBrowseCategory(id);
-        GetTopPickData(id);
-        APICallBanner(id);
-        APICallOffers(id);
+        GetPopularProductData(id, false);
+        GetNewProductData(id, false);
+        GetBrowseCategory(id, false);
+        GetTopPickData(id, false);
+        APICallBanner(id, false);
+        // APICallOffers(id);
       }
       getTopPickTitle();
     });
@@ -79,13 +80,14 @@ const MyComponent = (props) => {
 
   async function firstAPICall() {
     const id = await AsyncStorage.getItem(PREF_STORE_ID);
+    setPrefStoreId(id);
     if (id) {
       GetPopularProductData(id);
       GetNewProductData(id);
       GetBrowseCategory(id);
       GetTopPickData(id);
       APICallBanner(id);
-      APICallOffers(id);
+      // APICallOffers(id);
     }
 
     getTopPickTitle();
@@ -99,8 +101,8 @@ const MyComponent = (props) => {
     const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
     setLoginStatus(loginInfo);
   };
-  const GetTopPickData = async (id) => {
-    setLoader(true);
+  const GetTopPickData = async (id, isLoader = true) => {
+    setLoader(isLoader);
     const apiClass = new APICallService(HOMEPAGE_TOP_PICK, {
       store_id: id ? id : prefStoreId,
     });
@@ -121,15 +123,14 @@ const MyComponent = (props) => {
       });
   };
 
-  const GetPopularProductData = async (id) => {
-    setLoader(true);
+  const GetPopularProductData = async (id, isLoader = true) => {
+    setLoader(isLoader);
     const apiClass = new APICallService(HOMEPAGE_POPULAR_PRODUCT, {
       store_id: id ? id : prefStoreId,
     });
     apiClass
       .callAPI()
       .then(async function (res) {
-        console.log("popular product res:-", res);
         setLoader(false);
         if (validateResponse(res)) {
           setPopularData(res.data.items);
@@ -143,8 +144,8 @@ const MyComponent = (props) => {
         showErrorMessage(err.message);
       });
   };
-  const GetNewProductData = async (id) => {
-    setLoader(true);
+  const GetNewProductData = async (id, isLoader = true) => {
+    setLoader(isLoader);
     const apiClass = new APICallService(HOMEPAGE_NEW_PRODUCT, {
       store_id: id ? id : prefStoreId,
     });
@@ -164,8 +165,8 @@ const MyComponent = (props) => {
         setNewData([]);
       });
   };
-  const GetBrowseCategory = (id) => {
-    setLoader(true);
+  const GetBrowseCategory = (id, isLoader = true) => {
+    setLoader(isLoader);
 
     const apiClass = new APICallService(CATEGORY, {
       limit: -1,
@@ -198,29 +199,9 @@ const MyComponent = (props) => {
         setCategory([]);
       });
   };
-  const APICallOffers = (id) => {
-    setLoader(true);
-    const apiClass = new APICallService(OFFERS, {
-      store_id: id ? id : prefStoreId,
-    });
-    apiClass
-      .callAPI()
-      .then(async function (res) {
-        setLoader(false);
-        if (validateResponse(res)) {
-          setBestValueOffers(res.data?.values[0]?.couponsNew);
-        } else {
-          setBestValueOffers([]);
-        }
-      })
-      .catch((err) => {
-        setLoader(false);
-        // showErrorMessage(err.message);
-        setBestValueOffers([]);
-      });
-  };
-  const APICallBanner = (id) => {
-    setLoader(true);
+
+  const APICallBanner = (id, isLoader = true) => {
+    setLoader(isLoader);
     const apiClass = new APICallService(HOME_BANNER, {
       store_id: id ? id : prefStoreId,
     });
@@ -259,8 +240,8 @@ const MyComponent = (props) => {
       });
   };
 
-  const APICallWishList = () => {
-    setLoader(true);
+  const APICallWishList = (isLoader = true) => {
+    setLoader(isLoader);
     const apiClass = new APICallService(WHISHLIST, {
       // page: page,
       limit: -1,
@@ -287,52 +268,6 @@ const MyComponent = (props) => {
       });
   };
 
-  // const addToWishList = (product_item_code) => {
-  //   Logger.log("product_item_code", product_item_code);
-  //   AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
-  //     const id = [product_item_code];
-  //     if (result !== null && result != product_item_code) {
-  //       var newIds = JSON.parse(result).concat(id);
-  //       AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(newIds));
-  //       setLoader(true);
-  //       const apiClass = new APICallService(ADD_WISHLIST, {
-  //         product_item_code: newIds,
-  //       });
-  //       apiClass
-  //         .callAPI()
-  //         .then(async function (res) {
-  //           setLoader(false);
-  //           if (validateResponse(res)) {
-  //             showSuccessMessage(res.message);
-  //           }
-  //         })
-  //         .catch((err) => {
-  //           setLoader(false);
-  //           showErrorMessage(err.message);
-  //         });
-  //       console.log("all wishlist---------", newIds);
-  //     } else {
-  //       AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(id));
-  //       setLoader(true);
-  //       const apiClass = new APICallService(ADD_WISHLIST, {
-  //         product_item_code: id,
-  //       });
-  //       apiClass
-  //         .callAPI()
-  //         .then(async function (res) {
-  //           setLoader(false);
-  //           if (validateResponse(res)) {
-  //             showSuccessMessage(res.message);
-  //           }
-  //         })
-  //         .catch((err) => {
-  //           setLoader(false);
-  //           showErrorMessage(err.message);
-  //         });
-  //       Logger.log("single wishlist--------");
-  //     }
-  //   });
-  // };
   const renderBestItem = ({ item, index }) => (
     <Image
       source={{ uri: item?.bannerImage }}
@@ -502,6 +437,7 @@ const MyComponent = (props) => {
                   item={item}
                   listView={styles.shadow}
                   loginInfo={loginInfo ? true : false}
+                  storeId={prefStoreId}
                 />
               )}
             />
@@ -579,6 +515,7 @@ const MyComponent = (props) => {
                     item={item}
                     listView={{ width: Size.width / 2 - Size.FindSize(25) }}
                     loginInfo={loginInfo ? true : false}
+                    storeId={prefStoreId}
                   />
                 )}
               />
@@ -615,6 +552,7 @@ const MyComponent = (props) => {
                   item={item}
                   listView={styles.shadow}
                   loginInfo={loginInfo ? true : false}
+                  storeId={prefStoreId}
                   // addToWishList={(id) => addToWishList(id)}
                 />
               )}

@@ -32,6 +32,7 @@ import { Size } from "../Utility/sizes";
 import Strings from "../Utility/Strings";
 import { EventRegister } from "react-native-event-listeners";
 import CountryFlag from "react-native-country-flag";
+import Logger from "../Utility/Logger";
 
 // create a component
 const CustomItemView = (props) => {
@@ -86,7 +87,7 @@ const CustomItemView = (props) => {
                 showErrorMessage(err.message);
               });
           } catch (error) {
-            console.log(error);
+            Logger.log(error);
           }
         }
       } else {
@@ -110,84 +111,48 @@ const CustomItemView = (props) => {
       props.onRefresh && props.onRefresh();
     });
   };
-  const addToCartStorage = (product) => {
-    AsyncStorage.getItem(ALL_CART, (err, result) => {
-      if (result && JSON.parse(result).length > 0) {
-        let saveList = JSON.parse(result);
-        for (const key in saveList) {
-          if (saveList.hasOwnProperty(key)) {
-            const element = saveList[key];
-            if (element.item_code == product.item_code) {
-              saveList[key].quantity = element.quantity + 1;
-            }
-          }
-        }
-        AsyncStorage.setItem(ALL_CART, JSON.stringify(saveList));
-        let productList = [];
-        for (const key in saveList) {
-          if (saveList.hasOwnProperty(key)) {
-            const element = saveList[key];
-            productList.push({
-              product_item_code: element.item_code,
-              quantity: element.quantity,
-            });
-          }
-        }
-        APICallAddToCart(productList);
-      }
-    });
-  };
+
   const addToCart = (product) => {
     AsyncStorage.getItem(ALL_CART, (err, result) => {
-      product.quantity = 1;
-      const cartList = [product];
-      var prefList = [];
-      if (result && JSON.parse(result).length > 0) {
-        const saveList = JSON.parse(result);
-        // prefList = [...saveList, ...cartList];
+      const saveList = JSON.parse(result);
+      Logger.log({ saveList });
+      if (saveList && saveList.length > 0) {
         for (const key in saveList) {
           if (saveList.hasOwnProperty(key)) {
             const element = saveList[key];
             if (element.item_code == product.item_code) {
-              console.log(product.inventory[0].stock_quantity);
-              console.log(element.quantity);
               if (
                 element.quantity < parseInt(product.inventory[0].stock_quantity)
               ) {
-                addToCartStorage(product);
+                APICallAddToCart({
+                  product_item_code: element.item_code,
+                  quantity: element.quantity + 1,
+                });
               } else {
                 showErrorMessage("Stock limit over");
               }
             } else {
-              prefList = [...saveList, ...cartList];
+              APICallAddToCart({
+                product_item_code: product.item_code,
+                quantity: 1,
+              });
             }
           }
         }
       } else {
-        prefList = [...cartList];
-      }
-      if (prefList.length > 0) {
-        AsyncStorage.setItem(ALL_CART, JSON.stringify(prefList));
-        let productList = [];
-        for (const key in prefList) {
-          if (prefList.hasOwnProperty(key)) {
-            const element = prefList[key];
-
-            productList.push({
-              product_item_code: element.item_code,
-              quantity: element.quantity,
-            });
-          }
-        }
-        if (productList.length > 0) APICallAddToCart(productList);
+        APICallAddToCart({
+          product_item_code: product.item_code,
+          quantity: 1,
+        });
       }
     });
   };
 
   const APICallAddToCart = (product_list) => {
     const apiClass = new APICallService(ADD_TO_CART, {
-      product: product_list,
-      order_using: "Web_store",
+      product: [product_list],
+      order_using: "mobile",
+      store_id: props.storeId,
     });
     apiClass
       .callAPI()
@@ -195,15 +160,39 @@ const CustomItemView = (props) => {
         if (validateResponse(res)) {
           EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
           showSuccessMessage("Cart updated successfully!");
+          await AsyncStorage.getItem(ALL_CART, async (err, result) => {
+            const cartList = JSON.parse(result);
+            Logger.log({ cartList });
+            let saveList = [...cartList];
+            if (cartList && cartList.length > 0) {
+              if (
+                saveList.some(
+                  (item) => res.data.values[0].item_code == item.item_code
+                )
+              ) {
+                const index = saveList.findIndex(
+                  (e) => e.item_code == res.data.values[0].item_code
+                );
+                saveList[index].quantity = res.data.values[0].quantity;
+              } else {
+                saveList.push(res.data.values[0]);
+              }
+            } else {
+              saveList.push(res.data.values[0]);
+            }
+
+            const prefList = [...saveList];
+            Logger.log({ prefList });
+            await AsyncStorage.setItem(ALL_CART, JSON.stringify(prefList));
+            EventRegister.emit(UPDATE_CART_COUNT, prefList.length);
+          });
         }
       })
       .catch((err) => {
         showErrorMessage(err.message);
       });
   };
-  function percentage(partialValue, totalValue) {
-    return Math.round(100 - (100 * partialValue) / totalValue);
-  }
+
   return (
     <TouchableOpacity
       style={[styles.list, props.listView]}
@@ -251,7 +240,7 @@ const CustomItemView = (props) => {
             )}
           </TouchableOpacity>
         ) : null}
-        {props.item.rsp < props.item.mrp && (
+        {props.item.offer ? (
           <TouchableOpacity
             style={{
               height: Size.FindSize(20),
@@ -272,10 +261,12 @@ const CustomItemView = (props) => {
                 fontFamily: SemiBold,
               }}
             >
-              {percentage(props.item.rsp, props.item.mrp) + "% off"}
+              {props.item.offer.type == "flat"
+                ? "₹" + props.item.offer.discount + " off"
+                : props.item.offer.discount + "% off"}
             </Text>
           </TouchableOpacity>
-        )}
+        ) : null}
         <View style={styles.flagView}>
           {props?.item?.country_of_origin ? (
             <CountryFlag isoCode={props?.item?.country_of_origin} size={13} />
@@ -300,17 +291,27 @@ const CustomItemView = (props) => {
             <Text style={styles.price1}>₹{props.item.mrp}</Text>
           )}
         </View>
-        <TouchableOpacity
-          style={styles.cartView}
-          onPress={() => addToCart(props.item)}
-        >
-          <Image
-            source={Images.cart}
-            resizeMode="contain"
-            style={styles.cart}
-          />
-          <Text style={styles.add}>{Strings.Add}</Text>
-        </TouchableOpacity>
+        {props.item.inventory && props.item.inventory.length > 0 ? (
+          <TouchableOpacity
+            style={styles.cartView}
+            onPress={() => addToCart(props.item)}
+          >
+            <Image
+              source={Images.cart}
+              resizeMode="contain"
+              style={styles.cart}
+            />
+            <Text style={styles.add}>{Strings.Add}</Text>
+          </TouchableOpacity>
+        ) : (
+          <View
+            style={styles.outStockView}
+            opacity={0.5}
+            needsOffscreenAlphaCompositing
+          >
+            <Text style={styles.add}>{Strings.OutOfStock}</Text>
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );
@@ -386,6 +387,17 @@ const styles = StyleSheet.create({
     marginHorizontal: Size.FindSize(10),
   },
   cartView: {
+    marginHorizontal: Size.FindSize(10),
+    borderWidth: 1,
+    borderColor: Colors.Background,
+    borderRadius: Size.FindSize(5),
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height: Size.FindSize(42),
+    marginTop: Size.FindSize(15),
+  },
+  outStockView: {
     marginHorizontal: Size.FindSize(10),
     borderWidth: 1,
     borderColor: Colors.Background,

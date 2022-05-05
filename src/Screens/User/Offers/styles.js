@@ -42,4 +42,13 @@ export default styles = StyleSheet.create({
     fontFamily: Regular,
     color: Colors.pincodetext,
   },
+  shadow: {
+    // shadowColor: Colors.black,
+    // shadowOffset: { width: 1, height: 1 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 1,
+    // elevation: 3,
+    marginTop: 0,
+    backgroundColor: "#0000",
+  },
 });

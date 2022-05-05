@@ -12,7 +12,7 @@ export default styles = StyleSheet.create({
     fontSize: Size.FindSize(24),
     fontFamily: SemiBold,
     color: Colors.headerText,
-    marginVertical: Size.FindSize(20),
+    marginTop: Size.FindSize(20),
     paddingHorizontal: Size.FindSize(15),
   },
   icon: {
@@ -191,7 +191,7 @@ export default styles = StyleSheet.create({
     marginEnd: Size.FindSize(15),
   },
   rowItem: {
-    paddingHorizontal: Size.FindSize(10),
+    paddingHorizontal: Size.FindSize(15),
   },
   applyText: {
     color: Colors.white,

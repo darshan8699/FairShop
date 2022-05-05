@@ -21,6 +21,7 @@ const CustomInput = (props) => {
     autoCapitalize = "sentences",
     value = "",
     isPhone = false,
+    inputStyle,
   } = props;
 
   const isFirstRun = useRef(true);
@@ -42,8 +43,18 @@ const CustomInput = (props) => {
         placeholder={placeHolder}
         placeholderTextColor={Colors.forgotText}
         style={[
-          styles.input,
-          { backgroundColor: enable ? Colors.white : Colors.line },
+          {
+            height: Size.FindSize(50),
+            backgroundColor: Colors.white,
+            paddingHorizontal: Size.FindSize(15),
+            borderColor: Colors.borderColor,
+            borderWidth: Size.FindSize(1),
+            marginTop: Size.FindSize(8),
+            color: Colors.black,
+            fontFamily: Regular,
+            backgroundColor: enable ? Colors.white : Colors.line,
+          },
+          inputStyle,
         ]}
         editable={enable}
         value={text}

@@ -21,6 +21,7 @@ const MyComponent = (props) => {
   const [newData, setNewData] = useState([]);
   const [isShowLoader, setLoader] = useState(false);
   const [loginInfo, setLoginInfo] = useState("");
+  const [prefStoreId, setPrefStoreId] = useState("");
   const isFirstRun = useRef(true);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ const MyComponent = (props) => {
   const GetNewProductData = async () => {
     setLoader(true);
     const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    setPrefStoreId(store_id);
     const apiClass = new APICallService(HOMEPAGE_POPULAR_PRODUCT, {
       store_id: store_id,
     });
@@ -89,6 +91,7 @@ const MyComponent = (props) => {
             item={item}
             listView={styles.listView}
             loginInfo={loginInfo ? true : false}
+            storeId={prefStoreId}
           />
         )}
         nestedScrollEnabled={false}

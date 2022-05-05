@@ -3,6 +3,7 @@ import AsyncStorageLib from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import { EventRegister } from "react-native-event-listeners";
+import { ScrollView } from "react-native-gesture-handler";
 import APICallService from "../../../API/APICallService";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
@@ -13,6 +14,7 @@ import {
   ALL_CART,
   NO_IMAGE_URL,
   PREF_LOGIN_INFO,
+  PREF_STORE_ID,
   UPDATE_CART_COUNT,
 } from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
@@ -21,16 +23,23 @@ import Navigator from "../../../Utility/Navigator";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
-import { ScrollView } from "react-native-gesture-handler";
 
 // create a component
 const MyComponent = (props) => {
   const [loginData, setLoginData] = useState("");
-  const [totalPrice, setTotalPrice] = useState(0);
   const [isShowLoader, setLoader] = useState(false);
   const [cartList, setCartList] = useState([]);
-  const [totalrsp, setTotalrsp] = useState(0);
 
+  const [subTotalPrice, setSubTotalPrice] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalCGST, setTotalCGST] = useState(0);
+  const [totalSGST, setTotalSGST] = useState(0);
+  const [totalIGST, setTotalIGST] = useState(0);
+  const [discountedSubtotal, setDiscountedSubtotal] = useState(0);
+  const [totalSavings, setTotalSavings] = useState(0);
+  const [offerDiscount, setOfferDiscount] = useState(0);
+
+  const [prefStoreId, setPrefStoreId] = useState("");
   const isFirstRun = useRef(true);
 
   useEffect(() => {
@@ -41,16 +50,15 @@ const MyComponent = (props) => {
     }
     const unsubscribe = props.navigation.addListener("focus", () => {
       Logger.log("focus");
-      // if (loginData) APICallCartList(loginData);
       AsyncStorageLib.getItem(ALL_CART, (err, result) => {
         if (result) {
           let list = JSON.parse(result);
           list = list.filter(function (person) {
             return person.quantity != 0;
           });
-          Logger.log({ list });
           setCartList(list);
           updateCartTotal(list);
+          setLoader(false);
         }
       });
     });
@@ -58,51 +66,59 @@ const MyComponent = (props) => {
   }, [props.currentFocus]);
 
   async function setLoginInfo() {
+    const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    setPrefStoreId(id);
+
     const jsonValue = await AsyncStorageLib.getItem(PREF_LOGIN_INFO);
     const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
     Logger.log({ loginInfo });
 
     if (loginInfo) {
       setLoginData(loginInfo?.item);
-      // APICallCartList(loginInfo?.item);
     }
   }
 
-  const APICallCartList = (loginData) => {
-    setLoader(true);
-    const apiClass = new APICallService(ADD_TO_CART, {
-      user_id: loginData?.id,
-      order_using: "mobile",
-    });
-    apiClass
-      .callAPI()
-      .then(async function (res) {
-        setLoader(false);
-        if (validateResponse(res)) {
-          // setCartList(res.data?.values);
-          // let cartTotal = 0;
-          // res.data?.values.map((item) => {
-          //   cartTotal = cartTotal + item.mrp;
-          // });
-          // setTotalPrice(cartTotal);
-        }
-      })
-      .catch((err) => {
-        setLoader(false);
-        showErrorMessage(err.message);
-      });
-  };
-
   function updateCartTotal(cartList) {
-    let cartTotal = 0;
-    let rspTotal = 0;
-    Logger.log("updateCartTotal=>", cartList);
+    let cartSubtotal = 0;
+    let discountedSubtotal = 0;
+    let totalCgst = 0;
+    let totalSgst = 0;
+    let totalIgst = 0;
+    let totalSavings = 0;
+    let totalAmount = 0;
+    let offerDiscount = 0;
+
     cartList.map((item) => {
-      rspTotal = rspTotal + item.rsp * item.quantity;
-      cartTotal = cartTotal + item.mrp * item.quantity;
+      Logger.log(item);
+      totalCgst =
+        totalCgst + (item.cgst_amount ? item.cgst_amount : 0) * item.quantity;
+      totalSgst =
+        totalSgst + (item.sgst_amount ? item.sgst_amount : 0) * item.quantity;
+      totalIgst =
+        totalIgst + (item.igst_amount ? item.igst_amount : 0) * item.quantity;
+
+      cartSubtotal = cartSubtotal + item.mrp * item.quantity;
+      discountedSubtotal = discountedSubtotal + item.net_price * item.quantity;
+      totalSavings =
+        totalSavings +
+        (item.mrp -
+          item.net_price +
+          item.cgst_amount +
+          item.sgst_amount +
+          (item.igst_amount ? item.igst_amount : 0)) *
+          item.quantity;
+      Logger.log(item.igst_amount + " " + item.quantity);
+      totalAmount = discountedSubtotal + totalCgst + totalSgst + totalIgst;
     });
-    setTotalrsp(rspTotal);
-    setTotalPrice(cartTotal);
+
+    setTotalAmount(totalAmount);
+    setSubTotalPrice(cartSubtotal);
+    setTotalCGST(totalCgst);
+    setTotalSGST(totalSgst);
+    setTotalIGST(totalIgst);
+    setTotalSavings(totalSavings);
+    setDiscountedSubtotal(discountedSubtotal);
+    setOfferDiscount(offerDiscount);
   }
 
   const APICallAddToCart = (product_list) => {
@@ -110,6 +126,7 @@ const MyComponent = (props) => {
     const apiClass = new APICallService(ADD_TO_CART, {
       product: product_list,
       order_using: "mobile",
+      store_id: prefStoreId,
     });
     apiClass
       .callAPI()
@@ -125,8 +142,8 @@ const MyComponent = (props) => {
       });
   };
 
-  const addToCartStorage = (product, quantity) => {
-    AsyncStorageLib.getItem(ALL_CART, (err, result) => {
+  const addToCartStorage = async (product, quantity) => {
+    AsyncStorageLib.getItem(ALL_CART, async (err, result) => {
       product.quantity = quantity;
 
       if (result && JSON.parse(result).length > 0) {
@@ -147,7 +164,7 @@ const MyComponent = (props) => {
         saveList = saveList.filter(function (person) {
           return person.quantity != 0;
         });
-        AsyncStorageLib.setItem(ALL_CART, JSON.stringify(saveList));
+        await AsyncStorageLib.setItem(ALL_CART, JSON.stringify(saveList));
         setCartList(saveList);
         updateCartTotal(saveList);
         let productList = [];
@@ -238,43 +255,45 @@ const MyComponent = (props) => {
         <View style={styles.line} />
         <View style={styles.subTotalView}>
           <Text style={styles.subTotalText}>{Strings.Subtotal}</Text>
-          <Text style={styles.subTotalPrice}>₹{totalPrice}</Text>
-        </View>
-        <View style={styles.subTotalView}>
-          <Text style={styles.subTotalText}>{Strings.youSave}</Text>
-          <Text style={styles.discountText}>
-            {totalPrice != totalrsp ? " - ₹" + (totalPrice - totalrsp) : "₹0"}
+          <Text style={styles.subTotalPrice}>
+            ₹{discountedSubtotal.toFixed(2)}
           </Text>
         </View>
         <View style={styles.subTotalView}>
+          <Text style={styles.subTotalText}>{Strings.youSave}</Text>
+          <Text style={styles.discountText}>₹{totalSavings.toFixed(2)}</Text>
+        </View>
+        <View style={styles.subTotalView}>
           <Text style={styles.subTotalText}>{Strings.TaxableAmount}</Text>
-          <Text style={styles.subTotalPrice}>₹{totalPrice}</Text>
+          <Text style={styles.subTotalPrice}>
+            ₹{(subTotalPrice - totalSavings).toFixed(2)}
+          </Text>
         </View>
         <View style={styles.subTotalView}>
           <Text style={styles.subTotalText}>{Strings.CGST}</Text>
-          <Text style={styles.subTotalPrice}>₹{0}</Text>
+          <Text style={styles.subTotalPrice}>₹{totalCGST.toFixed(2)}</Text>
         </View>
         <View style={styles.subTotalView}>
           <Text style={styles.subTotalText}>{Strings.SGST}</Text>
-          <Text style={styles.subTotalPrice}>₹{0}</Text>
+          <Text style={styles.subTotalPrice}>₹{totalSGST.toFixed(2)}</Text>
         </View>
         <View style={styles.subTotalView}>
           <Text style={styles.subTotalText}>{Strings.IGST}</Text>
-          <Text style={styles.subTotalPrice}>₹{0}</Text>
+          <Text style={styles.subTotalPrice}>₹{totalIGST.toFixed(2)}</Text>
         </View>
         <View style={styles.line} />
         <View style={styles.subTotalView}>
           <Text style={[styles.subTotalText, { fontSize: Size.FindSize(20) }]}>
             {Strings.TotalAmount}
           </Text>
-          <Text style={styles.TotalPrice}>₹{totalrsp}</Text>
+          <Text style={styles.TotalPrice}>₹{totalAmount.toFixed(2)}</Text>
         </View>
         <TouchableOpacity
           activeOpacity={1}
           style={styles.checkOutView}
           // onPress={() => checkOutButton()}
           onPress={() => {
-            if (totalrsp > 0) Navigator.navigate(Route.PaymentOrder);
+            if (totalAmount > 0) Navigator.navigate(Route.PaymentOrder);
           }}
         >
           <Text style={styles.checkOutText}>{Strings.CheckOut}</Text>
@@ -284,7 +303,7 @@ const MyComponent = (props) => {
         <View>
           <View style={styles.subTotalView}>
             <Text style={styles.subTotalText}>{Strings.Subtotal}</Text>
-            <Text style={styles.subTotalPrice}>₹{totalPrice}</Text>
+            <Text style={styles.subTotalPrice}>₹{subTotalPrice}</Text>
           </View>
           <TouchableOpacity
             style={styles.checkOutView}

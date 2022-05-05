@@ -64,7 +64,6 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          console.log("res:---", res);
           setData(res.data.items);
         }
       })

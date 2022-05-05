@@ -129,6 +129,17 @@ export default styles = StyleSheet.create({
     height: Size.FindSize(66),
     flex: 1,
   },
+  outStockView: {
+    borderWidth: 1,
+    borderColor: Colors.Background,
+    // backgroundColor: Colors.Background,
+    borderRadius: Size.FindSize(5),
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    height: Size.FindSize(66),
+    flex: 1,
+  },
   BuycartView: {
     borderWidth: 1,
     borderColor: Colors.headerline,
