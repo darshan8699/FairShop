@@ -272,6 +272,7 @@ function RootNavigation() {
           name={Route.OrderSuccess}
           component={screen.OrderSuccess}
         />
+        <Stack.Screen name={Route.ContactUs} component={screen.ContactUs} />
       </Stack.Navigator>
     </NavigationContainer>
   );

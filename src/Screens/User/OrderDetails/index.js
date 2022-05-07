@@ -34,8 +34,11 @@ const MyComponent = (props) => {
           {item.item_name}
         </Text>
         <Text style={styles.itemText}>
-          <Text style={styles.redText}>{"₹" + item.mrp}</Text>
-          {"  x " + item.order_quantity}{" "}
+          <Text style={styles.redText}>₹{item.unit_price}</Text>
+          {item.unit_price < item.mrp ? (
+            <Text style={styles.priceText1}> ₹{item.mrp}</Text>
+          ) : null}
+          {"  x " + item.order_quantity}
         </Text>
       </View>
       <Text style={styles.redText}>{"₹" + item.subtotal}</Text>

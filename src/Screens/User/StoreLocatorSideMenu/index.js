@@ -102,9 +102,7 @@ const MyComponent = (props) => {
 
   const renderStoreItem = ({ item, index }) => {
     let isActive = false;
-    // if (storeIndex != null) {
-    //   isActive = storeIndex == item?.id;
-    // }
+
     return (
       <TouchableOpacity
         activeOpacity={1}

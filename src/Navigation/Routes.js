@@ -29,4 +29,5 @@ export const Route = {
   AllBrowseCategory: "AllBrowseCategory",
   NewProducts: "NewProducts",
   OrderSuccess: "OrderSuccess",
+  ContactUs: "ContactUs",
 };

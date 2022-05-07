@@ -298,9 +298,7 @@ const MyComponent = (props) => {
           >
             <Text style={styles.textView}>{Strings.AboutUs}</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-          //onPress={() => Navigator.navigate(Route.AboutUs, { type: 8 })}
-          >
+          <TouchableOpacity onPress={() => Navigator.navigate(Route.ContactUs)}>
             <Text style={styles.textView}>{Strings.ContactUs}</Text>
           </TouchableOpacity>
           {/* <TouchableOpacity

@@ -55,17 +55,31 @@ const MyComponent = (props) => {
   const flatListRef = useRef();
   const isFirstRun = useRef(true);
   const [favarray, setFavarray] = useState([]);
+  const [cartItem, setCartItem] = useState([]);
 
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       setLoginInfo();
-
-      AsyncStorageLib.getItem(ALL_WISHLIST, (err, result) => {
-        if (result) setFavarray(JSON.parse(result));
-      });
     }
+    checkFilter();
   });
+
+  async function checkFilter() {
+    await AsyncStorageLib.getItem(ALL_WISHLIST, (err, result) => {
+      if (result) setFavarray(JSON.parse(result));
+    });
+
+    await AsyncStorageLib.getItem(ALL_CART, (err, result) => {
+      const cartList = JSON.parse(result);
+      setCartItem(
+        cartList.filter(function (item) {
+          return item.item_code == props.route.params.id;
+        })
+      );
+    });
+  }
+
   async function setLoginInfo() {
     const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     setPrefStoreId(id);
@@ -163,7 +177,7 @@ const MyComponent = (props) => {
           await AsyncStorageLib.getItem(ALL_CART, async (err, result) => {
             const cartList = JSON.parse(result);
             Logger.log({ cartList });
-            let saveList = [...cartList];
+            let saveList = cartList && cartList.length > 0 ? [...cartList] : [];
             if (cartList && cartList.length > 0) {
               if (
                 saveList.some(
@@ -268,6 +282,68 @@ const MyComponent = (props) => {
           });
       }
     });
+  };
+
+  const updateCartData = async (product, quantity) => {
+    AsyncStorageLib.getItem(ALL_CART, async (err, result) => {
+      product.quantity = quantity;
+
+      if (result && JSON.parse(result).length > 0) {
+        let saveList = JSON.parse(result);
+        for (const key in saveList) {
+          if (saveList.hasOwnProperty(key)) {
+            const element = saveList[key];
+            if (element.item_code == product.item_code) {
+              if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
+                saveList[key].quantity = quantity;
+              } else {
+                showErrorMessage("Stock limit over");
+                setLoader(false);
+              }
+              //saveList[key].quantity = quantity;
+            }
+          }
+        }
+        saveList = saveList.filter(function (person) {
+          return person.quantity != 0;
+        });
+        await AsyncStorageLib.setItem(ALL_CART, JSON.stringify(saveList));
+        // setCartList(saveList);
+        // updateCartTotal(saveList);
+        // let productList = [];
+        // for (const key in saveList) {
+        //   if (saveList.hasOwnProperty(key)) {
+        //     const element = saveList[key];
+        //     productList.push({
+        //       product_item_code: element.item_code,
+        //       quantity: element.quantity,
+        //     });
+        //   }
+        // }
+        // APICallUpdateToCart(productList);
+      }
+    });
+  };
+
+  const APICallUpdateToCart = (product_list) => {
+    setLoader(true);
+    const apiClass = new APICallService(ADD_TO_CART, {
+      product: product_list,
+      order_using: "mobile",
+      store_id: prefStoreId,
+    });
+    apiClass
+      .callAPI()
+      .then(async function (res) {
+        setLoader(false);
+        if (validateResponse(res)) {
+          EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
+        }
+      })
+      .catch((err) => {
+        showErrorMessage(err.message);
+        setLoader(false);
+      });
   };
 
   const renderImages = ({ item, index }) => (
@@ -458,17 +534,41 @@ const MyComponent = (props) => {
         <View style={styles.buttonView}>
           {productData && productData.inventory.length > 0 ? (
             <View style={{ flexDirection: "row", flex: 1 }}>
-              <TouchableOpacity
-                style={styles.cartView}
-                onPress={() => addToCart(productData, false)}
-              >
-                <Image
-                  source={Images.cart}
-                  resizeMode="contain"
-                  style={styles.cart}
-                />
-                <Text style={styles.add}>{Strings.AddToCart}</Text>
-              </TouchableOpacity>
+              {cartItem.length > 0 ? (
+                <View style={styles.countPanelView}>
+                  <TouchableOpacity
+                    style={styles.minusButton}
+                    onPress={() =>
+                      updateCartData(cartItem[0], cartItem[0].quantity - 1)
+                    }
+                  >
+                    <Text style={styles.minusText}>-</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.countView} activeOpacity={1}>
+                    <Text style={styles.countText}>{cartItem[0].quantity}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.plusButton}
+                    onPress={() =>
+                      updateCartData(cartItem[0], cartItem[0].quantity + 1)
+                    }
+                  >
+                    <Text style={styles.plusText}>+</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={styles.cartView}
+                  onPress={() => addToCart(productData, false)}
+                >
+                  <Image
+                    source={Images.cart}
+                    resizeMode="contain"
+                    style={styles.cart}
+                  />
+                  <Text style={styles.add}>{Strings.AddToCart}</Text>
+                </TouchableOpacity>
+              )}
 
               <TouchableOpacity
                 style={styles.BuycartView}

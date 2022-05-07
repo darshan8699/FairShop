@@ -28,5 +28,6 @@ export { default as PopularProduct } from "./User/PopularProduct";
 export { default as NewProducts } from "./User/NewProducts";
 export { default as AllBrowseCategory } from "./User/AllBrowseCategory";
 export { default as OrderSuccess } from "./User/OrderSuccess";
+export { default as ContactUs } from "./User/ContactUs";
 
 LogBox.ignoreAllLogs();

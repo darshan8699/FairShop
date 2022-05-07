@@ -6,7 +6,7 @@ import Colors from "./Colors";
 import Logger from "./Logger";
 import Strings from "./Strings";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ALL_WISHLIST } from "../Utility/Constants";
+import { ALL_CART, ALL_WISHLIST } from "../Utility/Constants";
 
 export function validateResponse(res) {
   Logger.log(res);
@@ -104,8 +104,8 @@ export function getFormatedate(dateTime, format = "ddd, DD.MM.yyyy, hh.mm a") {
   }
 }
 
-export function checkFavItem(itemCode) {
-  AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
+export async function checkFavItem(itemCode) {
+  await AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
     if (JSON.parse(result).indexOf(itemCode) !== -1) {
       return true;
     } else {

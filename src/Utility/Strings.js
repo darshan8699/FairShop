@@ -179,5 +179,7 @@ export const Strings = {
   Summary: "Summary",
   youSave: "You save",
   Apply: "Apply",
+  CustomerCare: "Customer Care",
+  officeTiming: "Office Timing",
 };
 export default Strings;

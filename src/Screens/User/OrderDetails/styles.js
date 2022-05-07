@@ -35,6 +35,13 @@ export default styles = StyleSheet.create({
     fontFamily: Regular,
     fontSize: Size.FindSize(14),
   },
+  priceText1: {
+    textDecorationLine: "line-through",
+    color: Colors.forgotText,
+    fontSize: Size.FindSize(14),
+    fontFamily: Regular,
+    marginLeft: Size.FindSize(5),
+  },
   normalText: {
     color: Colors.orderText,
     fontFamily: Regular,
@@ -77,6 +84,7 @@ export default styles = StyleSheet.create({
     marginRight: Size.FindSize(15),
     width: Size.FindSize(230),
     color: Colors.headerText,
+    textAlignVertical: "center",
   },
   childContainer: {
     padding: Size.FindSize(15),

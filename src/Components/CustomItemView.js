@@ -23,6 +23,7 @@ import {
   UPDATE_CART_COUNT,
 } from "../Utility/Constants";
 import {
+  checkCartCountItem,
   showErrorMessage,
   showSuccessMessage,
   validateResponse,
@@ -37,12 +38,26 @@ import Logger from "../Utility/Logger";
 // create a component
 const CustomItemView = (props) => {
   const [favarray, setFavarray] = useState([]);
+  const [cartItem, setCartItem] = useState([]);
 
   useEffect(() => {
-    AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
+    checkFilter();
+  });
+
+  async function checkFilter() {
+    await AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
       if (result) setFavarray(JSON.parse(result));
     });
-  });
+
+    await AsyncStorage.getItem(ALL_CART, (err, result) => {
+      const cartList = JSON.parse(result);
+      setCartItem(
+        cartList.filter(function (item) {
+          return item.item_code == props.item.item_code;
+        })
+      );
+    });
+  }
 
   const addToWishList = (product_item_code) => {
     AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
@@ -163,7 +178,7 @@ const CustomItemView = (props) => {
           await AsyncStorage.getItem(ALL_CART, async (err, result) => {
             const cartList = JSON.parse(result);
             Logger.log({ cartList });
-            let saveList = [...cartList];
+            let saveList = cartList && cartList.length > 0 ? [...cartList] : [];
             if (cartList && cartList.length > 0) {
               if (
                 saveList.some(
@@ -178,6 +193,7 @@ const CustomItemView = (props) => {
                 saveList.push(res.data.values[0]);
               }
             } else {
+              console.log({ saveList });
               saveList.push(res.data.values[0]);
             }
 
@@ -191,6 +207,44 @@ const CustomItemView = (props) => {
       .catch((err) => {
         showErrorMessage(err.message);
       });
+  };
+
+  const updateCartData = async (product, quantity) => {
+    await AsyncStorage.getItem(ALL_CART, async (err, result) => {
+      product.quantity = quantity;
+
+      if (result && JSON.parse(result).length > 0) {
+        let saveList = JSON.parse(result);
+        for (const key in saveList) {
+          if (saveList.hasOwnProperty(key)) {
+            const element = saveList[key];
+            if (element.item_code == product.item_code) {
+              if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
+                saveList[key].quantity = quantity;
+              } else {
+                showErrorMessage("Stock limit over");
+              }
+              //saveList[key].quantity = quantity;
+            }
+          }
+        }
+        saveList = saveList.filter(function (person) {
+          return person.quantity != 0;
+        });
+        await AsyncStorage.setItem(ALL_CART, JSON.stringify(saveList));
+
+        let productList = [];
+        for (const key in saveList) {
+          if (saveList.hasOwnProperty(key)) {
+            const element = saveList[key];
+            productList.push({
+              product_item_code: element.item_code,
+              quantity: element.quantity,
+            });
+          }
+        }
+      }
+    });
   };
 
   return (
@@ -292,17 +346,43 @@ const CustomItemView = (props) => {
           )}
         </View>
         {props.item.inventory && props.item.inventory.length > 0 ? (
-          <TouchableOpacity
-            style={styles.cartView}
-            onPress={() => addToCart(props.item)}
-          >
-            <Image
-              source={Images.cart}
-              resizeMode="contain"
-              style={styles.cart}
-            />
-            <Text style={styles.add}>{Strings.Add}</Text>
-          </TouchableOpacity>
+          <View>
+            {cartItem.length > 0 ? (
+              <View style={styles.countPanelView}>
+                <TouchableOpacity
+                  style={styles.minusButton}
+                  onPress={() =>
+                    updateCartData(cartItem[0], cartItem[0].quantity - 1)
+                  }
+                >
+                  <Text style={styles.minusText}>-</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.countView} activeOpacity={1}>
+                  <Text style={styles.countText}>{cartItem[0].quantity}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.plusButton}
+                  onPress={() =>
+                    updateCartData(cartItem[0], cartItem[0].quantity + 1)
+                  }
+                >
+                  <Text style={styles.plusText}>+</Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.cartView}
+                onPress={() => addToCart(props.item)}
+              >
+                <Image
+                  source={Images.cart}
+                  resizeMode="contain"
+                  style={styles.cart}
+                />
+                <Text style={styles.add}>{Strings.Add}</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         ) : (
           <View
             style={styles.outStockView}
@@ -320,27 +400,19 @@ const CustomItemView = (props) => {
 // define your styles
 const styles = StyleSheet.create({
   list: {
-    // height: Size.FindSize(280),
     width: Size.FindSize(180),
-    // backgroundColor: Colors.white,
     marginLeft: Size.FindSize(15),
     borderRadius: Size.FindSize(10),
     marginTop: Size.FindSize(5),
     elevation: 2,
-    // paddingHorizontal: Size.FindSize(5),
-    // paddingTop: Size.FindSize(15),
-    // paddingBottom: Size.FindSize(15),
-    marginBottom: Size.FindSize(15),
-    // overflow: "hidden",
 
+    marginBottom: Size.FindSize(15),
     shadowColor: "#000",
     shadowOffset: { width: Platform.OS == "ios" ? 0 : 1, height: 1 },
     shadowOpacity: Platform.OS == "ios" ? 0.5 : 0.1,
     shadowRadius: Platform.OS == "ios" ? 2 : 1,
   },
   item: {
-    // height: Size.FindSize(100),
-    // width: Size.FindSize(180),
     height: Size.FindSize(120),
     width: Size.FindSize(200),
     alignSelf: "center",
@@ -425,6 +497,61 @@ const styles = StyleSheet.create({
     color: Colors.forgotText,
     fontSize: Size.FindSize(15),
     fontFamily: Regular,
+  },
+  countPanelView: {
+    flexDirection: "row",
+    alignSelf: "center",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: Size.FindSize(15),
+    height: Size.FindSize(42),
+    marginHorizontal: Size.FindSize(10),
+  },
+  minusButton: {
+    height: Size.FindSize(42),
+    width: Size.FindSize(40),
+    backgroundColor: Colors.cookBorder,
+    justifyContent: "center",
+    alignItems: "center",
+    borderTopLeftRadius: Size.FindSize(5),
+    borderBottomLeftRadius: Size.FindSize(5),
+  },
+  plusButton: {
+    height: Size.FindSize(42),
+    width: Size.FindSize(40),
+    backgroundColor: Colors.Background,
+    justifyContent: "center",
+    alignItems: "center",
+    borderTopRightRadius: Size.FindSize(5),
+    borderBottomRightRadius: Size.FindSize(5),
+  },
+  minusText: {
+    fontSize: Size.FindSize(20),
+    lineHeight: Size.FindSize(42),
+    color: Colors.headerText,
+    fontFamily: Regular,
+  },
+  plusText: {
+    fontSize: Size.FindSize(20),
+    lineHeight: Size.FindSize(42),
+    color: Colors.white,
+    fontFamily: Regular,
+  },
+  countView: {
+    height: Size.FindSize(42),
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    borderColor: Colors.cookBorder,
+  },
+  countText: {
+    fontSize: Size.FindSize(20),
+    lineHeight: Size.FindSize(42),
+    color: Colors.Background,
+    fontFamily: SemiBold,
+    justifyContent: "center",
   },
 });
 

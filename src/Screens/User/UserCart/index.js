@@ -142,7 +142,7 @@ const MyComponent = (props) => {
       });
   };
 
-  const addToCartStorage = async (product, quantity) => {
+  const updateCartData = async (product, quantity) => {
     AsyncStorageLib.getItem(ALL_CART, async (err, result) => {
       product.quantity = quantity;
 
@@ -208,7 +208,7 @@ const MyComponent = (props) => {
         <View style={styles.countPanelView}>
           <TouchableOpacity
             style={styles.minusButton}
-            onPress={() => addToCartStorage(item, item.quantity - 1)}
+            onPress={() => updateCartData(item, item.quantity - 1)}
           >
             <Text style={styles.minusText}>-</Text>
           </TouchableOpacity>
@@ -217,7 +217,7 @@ const MyComponent = (props) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.plusButton}
-            onPress={() => addToCartStorage(item, item.quantity + 1)}
+            onPress={() => updateCartData(item, item.quantity + 1)}
           >
             <Text style={styles.plusText}>+</Text>
           </TouchableOpacity>
