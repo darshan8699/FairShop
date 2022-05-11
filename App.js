@@ -2,14 +2,20 @@
 import React from "react";
 import { SafeAreaView, StatusBar, StyleSheet, View } from "react-native";
 import { RootSiblingParent } from "react-native-root-siblings";
+import { createStoreHook, Provider } from "react-redux";
+import { applyMiddleware, createStore } from "redux";
+import thunk from "redux-thunk";
 import MainRouteConfig from "./src/Navigation/RootNavigation";
+import rootReducer, { configureStore } from "./src/ReduxStore/configureStore";
 import Colors from "./src/Utility/Colors";
-// export const store = createStore(mainReducer, applyMiddleware(ReduxThunk));
+
+export const store = createStoreHook(rootReducer, applyMiddleware(thunk));
 
 // create a component
 const MyComponent = () => {
   return (
-    <RootSiblingParent>
+    <Provider store={store}>
+      {/* <RootSiblingParent> */}
       <View style={{ flex: 1 }}>
         <SafeAreaView style={{ flex: 0, backgroundColor: Colors.Background }} />
         <StatusBar backgroundColor={Colors.Background} />
@@ -17,7 +23,8 @@ const MyComponent = () => {
           <MainRouteConfig />
         </SafeAreaView>
       </View>
-    </RootSiblingParent>
+      {/* </RootSiblingParent> */}
+    </Provider>
   );
 };
 

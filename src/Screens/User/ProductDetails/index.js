@@ -29,7 +29,6 @@ import {
   NO_IMAGE_URL,
   PREF_LOGIN_INFO,
   PREF_STORE_ID,
-  PRODUCT_DETAILS,
   SHARE_URL,
   UPDATE_CART_COUNT,
 } from "../../../Utility/Constants";
@@ -71,16 +70,19 @@ const MyComponent = (props) => {
     });
 
     await AsyncStorageLib.getItem(ALL_CART, (err, result) => {
-      const cartList = JSON.parse(result);
-      setCartItem(
-        cartList.filter(function (item) {
-          return item.item_code == props.route.params.id;
-        })
-      );
+      if (result) {
+        const cartList = JSON.parse(result);
+        setCartItem(
+          cartList.filter(function (item) {
+            return item.item_code == props.route.params.id;
+          })
+        );
+      }
     });
   }
 
   async function setLoginInfo() {
+    await setLoader(true);
     const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
     setPrefStoreId(id);
     GetItemData(id);
@@ -119,7 +121,7 @@ const MyComponent = (props) => {
 
   const addToCart = async (product, isBuyNow) => {
     setLoader(true);
-    AsyncStorageLib.getItem(ALL_CART, (err, result) => {
+    await AsyncStorageLib.getItem(ALL_CART, (err, result) => {
       const saveList = JSON.parse(result);
       Logger.log({ saveList });
       if (saveList && saveList.length > 0) {
@@ -139,6 +141,7 @@ const MyComponent = (props) => {
                 );
               } else {
                 showErrorMessage("Stock limit over");
+                setLoader(false);
               }
             } else {
               APICallAddToCart(
@@ -285,7 +288,8 @@ const MyComponent = (props) => {
   };
 
   const updateCartData = async (product, quantity) => {
-    AsyncStorageLib.getItem(ALL_CART, async (err, result) => {
+    setLoader(true);
+    await AsyncStorageLib.getItem(ALL_CART, async (err, result) => {
       product.quantity = quantity;
 
       if (result && JSON.parse(result).length > 0) {
@@ -308,6 +312,7 @@ const MyComponent = (props) => {
           return person.quantity != 0;
         });
         await AsyncStorageLib.setItem(ALL_CART, JSON.stringify(saveList));
+        setLoader(false);
         // setCartList(saveList);
         // updateCartTotal(saveList);
         // let productList = [];
@@ -321,6 +326,8 @@ const MyComponent = (props) => {
         //   }
         // }
         // APICallUpdateToCart(productList);
+      } else {
+        setLoader(false);
       }
     });
   };

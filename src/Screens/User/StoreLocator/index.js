@@ -76,9 +76,11 @@ const MyComponent = (props) => {
               pinList = [...pinList, ...element.servicable_pincodes];
             }
           }
-          pinList = pinList.filter((value, index, self) => {
-            return self.indexOf(value) === index;
-          });
+          if (pinList.length > 0)
+            pinList = pinList.filter((value, index, self) => {
+              return self.indexOf(value) === index;
+            });
+
           setPinCodeList(pinList);
         }
       })
@@ -90,13 +92,15 @@ const MyComponent = (props) => {
 
   async function searchFilter(text) {
     setSearchText(text);
-    let filteredList = storeListing.filter(function (item) {
-      return item.servicable_pincodes.includes(text);
-    });
-    if (text.length == 0) {
-      setSearchStoreListing(storeListing);
-    } else {
-      setSearchStoreListing(filteredList);
+    if (storeListing.length > 0) {
+      let filteredList = storeListing.filter(function (item) {
+        return item.servicable_pincodes.includes(text);
+      });
+      if (text.length == 0) {
+        setSearchStoreListing(storeListing);
+      } else {
+        setSearchStoreListing(filteredList);
+      }
     }
   }
 

@@ -9,6 +9,9 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import CountryFlag from "react-native-country-flag";
+import { EventRegister } from "react-native-event-listeners";
+import { useDispatch, useSelector } from "react-redux";
 import APICallService from "../API/APICallService";
 import { Regular, SemiBold } from "../Assets/fonts";
 import { Images } from "../Assets/images";
@@ -23,25 +26,28 @@ import {
   UPDATE_CART_COUNT,
 } from "../Utility/Constants";
 import {
-  checkCartCountItem,
   showErrorMessage,
   showSuccessMessage,
   validateResponse,
 } from "../Utility/Helper";
+import Logger from "../Utility/Logger";
 import Navigator from "../Utility/Navigator";
 import { Size } from "../Utility/sizes";
 import Strings from "../Utility/Strings";
-import { EventRegister } from "react-native-event-listeners";
-import CountryFlag from "react-native-country-flag";
-import Logger from "../Utility/Logger";
 
 // create a component
 const CustomItemView = (props) => {
   const [favarray, setFavarray] = useState([]);
   const [cartItem, setCartItem] = useState([]);
 
+  const { cartListReducer } = useSelector((state) => ({
+    cartListReducer: state.cartListReducer,
+  }));
+  const dispatch = useDispatch();
+
   useEffect(() => {
     checkFilter();
+    Logger.log("cartListReducer.cartList=> ", cartListReducer.cartList);
   });
 
   async function checkFilter() {
@@ -50,12 +56,14 @@ const CustomItemView = (props) => {
     });
 
     await AsyncStorage.getItem(ALL_CART, (err, result) => {
-      const cartList = JSON.parse(result);
-      setCartItem(
-        cartList.filter(function (item) {
-          return item.item_code == props.item.item_code;
-        })
-      );
+      if (result) {
+        const cartList = JSON.parse(result);
+        setCartItem(
+          cartList.filter(function (item) {
+            return item.item_code == props.item.item_code;
+          })
+        );
+      }
     });
   }
 
@@ -200,6 +208,7 @@ const CustomItemView = (props) => {
             const prefList = [...saveList];
             Logger.log({ prefList });
             await AsyncStorage.setItem(ALL_CART, JSON.stringify(prefList));
+            dispatch(updateCartData(JSON.parse(userData)));
             EventRegister.emit(UPDATE_CART_COUNT, prefList.length);
           });
         }
@@ -550,7 +559,7 @@ const styles = StyleSheet.create({
     fontSize: Size.FindSize(20),
     lineHeight: Size.FindSize(42),
     color: Colors.Background,
-    fontFamily: SemiBold,
+    fontFamily: Regular,
     justifyContent: "center",
   },
 });

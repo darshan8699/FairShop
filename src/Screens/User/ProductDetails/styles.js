@@ -246,11 +246,13 @@ export default styles = StyleSheet.create({
     fontFamily: Bold,
     fontSize: Size.FindSize(14),
     marginLeft: Size.FindSize(15),
+    color: Colors.black,
   },
   flatDiscountText1: {
     marginLeft: Size.FindSize(15),
     fontFamily: Regular,
     fontSize: Size.FindSize(12),
+    color: Colors.forgotText,
   },
 
   countPanelView: {
@@ -263,7 +265,7 @@ export default styles = StyleSheet.create({
   },
   minusButton: {
     height: Size.FindSize(66),
-    width: Size.FindSize(40),
+    width: Size.FindSize(60),
     backgroundColor: Colors.cookBorder,
     justifyContent: "center",
     alignItems: "center",
@@ -273,7 +275,7 @@ export default styles = StyleSheet.create({
   },
   plusButton: {
     height: Size.FindSize(66),
-    width: Size.FindSize(40),
+    width: Size.FindSize(60),
     backgroundColor: Colors.Background,
     justifyContent: "center",
     alignItems: "center",
@@ -306,7 +308,7 @@ export default styles = StyleSheet.create({
     fontSize: Size.FindSize(28),
     lineHeight: Size.FindSize(66),
     color: Colors.Background,
-    fontFamily: SemiBold,
+    fontFamily: Regular,
     justifyContent: "center",
   },
 });
