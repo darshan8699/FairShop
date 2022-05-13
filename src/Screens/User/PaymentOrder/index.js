@@ -7,33 +7,35 @@ import {
   Image,
   Keyboard,
   LogBox,
+  Platform,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
-  TextInput,
-  Platform,
 } from "react-native";
 import { EventRegister } from "react-native-event-listeners";
-import { ScrollView } from "react-native-gesture-handler";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import RazorpayCheckout from "react-native-razorpay";
+import { useDispatch, useSelector } from "react-redux";
 import APICallService from "../../../API/APICallService";
+import { Images } from "../../../Assets/images";
 import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
+import { Route } from "../../../Navigation/Routes";
+import { updateCartList } from "../../../ReduxStore/Actions/cartListAction";
 import Colors from "../../../Utility/Colors";
 import {
   ADD_TO_CART,
-  ALL_CART,
   CREATE_ORDER,
   MY_ADDRESS,
-  NO_IMAGE_URL,
   PAYMENT_VERIFY,
   PREF_LOGIN_INFO,
   PREF_STORE_ID,
   PROMOCODE_VERIFY,
-  UPDATE_CART_COUNT,
   STORE_DETAILS,
+  UPDATE_CART_COUNT,
 } from "../../../Utility/Constants";
 import {
   showErrorMessage,
@@ -41,14 +43,11 @@ import {
   validateResponse,
 } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
+import Navigator from "../../../Utility/Navigator";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import { isTextNotEmpty, validateEmail } from "../../../Utility/Validation";
 import styles from "./styles";
-import Navigator from "../../../Utility/Navigator";
-import { Route } from "../../../Navigation/Routes";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { Images } from "../../../Assets/images";
 
 // create a component
 const PaymentOrder = (props) => {
@@ -91,6 +90,10 @@ const PaymentOrder = (props) => {
   const [billingPincode, setBillingPincode] = useState("");
   const [promoCode, setPromocode] = useState("");
   const isFirstRun = useRef(true);
+  const { cartListReducer } = useSelector((state) => ({
+    cartListReducer: state.cartListReducer,
+  }));
+  const dispatch = useDispatch();
 
   useEffect(() => {
     LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
@@ -121,17 +124,15 @@ const PaymentOrder = (props) => {
   }
 
   function getCartList() {
-    AsyncStorageLib.getItem(ALL_CART, (err, result) => {
-      if (result) {
-        let list = JSON.parse(result);
-        list = list.filter(function (person) {
-          return person.quantity != 0;
-        });
-        Logger.log({ list });
-        setCartList(list);
-        updateCartTotal(list);
-      }
-    });
+    if (cartListReducer.cartList) {
+      let list = cartListReducer.cartList;
+      list = list.filter(function (person) {
+        return person.quantity != 0;
+      });
+      Logger.log({ list });
+      setCartList(list);
+      updateCartTotal(list);
+    }
   }
 
   function updateCartTotal(cartList) {
@@ -237,61 +238,6 @@ const PaymentOrder = (props) => {
       });
   };
 
-  const addToCartStorage = (product, quantity) => {
-    AsyncStorageLib.getItem(ALL_CART, (err, result) => {
-      product.quantity = quantity;
-
-      if (result && JSON.parse(result).length > 0) {
-        let saveList = JSON.parse(result);
-        for (const key in saveList) {
-          if (saveList.hasOwnProperty(key)) {
-            const element = saveList[key];
-            if (element.item_code == product.item_code) {
-              saveList[key].quantity = quantity;
-            }
-          }
-        }
-        saveList = saveList.filter(function (person) {
-          return person.quantity != 0;
-        });
-        AsyncStorageLib.setItem(ALL_CART, JSON.stringify(saveList));
-        setCartList(saveList);
-        updateCartTotal(saveList);
-        let productList = [];
-        for (const key in saveList) {
-          if (saveList.hasOwnProperty(key)) {
-            const element = saveList[key];
-            productList.push({
-              product_item_code: element.item_code,
-              quantity: element.quantity,
-            });
-          }
-        }
-        APICallAddToCart(productList);
-      }
-    });
-  };
-
-  const APICallAddToCart = (product_list) => {
-    setLoader(true);
-    const apiClass = new APICallService(ADD_TO_CART, {
-      product: product_list,
-      order_using: "mobile",
-    });
-    apiClass
-      .callAPI()
-      .then(async function (res) {
-        setLoader(false);
-        if (validateResponse(res)) {
-          EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
-        }
-      })
-      .catch((err) => {
-        showErrorMessage(err.message);
-        setLoader(false);
-      });
-  };
-
   const APICallVerifyPayament = (
     order_id,
     payment_status,
@@ -317,7 +263,7 @@ const PaymentOrder = (props) => {
         if (validateResponse(res)) {
           showSuccessMessage("Order payment sucessfully");
           const list = [];
-          AsyncStorageLib.setItem(ALL_CART, JSON.stringify(list));
+          dispatch(updateCartList([]));
           EventRegister.emit(UPDATE_CART_COUNT, 0);
           //props.navigation.goBack();
           Navigator.navigate(Route.OrderSuccess, {
@@ -529,7 +475,7 @@ const PaymentOrder = (props) => {
           if (paymentMode == 2) {
             showSuccessMessage(res.message);
             const list = [];
-            AsyncStorageLib.setItem(ALL_CART, JSON.stringify(list));
+            dispatch(updateCartList([]));
             EventRegister.emit(UPDATE_CART_COUNT, 0);
             //props.navigation.goBack();
             Navigator.navigate(Route.OrderSuccess, {
@@ -595,60 +541,6 @@ const PaymentOrder = (props) => {
         }
       });
   };
-
-  const renderCartItem = ({ item }) => (
-    <View style={{}}>
-      <View style={styles.listView}>
-        <View style={{ flexDirection: "row", flex: 1 }}>
-          <Image
-            resizeMode="contain"
-            // source={{ uri: item.image ? item.image : NO_IMAGE_URL }}
-            source={{ uri: item?.images ? item?.images[0].url : NO_IMAGE_URL }}
-            style={styles.icon}
-          />
-          <View style={styles.textView}>
-            <Text style={styles.item}>{item.item_name}</Text>
-            {/* <Text style={styles.quantityText}>{item.quantity}</Text> */}
-            {item.rsp < item.mrp ? (
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text style={styles.priceText}>₹{item.rsp}</Text>
-                <Text style={styles.priceText1}>₹{item.mrp}</Text>
-              </View>
-            ) : (
-              <Text style={styles.priceText}>₹{item.mrp}</Text>
-            )}
-          </View>
-        </View>
-      </View>
-      <View
-        style={{
-          flexDirection: "row",
-          marginTop: Size.FindSize(15),
-          paddingHorizontal: Size.FindSize(10),
-        }}
-      >
-        <View style={styles.countPanelView}>
-          <TouchableOpacity
-            style={styles.minusButton}
-            onPress={() => addToCartStorage(item, item.quantity - 1)}
-          >
-            <Text style={styles.minusText}>-</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.countView} activeOpacity={1}>
-            <Text style={styles.countText}>{item.quantity}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.plusButton}
-            onPress={() => addToCartStorage(item, item.quantity + 1)}
-          >
-            <Text style={styles.plusText}>+</Text>
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.priceText2}>₹{item.rsp * item.quantity}</Text>
-      </View>
-      <View style={styles.line} />
-    </View>
-  );
 
   const renderAddressList = ({ item, index }) => (
     <TouchableOpacity

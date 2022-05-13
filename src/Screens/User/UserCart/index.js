@@ -4,14 +4,15 @@ import React, { useEffect, useRef, useState } from "react";
 import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import { EventRegister } from "react-native-event-listeners";
 import { ScrollView } from "react-native-gesture-handler";
+import { useDispatch, useSelector } from "react-redux";
 import APICallService from "../../../API/APICallService";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
 import NoDataView from "../../../Components/NoDataView";
 import { Route } from "../../../Navigation/Routes";
+import { updateCartList } from "../../../ReduxStore/Actions/cartListAction";
 import {
   ADD_TO_CART,
-  ALL_CART,
   NO_IMAGE_URL,
   PREF_LOGIN_INFO,
   PREF_STORE_ID,
@@ -42,6 +43,11 @@ const MyComponent = (props) => {
   const [prefStoreId, setPrefStoreId] = useState("");
   const isFirstRun = useRef(true);
 
+  const { cartListReducer } = useSelector((state) => ({
+    cartListReducer: state.cartListReducer,
+  }));
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
@@ -50,17 +56,15 @@ const MyComponent = (props) => {
     }
     const unsubscribe = props.navigation.addListener("focus", () => {
       Logger.log("focus");
-      AsyncStorageLib.getItem(ALL_CART, (err, result) => {
-        if (result) {
-          let list = JSON.parse(result);
-          list = list.filter(function (person) {
-            return person.quantity != 0;
-          });
-          setCartList(list);
-          updateCartTotal(list);
-          setLoader(false);
-        }
-      });
+      Logger.log("focus.cartList=> ", cartListReducer.cartList);
+      if (cartListReducer.cartList.length > 0) {
+        let list = cartListReducer.cartList;
+        list = list.filter(function (person) {
+          return person.quantity != 0;
+        });
+        setCartList(list);
+        updateCartTotal(list);
+      }
     });
     return () => unsubscribe();
   }, [props.currentFocus]);
@@ -99,16 +103,26 @@ const MyComponent = (props) => {
 
       cartSubtotal = cartSubtotal + item.mrp * item.quantity;
       discountedSubtotal = discountedSubtotal + item.net_price * item.quantity;
+
+      const th =
+        item.cgst_amount +
+        item.sgst_amount +
+        (item.igst_amount ? item.igst_amount : 0);
+
       totalSavings =
-        totalSavings +
-        (item.mrp -
-          item.net_price +
-          item.cgst_amount +
-          item.sgst_amount +
-          (item.igst_amount ? item.igst_amount : 0)) *
-          item.quantity;
-      Logger.log(item.igst_amount + " " + item.quantity);
-      totalAmount = discountedSubtotal + totalCgst + totalSgst + totalIgst;
+        totalSavings + (item.mrp - item.net_price + th) * item.quantity;
+
+      totalAmount =
+        discountedSubtotal +
+        (item.taxexclusiveof_rsp === "N"
+          ? totalCgst - item.cgst_amount
+          : totalCgst) +
+        (item.taxexclusiveof_rsp === "N"
+          ? totalSgst - item.sgst_amount
+          : totalSgst) +
+        (item.taxexclusiveof_rsp === "N"
+          ? totalIgst - (item.igst_amount ? item.igst_amount : 0)
+          : totalIgst);
     });
 
     setTotalAmount(totalAmount);
@@ -143,43 +157,42 @@ const MyComponent = (props) => {
   };
 
   const updateCartData = async (product, quantity) => {
-    AsyncStorageLib.getItem(ALL_CART, async (err, result) => {
-      product.quantity = quantity;
+    product.quantity = quantity;
 
-      if (result && JSON.parse(result).length > 0) {
-        let saveList = JSON.parse(result);
-        for (const key in saveList) {
-          if (saveList.hasOwnProperty(key)) {
-            const element = saveList[key];
-            if (element.item_code == product.item_code) {
-              if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
-                saveList[key].quantity = quantity;
-              } else {
-                showErrorMessage("Stock limit over");
-              }
-              //saveList[key].quantity = quantity;
+    if (cartListReducer.cartList && cartListReducer.cartList.length > 0) {
+      let saveList = cartListReducer.cartList;
+      for (const key in saveList) {
+        if (saveList.hasOwnProperty(key)) {
+          const element = saveList[key];
+          if (element.item_code == product.item_code) {
+            if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
+              saveList[key].quantity = quantity;
+            } else {
+              showErrorMessage("Stock limit over");
             }
+            //saveList[key].quantity = quantity;
           }
         }
-        saveList = saveList.filter(function (person) {
-          return person.quantity != 0;
-        });
-        await AsyncStorageLib.setItem(ALL_CART, JSON.stringify(saveList));
-        setCartList(saveList);
-        updateCartTotal(saveList);
-        let productList = [];
-        for (const key in saveList) {
-          if (saveList.hasOwnProperty(key)) {
-            const element = saveList[key];
-            productList.push({
-              product_item_code: element.item_code,
-              quantity: element.quantity,
-            });
-          }
-        }
-        APICallAddToCart(productList);
       }
-    });
+      saveList = saveList.filter(function (person) {
+        return person.quantity != 0;
+      });
+
+      dispatch(updateCartList(saveList));
+      setCartList(saveList);
+      updateCartTotal(saveList);
+      let productList = [];
+      for (const key in saveList) {
+        if (saveList.hasOwnProperty(key)) {
+          const element = saveList[key];
+          productList.push({
+            product_item_code: element.item_code,
+            quantity: element.quantity,
+          });
+        }
+      }
+      APICallAddToCart(productList);
+    }
   };
 
   const renderCartItem = ({ item }) => (

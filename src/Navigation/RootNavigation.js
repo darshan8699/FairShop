@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import { Image, Platform, Text, View } from "react-native";
 import { EventRegister } from "react-native-event-listeners";
+import { useSelector } from "react-redux";
 import { Bold } from "../Assets/fonts";
 import { Images } from "../Assets/images";
 import * as screen from "../Screens";
@@ -58,14 +59,16 @@ const Tab = createBottomTabNavigator();
 
 function BottomTabApp() {
   const [tabCount, setCount] = React.useState(0);
+  const { cartListReducer } = useSelector((state) => ({
+    cartListReducer: state.cartListReducer,
+  }));
 
   React.useEffect(() => {
-    AsyncStorageLib.getItem(ALL_CART, (err, result) => {
-      if (result) {
-        let list = JSON.parse(result);
-        setCount(list.length);
-      }
-    });
+    // if (cartListReducer.cartList.length > 0) {
+    //   let list = cartListReducer.cartList;
+    //   setCount(list.length);
+    // }
+
     EventRegister.addEventListener(UPDATE_CART_COUNT, (count) => {
       Logger.log({ count });
       setCount(count);

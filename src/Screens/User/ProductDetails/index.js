@@ -14,16 +14,17 @@ import {
 } from "react-native";
 import CountryFlag from "react-native-country-flag";
 import { EventRegister } from "react-native-event-listeners";
+import { useDispatch, useSelector } from "react-redux";
 import APICallService from "../../../API/APICallService";
 import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
 import { Route } from "../../../Navigation/Routes";
+import { updateCartList } from "../../../ReduxStore/Actions/cartListAction";
 import Colors from "../../../Utility/Colors";
 import {
   ADD_TO_CART,
   ADD_WISHLIST,
-  ALL_CART,
   ALL_WISHLIST,
   GET_URL_PARAMS,
   NO_IMAGE_URL,
@@ -56,6 +57,11 @@ const MyComponent = (props) => {
   const [favarray, setFavarray] = useState([]);
   const [cartItem, setCartItem] = useState([]);
 
+  const { cartListReducer } = useSelector((state) => ({
+    cartListReducer: state.cartListReducer,
+  }));
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
@@ -69,16 +75,14 @@ const MyComponent = (props) => {
       if (result) setFavarray(JSON.parse(result));
     });
 
-    await AsyncStorageLib.getItem(ALL_CART, (err, result) => {
-      if (result) {
-        const cartList = JSON.parse(result);
-        setCartItem(
-          cartList.filter(function (item) {
-            return item.item_code == props.route.params.id;
-          })
-        );
-      }
-    });
+    if (cartListReducer.cartList.length > 0) {
+      const cartList = cartListReducer.cartList;
+      setCartItem(
+        cartList.filter(function (item) {
+          return item.item_code == props.route.params.id;
+        })
+      );
+    }
   }
 
   async function setLoginInfo() {
@@ -121,49 +125,47 @@ const MyComponent = (props) => {
 
   const addToCart = async (product, isBuyNow) => {
     setLoader(true);
-    await AsyncStorageLib.getItem(ALL_CART, (err, result) => {
-      const saveList = JSON.parse(result);
-      Logger.log({ saveList });
-      if (saveList && saveList.length > 0) {
-        for (const key in saveList) {
-          if (saveList.hasOwnProperty(key)) {
-            const element = saveList[key];
-            if (element.item_code == product.item_code) {
-              if (
-                element.quantity < parseInt(product.inventory[0].stock_quantity)
-              ) {
-                APICallAddToCart(
-                  {
-                    product_item_code: element.item_code,
-                    quantity: element.quantity + 1,
-                  },
-                  isBuyNow
-                );
-              } else {
-                showErrorMessage("Stock limit over");
-                setLoader(false);
-              }
-            } else {
+    const saveList = cartListReducer.cartList;
+    Logger.log({ saveList });
+    if (saveList && saveList.length > 0) {
+      for (const key in saveList) {
+        if (saveList.hasOwnProperty(key)) {
+          const element = saveList[key];
+          if (element.item_code == product.item_code) {
+            if (
+              element.quantity < parseInt(product.inventory[0].stock_quantity)
+            ) {
               APICallAddToCart(
                 {
-                  product_item_code: product.item_code,
-                  quantity: 1,
+                  product_item_code: element.item_code,
+                  quantity: element.quantity + 1,
                 },
                 isBuyNow
               );
+            } else {
+              showErrorMessage("Stock limit over");
+              setLoader(false);
             }
+          } else {
+            APICallAddToCart(
+              {
+                product_item_code: product.item_code,
+                quantity: 1,
+              },
+              isBuyNow
+            );
           }
         }
-      } else {
-        APICallAddToCart(
-          {
-            product_item_code: product.item_code,
-            quantity: 1,
-          },
-          isBuyNow
-        );
       }
-    });
+    } else {
+      APICallAddToCart(
+        {
+          product_item_code: product.item_code,
+          quantity: 1,
+        },
+        isBuyNow
+      );
+    }
   };
 
   const APICallAddToCart = (product_list, isBuyNow) => {
@@ -177,36 +179,35 @@ const MyComponent = (props) => {
       .then(async function (res) {
         if (validateResponse(res)) {
           EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
-          await AsyncStorageLib.getItem(ALL_CART, async (err, result) => {
-            const cartList = JSON.parse(result);
-            Logger.log({ cartList });
-            let saveList = cartList && cartList.length > 0 ? [...cartList] : [];
-            if (cartList && cartList.length > 0) {
-              if (
-                saveList.some(
-                  (item) => res.data.values[0].item_code == item.item_code
-                )
-              ) {
-                const index = saveList.findIndex(
-                  (e) => e.item_code == res.data.values[0].item_code
-                );
-                saveList[index].quantity = res.data.values[0].quantity;
-              } else {
-                saveList.push(res.data.values[0]);
-              }
+
+          const cartList = cartListReducer.cartList;
+          Logger.log({ cartList });
+          let saveList = cartList && cartList.length > 0 ? [...cartList] : [];
+          if (cartList && cartList.length > 0) {
+            if (
+              saveList.some(
+                (item) => res.data.values[0].item_code == item.item_code
+              )
+            ) {
+              const index = saveList.findIndex(
+                (e) => e.item_code == res.data.values[0].item_code
+              );
+              saveList[index].quantity = res.data.values[0].quantity;
             } else {
               saveList.push(res.data.values[0]);
             }
+          } else {
+            saveList.push(res.data.values[0]);
+          }
 
-            const prefList = [...saveList];
-            Logger.log({ prefList });
-            await AsyncStorageLib.setItem(ALL_CART, JSON.stringify(prefList));
-            EventRegister.emit(UPDATE_CART_COUNT, prefList.length);
-            if (isBuyNow) {
-              Navigator.navigate(Route.PaymentOrder);
-            }
-            setLoader(false);
-          });
+          const prefList = [...saveList];
+          Logger.log({ prefList });
+          dispatch(updateCartList(prefList));
+          EventRegister.emit(UPDATE_CART_COUNT, prefList.length);
+          if (isBuyNow) {
+            Navigator.navigate(Route.PaymentOrder);
+          }
+          setLoader(false);
         }
       })
       .catch((err) => {
@@ -288,48 +289,28 @@ const MyComponent = (props) => {
   };
 
   const updateCartData = async (product, quantity) => {
-    setLoader(true);
-    await AsyncStorageLib.getItem(ALL_CART, async (err, result) => {
-      product.quantity = quantity;
+    product.quantity = quantity;
 
-      if (result && JSON.parse(result).length > 0) {
-        let saveList = JSON.parse(result);
-        for (const key in saveList) {
-          if (saveList.hasOwnProperty(key)) {
-            const element = saveList[key];
-            if (element.item_code == product.item_code) {
-              if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
-                saveList[key].quantity = quantity;
-              } else {
-                showErrorMessage("Stock limit over");
-                setLoader(false);
-              }
-              //saveList[key].quantity = quantity;
+    if (cartListReducer.cartList && cartListReducer.cartList.length > 0) {
+      let saveList = cartListReducer.cartList;
+      for (const key in saveList) {
+        if (saveList.hasOwnProperty(key)) {
+          const element = saveList[key];
+          if (element.item_code == product.item_code) {
+            if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
+              saveList[key].quantity = quantity;
+            } else {
+              showErrorMessage("Stock limit over");
             }
+            //saveList[key].quantity = quantity;
           }
         }
-        saveList = saveList.filter(function (person) {
-          return person.quantity != 0;
-        });
-        await AsyncStorageLib.setItem(ALL_CART, JSON.stringify(saveList));
-        setLoader(false);
-        // setCartList(saveList);
-        // updateCartTotal(saveList);
-        // let productList = [];
-        // for (const key in saveList) {
-        //   if (saveList.hasOwnProperty(key)) {
-        //     const element = saveList[key];
-        //     productList.push({
-        //       product_item_code: element.item_code,
-        //       quantity: element.quantity,
-        //     });
-        //   }
-        // }
-        // APICallUpdateToCart(productList);
-      } else {
-        setLoader(false);
       }
-    });
+      saveList = saveList.filter(function (person) {
+        return person.quantity != 0;
+      });
+      dispatch(updateCartList(saveList));
+    }
   };
 
   const APICallUpdateToCart = (product_list) => {

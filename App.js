@@ -9,7 +9,7 @@ import MainRouteConfig from "./src/Navigation/RootNavigation";
 import rootReducer, { configureStore } from "./src/ReduxStore/configureStore";
 import Colors from "./src/Utility/Colors";
 
-export const store = createStoreHook(rootReducer, applyMiddleware(thunk));
+export const store = createStore(rootReducer, applyMiddleware(thunk));
 
 // create a component
 const MyComponent = () => {
