@@ -56,6 +56,21 @@ const iOSAnimation = {
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
+const HomeStack = createNativeStackNavigator();
+
+function HomeStackScreen() {
+  return (
+    <HomeStack.Navigator
+      screenOptions={Platform.OS == "ios" ? iOSAnimation : horizontalAnimation}
+    >
+      <HomeStack.Screen name={Route.UserHome} component={screen.UserHome} />
+      <HomeStack.Screen
+        name={Route.ShopCategoryWise}
+        component={screen.ShopCategoryWise}
+      />
+    </HomeStack.Navigator>
+  );
+}
 
 function BottomTabApp() {
   const [tabCount, setCount] = React.useState(0);
@@ -84,7 +99,7 @@ function BottomTabApp() {
     >
       <Tab.Screen
         name={Route.UserHome}
-        component={screen.UserHome}
+        component={HomeStackScreen}
         options={{
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, color, size }) => (
@@ -225,10 +240,10 @@ function RootNavigation() {
         <Stack.Screen name={Route.DrawerApp} component={DrawerApp} />
         <Stack.Screen name={Route.MyOrders} component={screen.MyOrders} />
         <Stack.Screen name={Route.MyProfile} component={screen.MyProfile} />
-        <Stack.Screen
+        {/* <Stack.Screen
           name={Route.ShopCategoryWise}
           component={screen.ShopCategoryWise}
-        />
+        /> */}
         <Stack.Screen name={Route.Recipes} component={screen.Recipes} />
         <Stack.Screen name={Route.Offers} component={screen.Offers} />
         <Stack.Screen

@@ -24,14 +24,14 @@ export default styles = StyleSheet.create({
     marginTop: Size.FindSize(5),
     marginRight: Size.FindSize(13),
     borderWidth: Size.FindSize(1),
-    height: Size.FindSize(85),
-    width: Size.FindSize(85),
+    height: Size.FindSize(65),
+    width: Size.FindSize(65),
     justifyContent: "center",
     alignItems: "center",
   },
   slideImage: {
-    height: Size.FindSize(65),
-    width: Size.FindSize(65),
+    height: Size.FindSize(45),
+    width: Size.FindSize(45),
   },
   leftSliderIcon: {
     height: Size.FindSize(22),
@@ -39,7 +39,7 @@ export default styles = StyleSheet.create({
   },
   leftSlider: {
     position: "absolute",
-    top: Size.FindSize(38),
+    top: Size.FindSize(28),
   },
   rightSliderIcon: {
     height: Size.FindSize(22),
@@ -48,7 +48,7 @@ export default styles = StyleSheet.create({
   rightSlider: {
     position: "absolute",
     right: 0,
-    top: Size.FindSize(38),
+    top: Size.FindSize(28),
   },
   title: {
     color: Colors.Background,
