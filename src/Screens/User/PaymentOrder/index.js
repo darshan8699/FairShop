@@ -62,6 +62,7 @@ const PaymentOrder = (props) => {
   const [discountedSubtotal, setDiscountedSubtotal] = useState(0);
   const [totalSavings, setTotalSavings] = useState(0);
   const [offerDiscount, setOfferDiscount] = useState(0);
+  const [taxableAmount, setTaxableAmount] = useState(0);
 
   const [isShowLoader, setLoader] = useState(false);
   const [cartList, setCartList] = useState([]);
@@ -138,6 +139,7 @@ const PaymentOrder = (props) => {
   function updateCartTotal(cartList) {
     let cartSubtotal = 0;
     let discountedSubtotal = 0;
+    let taxableAmount = 0;
     let totalCgst = 0;
     let totalSgst = 0;
     let totalIgst = 0;
@@ -145,27 +147,86 @@ const PaymentOrder = (props) => {
     let totalAmount = 0;
     let offerDiscount = 0;
 
-    cartList.map((item) => {
-      Logger.log(item);
-      totalCgst =
-        totalCgst + (item.cgst_amount ? item.cgst_amount : 0) * item.quantity;
-      totalSgst =
-        totalSgst + (item.sgst_amount ? item.sgst_amount : 0) * item.quantity;
-      totalIgst =
-        totalIgst + (item.igst_amount ? item.igst_amount : 0) * item.quantity;
+    cartList.map((singleProduct) => {
+      Logger.log(singleProduct);
+      let thisProductCgst = 0;
+      let thisProductSgst = 0;
+      let thisProductIgst = 0;
+      let totalGst = 0;
+      let taxAdditional = false;
+      if (
+        ["yes", "YES", "Yes", "Y"].includes(singleProduct.taxexclusiveof_rsp)
+      ) {
+        taxAdditional = true;
+        if (singleProduct.hsn_tax && singleProduct.hsn_tax.current_gst_tax) {
+          totalGst =
+            (singleProduct.rsp *
+              parseFloat(singleProduct.hsn_tax.current_gst_tax)) /
+            100;
+        }
+      } else if (
+        ["no", "NO", "No", "N"].includes(singleProduct.taxexclusiveof_rsp)
+      ) {
+        taxAdditional = false;
+        if (singleProduct.hsn_tax && singleProduct.hsn_tax.current_gst_tax) {
+          totalGst =
+            singleProduct.rsp -
+            (100 * singleProduct.rsp) /
+              (100 + parseFloat(singleProduct.hsn_tax.current_gst_tax));
+        }
+      }
 
-      cartSubtotal = cartSubtotal + item.mrp * item.quantity;
-      discountedSubtotal = discountedSubtotal + item.net_price * item.quantity;
-      totalSavings =
-        totalSavings +
-        (item.mrp -
-          item.net_price +
-          item.cgst_amount +
-          item.sgst_amount +
-          (item.igst_amount ? item.igst_amount : 0)) *
-          item.quantity;
-      Logger.log(item.igst_amount + " " + item.quantity);
-      totalAmount = discountedSubtotal + totalCgst + totalSgst + totalIgst;
+      discountedSubtotal =
+        discountedSubtotal + singleProduct.rsp * singleProduct.quantity;
+      thisProductCgst = totalGst / 2;
+      thisProductSgst = totalGst / 2;
+      thisProductIgst = singleProduct.igst_amount
+        ? singleProduct.igst_amount
+        : 0;
+
+      if (taxAdditional === true) {
+        totalAmount =
+          totalAmount + (singleProduct.rsp + totalGst) * singleProduct.quantity;
+        taxableAmount =
+          taxableAmount + singleProduct.rsp * singleProduct.quantity;
+      } else {
+        totalAmount = totalAmount + singleProduct.rsp * singleProduct.quantity;
+        taxableAmount =
+          taxableAmount +
+          (singleProduct.rsp - totalGst) * singleProduct.quantity;
+      }
+      totalCgst = totalCgst + thisProductCgst * singleProduct.quantity;
+      totalSgst = totalSgst + thisProductSgst * singleProduct.quantity;
+      totalIgst = totalIgst + thisProductIgst * singleProduct.quantity;
+      if (singleProduct.rsp < singleProduct.mrp) {
+        totalSavings = totalSavings + (singleProduct.mrp - singleProduct.rsp);
+      }
+
+      // if (
+      //   cartContext.cartOffer &&
+      //   Object.keys(cartContext.cartOffer).length > 0
+      // ) {
+      //   let appliedMinValue = 0;
+      //   let discountToApply = 0;
+      //   if (Array.isArray(cartContext.cartOffer.discount)) {
+      //     cartContext.cartOffer.discount.forEach((discountObj) => {
+      //       if (
+      //         discountObj.min_value >= appliedMinValue &&
+      //         discountedSubtotal >= discountObj.min_value
+      //       ) {
+      //         discountToApply = discountObj.discount;
+      //       }
+      //     });
+      //   }
+      //   if (cartContext.cartOffer.type === "flat") {
+      //     offerDiscount = discountToApply;
+      //   } else if (cartContext.cartOffer.type === "percentage") {
+      //     offerDiscount = cartSubtotal * (discountToApply / 100);
+      //   }
+      // }
+      totalAmount = totalAmount - offerDiscount;
+
+      totalSavings = totalSavings + offerDiscount;
     });
 
     setTotalAmount(totalAmount);
@@ -176,6 +237,7 @@ const PaymentOrder = (props) => {
     setTotalSavings(totalSavings);
     setDiscountedSubtotal(discountedSubtotal);
     setOfferDiscount(offerDiscount);
+    setTaxableAmount(taxableAmount);
   }
 
   const APICallGetStoreInfo = (store_id) => {
@@ -1023,7 +1085,7 @@ const PaymentOrder = (props) => {
               <Text style={styles.subTotalText}>{Strings.TaxableAmount}</Text>
               <Text style={styles.subTotalPrice}>
                 {" "}
-                ₹{(subTotalPrice - totalSavings).toFixed(2)}
+                ₹{taxableAmount.toFixed(2)}
               </Text>
             </View>
             <View style={styles.subTotalView}>

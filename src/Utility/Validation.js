@@ -5,6 +5,13 @@ export const isTextNotEmpty = (text) => {
   return false;
 };
 
+export const isValidAmount = (text) => {
+  if (text && text > 0) {
+    return true;
+  }
+  return false;
+};
+
 export const validateEmail = (email) => {
   const emailRegex =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

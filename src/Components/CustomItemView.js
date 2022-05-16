@@ -47,13 +47,9 @@ const CustomItemView = (props) => {
 
   useEffect(() => {
     checkFilter();
-  });
+  }, [cartListReducer.cartList]);
 
   async function checkFilter() {
-    await AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
-      if (result) setFavarray(JSON.parse(result));
-    });
-
     if (cartListReducer.cartList.length > 0) {
       const cartList = cartListReducer.cartList;
       setCartItem(
@@ -61,7 +57,12 @@ const CustomItemView = (props) => {
           return item.item_code == props.item.item_code;
         })
       );
+    } else {
+      setCartItem([]);
     }
+    await AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
+      if (result) setFavarray(JSON.parse(result));
+    });
   }
 
   const addToWishList = (product_item_code) => {
@@ -137,25 +138,23 @@ const CustomItemView = (props) => {
 
     if (saveList && saveList.length > 0) {
       for (const key in saveList) {
-        if (saveList.hasOwnProperty(key)) {
-          const element = saveList[key];
-          if (element.item_code == product.item_code) {
-            if (
-              element.quantity < parseInt(product.inventory[0].stock_quantity)
-            ) {
-              APICallAddToCart({
-                product_item_code: element.item_code,
-                quantity: element.quantity + 1,
-              });
-            } else {
-              showErrorMessage("Stock limit over");
-            }
-          } else {
+        const element = saveList[key];
+        if (element.item_code == product.item_code) {
+          if (
+            element.quantity < parseInt(product.inventory[0].stock_quantity)
+          ) {
             APICallAddToCart({
-              product_item_code: product.item_code,
-              quantity: 1,
+              product_item_code: element.item_code,
+              quantity: element.quantity + 1,
             });
+          } else {
+            showErrorMessage("Stock limit over");
           }
+        } else {
+          APICallAddToCart({
+            product_item_code: product.item_code,
+            quantity: 1,
+          });
         }
       }
     } else {
@@ -176,11 +175,8 @@ const CustomItemView = (props) => {
       .callAPI()
       .then(async function (res) {
         if (validateResponse(res)) {
-          EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
-          showSuccessMessage("Cart updated successfully!");
-
           const cartList = cartListReducer.cartList;
-          Logger.log({ cartList });
+
           let saveList = cartList && cartList.length > 0 ? [...cartList] : [];
           if (cartList && cartList.length > 0) {
             if (
@@ -196,15 +192,13 @@ const CustomItemView = (props) => {
               saveList.push(res.data.values[0]);
             }
           } else {
-            console.log({ saveList });
             saveList.push(res.data.values[0]);
           }
 
           const prefList = [...saveList];
-          Logger.log({ prefList });
-
           dispatch(updateCartList(prefList));
-          EventRegister.emit(UPDATE_CART_COUNT, prefList.length);
+          showSuccessMessage("Cart updated successfully!");
+          await EventRegister.emit(UPDATE_CART_COUNT, prefList.length);
         }
       })
       .catch((err) => {
@@ -213,19 +207,16 @@ const CustomItemView = (props) => {
   };
 
   const updateCartData = async (product, quantity) => {
+    let saveList = cartListReducer.cartList;
     product.quantity = quantity;
-    if (cartListReducer.cartList && cartListReducer.cartList.length > 0) {
-      let saveList = cartListReducer.cartList;
+    if (saveList && saveList.length > 0) {
       for (const key in saveList) {
-        if (saveList.hasOwnProperty(key)) {
-          const element = saveList[key];
-          if (element.item_code == product.item_code) {
-            if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
-              saveList[key].quantity = quantity;
-            } else {
-              showErrorMessage("Stock limit over");
-            }
-            //saveList[key].quantity = quantity;
+        const element = saveList[key];
+        if (element.item_code == product.item_code) {
+          if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
+            saveList[key].quantity = quantity;
+          } else {
+            showErrorMessage("Stock limit over");
           }
         }
       }
@@ -235,16 +226,7 @@ const CustomItemView = (props) => {
 
       dispatch(updateCartList(saveList));
 
-      let productList = [];
-      for (const key in saveList) {
-        if (saveList.hasOwnProperty(key)) {
-          const element = saveList[key];
-          productList.push({
-            product_item_code: element.item_code,
-            quantity: element.quantity,
-          });
-        }
-      }
+      await EventRegister.emit(UPDATE_CART_COUNT, saveList.length);
     }
   };
 

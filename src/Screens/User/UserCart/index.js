@@ -5,20 +5,18 @@ import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import { EventRegister } from "react-native-event-listeners";
 import { ScrollView } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
-import APICallService from "../../../API/APICallService";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
 import NoDataView from "../../../Components/NoDataView";
 import { Route } from "../../../Navigation/Routes";
 import { updateCartList } from "../../../ReduxStore/Actions/cartListAction";
 import {
-  ADD_TO_CART,
   NO_IMAGE_URL,
   PREF_LOGIN_INFO,
   PREF_STORE_ID,
   UPDATE_CART_COUNT,
 } from "../../../Utility/Constants";
-import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
+import { showErrorMessage } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import Navigator from "../../../Utility/Navigator";
 import { Size } from "../../../Utility/sizes";
@@ -39,6 +37,7 @@ const MyComponent = (props) => {
   const [discountedSubtotal, setDiscountedSubtotal] = useState(0);
   const [totalSavings, setTotalSavings] = useState(0);
   const [offerDiscount, setOfferDiscount] = useState(0);
+  const [taxableAmount, setTaxableAmount] = useState(0);
 
   const [prefStoreId, setPrefStoreId] = useState("");
   const isFirstRun = useRef(true);
@@ -52,22 +51,16 @@ const MyComponent = (props) => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       setLoginInfo();
-    } else {
     }
-    const unsubscribe = props.navigation.addListener("focus", () => {
-      Logger.log("focus");
-      Logger.log("focus.cartList=> ", cartListReducer.cartList);
-      if (cartListReducer.cartList.length > 0) {
-        let list = cartListReducer.cartList;
-        list = list.filter(function (person) {
-          return person.quantity != 0;
-        });
-        setCartList(list);
-        updateCartTotal(list);
-      }
-    });
-    return () => unsubscribe();
-  }, [props.currentFocus]);
+    if (cartListReducer.cartList.length > 0) {
+      let list = cartListReducer.cartList;
+      list = list.filter(function (person) {
+        return person.quantity != 0;
+      });
+      setCartList(list);
+      updateCartTotal(list);
+    }
+  }, [cartListReducer.cartList]);
 
   async function setLoginInfo() {
     const id = await AsyncStorageLib.getItem(PREF_STORE_ID);
@@ -85,6 +78,7 @@ const MyComponent = (props) => {
   function updateCartTotal(cartList) {
     let cartSubtotal = 0;
     let discountedSubtotal = 0;
+    let taxableAmount = 0;
     let totalCgst = 0;
     let totalSgst = 0;
     let totalIgst = 0;
@@ -92,37 +86,116 @@ const MyComponent = (props) => {
     let totalAmount = 0;
     let offerDiscount = 0;
 
-    cartList.map((item) => {
-      Logger.log(item);
-      totalCgst =
-        totalCgst + (item.cgst_amount ? item.cgst_amount : 0) * item.quantity;
-      totalSgst =
-        totalSgst + (item.sgst_amount ? item.sgst_amount : 0) * item.quantity;
-      totalIgst =
-        totalIgst + (item.igst_amount ? item.igst_amount : 0) * item.quantity;
+    cartList.map((singleProduct) => {
+      Logger.log(singleProduct);
+      // totalCgst =
+      //   totalCgst + (item.cgst_amount ? item.cgst_amount : 0) * item.quantity;
+      // totalSgst =
+      //   totalSgst + (item.sgst_amount ? item.sgst_amount : 0) * item.quantity;
+      // totalIgst =
+      //   totalIgst + (item.igst_amount ? item.igst_amount : 0) * item.quantity;
 
-      cartSubtotal = cartSubtotal + item.mrp * item.quantity;
-      discountedSubtotal = discountedSubtotal + item.net_price * item.quantity;
+      // cartSubtotal = cartSubtotal + item.mrp * item.quantity;
+      // discountedSubtotal = discountedSubtotal + item.net_price * item.quantity;
 
-      const th =
-        item.cgst_amount +
-        item.sgst_amount +
-        (item.igst_amount ? item.igst_amount : 0);
+      // const th =
+      //   item.cgst_amount +
+      //   item.sgst_amount +
+      //   (item.igst_amount ? item.igst_amount : 0);
 
-      totalSavings =
-        totalSavings + (item.mrp - item.net_price + th) * item.quantity;
+      // totalSavings =
+      //   totalSavings + (item.mrp - item.net_price + th) * item.quantity;
 
-      totalAmount =
-        discountedSubtotal +
-        (item.taxexclusiveof_rsp === "N"
-          ? totalCgst - item.cgst_amount
-          : totalCgst) +
-        (item.taxexclusiveof_rsp === "N"
-          ? totalSgst - item.sgst_amount
-          : totalSgst) +
-        (item.taxexclusiveof_rsp === "N"
-          ? totalIgst - (item.igst_amount ? item.igst_amount : 0)
-          : totalIgst);
+      // totalAmount =
+      //   discountedSubtotal +
+      //   (item.taxexclusiveof_rsp === "N"
+      //     ? totalCgst - item.cgst_amount
+      //     : totalCgst) +
+      //   (item.taxexclusiveof_rsp === "N"
+      //     ? totalSgst - item.sgst_amount
+      //     : totalSgst) +
+      //   (item.taxexclusiveof_rsp === "N"
+      //     ? totalIgst - (item.igst_amount ? item.igst_amount : 0)
+      //     : totalIgst);
+
+      let thisProductCgst = 0;
+      let thisProductSgst = 0;
+      let thisProductIgst = 0;
+      let totalGst = 0;
+      let taxAdditional = false;
+      if (
+        ["yes", "YES", "Yes", "Y"].includes(singleProduct.taxexclusiveof_rsp)
+      ) {
+        taxAdditional = true;
+        if (singleProduct.hsn_tax && singleProduct.hsn_tax.current_gst_tax) {
+          totalGst =
+            (singleProduct.rsp *
+              parseFloat(singleProduct.hsn_tax.current_gst_tax)) /
+            100;
+        }
+      } else if (
+        ["no", "NO", "No", "N"].includes(singleProduct.taxexclusiveof_rsp)
+      ) {
+        taxAdditional = false;
+        if (singleProduct.hsn_tax && singleProduct.hsn_tax.current_gst_tax) {
+          totalGst =
+            singleProduct.rsp -
+            (100 * singleProduct.rsp) /
+              (100 + parseFloat(singleProduct.hsn_tax.current_gst_tax));
+        }
+      }
+
+      discountedSubtotal =
+        discountedSubtotal + singleProduct.rsp * singleProduct.quantity;
+      thisProductCgst = totalGst / 2;
+      thisProductSgst = totalGst / 2;
+      thisProductIgst = singleProduct.igst_amount
+        ? singleProduct.igst_amount
+        : 0;
+
+      if (taxAdditional === true) {
+        totalAmount =
+          totalAmount + (singleProduct.rsp + totalGst) * singleProduct.quantity;
+        taxableAmount =
+          taxableAmount + singleProduct.rsp * singleProduct.quantity;
+      } else {
+        totalAmount = totalAmount + singleProduct.rsp * singleProduct.quantity;
+        taxableAmount =
+          taxableAmount +
+          (singleProduct.rsp - totalGst) * singleProduct.quantity;
+      }
+      totalCgst = totalCgst + thisProductCgst * singleProduct.quantity;
+      totalSgst = totalSgst + thisProductSgst * singleProduct.quantity;
+      totalIgst = totalIgst + thisProductIgst * singleProduct.quantity;
+      if (singleProduct.rsp < singleProduct.mrp) {
+        totalSavings = totalSavings + (singleProduct.mrp - singleProduct.rsp);
+      }
+
+      // if (
+      //   cartContext.cartOffer &&
+      //   Object.keys(cartContext.cartOffer).length > 0
+      // ) {
+      //   let appliedMinValue = 0;
+      //   let discountToApply = 0;
+      //   if (Array.isArray(cartContext.cartOffer.discount)) {
+      //     cartContext.cartOffer.discount.forEach((discountObj) => {
+      //       if (
+      //         discountObj.min_value >= appliedMinValue &&
+      //         discountedSubtotal >= discountObj.min_value
+      //       ) {
+      //         discountToApply = discountObj.discount;
+      //       }
+      //     });
+      //   }
+      //   if (cartContext.cartOffer.type === "flat") {
+      //     offerDiscount = discountToApply;
+      //   } else if (cartContext.cartOffer.type === "percentage") {
+      //     offerDiscount = cartSubtotal * (discountToApply / 100);
+      //   }
+      // }
+      totalAmount = totalAmount - offerDiscount;
+
+      totalSavings = totalSavings + offerDiscount;
     });
 
     setTotalAmount(totalAmount);
@@ -133,44 +206,20 @@ const MyComponent = (props) => {
     setTotalSavings(totalSavings);
     setDiscountedSubtotal(discountedSubtotal);
     setOfferDiscount(offerDiscount);
+    setTaxableAmount(taxableAmount);
   }
 
-  const APICallAddToCart = (product_list) => {
-    setLoader(true);
-    const apiClass = new APICallService(ADD_TO_CART, {
-      product: product_list,
-      order_using: "mobile",
-      store_id: prefStoreId,
-    });
-    apiClass
-      .callAPI()
-      .then(async function (res) {
-        setLoader(false);
-        if (validateResponse(res)) {
-          EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
-        }
-      })
-      .catch((err) => {
-        showErrorMessage(err.message);
-        setLoader(false);
-      });
-  };
-
   const updateCartData = async (product, quantity) => {
+    let saveList = cartListReducer.cartList;
     product.quantity = quantity;
-
-    if (cartListReducer.cartList && cartListReducer.cartList.length > 0) {
-      let saveList = cartListReducer.cartList;
+    if (saveList && saveList.length > 0) {
       for (const key in saveList) {
-        if (saveList.hasOwnProperty(key)) {
-          const element = saveList[key];
-          if (element.item_code == product.item_code) {
-            if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
-              saveList[key].quantity = quantity;
-            } else {
-              showErrorMessage("Stock limit over");
-            }
-            //saveList[key].quantity = quantity;
+        const element = saveList[key];
+        if (element.item_code == product.item_code) {
+          if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
+            saveList[key].quantity = quantity;
+          } else {
+            showErrorMessage("Stock limit over");
           }
         }
       }
@@ -179,19 +228,7 @@ const MyComponent = (props) => {
       });
 
       dispatch(updateCartList(saveList));
-      setCartList(saveList);
-      updateCartTotal(saveList);
-      let productList = [];
-      for (const key in saveList) {
-        if (saveList.hasOwnProperty(key)) {
-          const element = saveList[key];
-          productList.push({
-            product_item_code: element.item_code,
-            quantity: element.quantity,
-          });
-        }
-      }
-      APICallAddToCart(productList);
+      await EventRegister.emit(UPDATE_CART_COUNT, saveList.length);
     }
   };
 
@@ -278,9 +315,7 @@ const MyComponent = (props) => {
         </View>
         <View style={styles.subTotalView}>
           <Text style={styles.subTotalText}>{Strings.TaxableAmount}</Text>
-          <Text style={styles.subTotalPrice}>
-            ₹{(subTotalPrice - totalSavings).toFixed(2)}
-          </Text>
+          <Text style={styles.subTotalPrice}>₹{taxableAmount.toFixed(2)}</Text>
         </View>
         <View style={styles.subTotalView}>
           <Text style={styles.subTotalText}>{Strings.CGST}</Text>

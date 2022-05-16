@@ -68,13 +68,9 @@ const MyComponent = (props) => {
       setLoginInfo();
     }
     checkFilter();
-  });
+  }, [cartListReducer.cartList]);
 
   async function checkFilter() {
-    await AsyncStorageLib.getItem(ALL_WISHLIST, (err, result) => {
-      if (result) setFavarray(JSON.parse(result));
-    });
-
     if (cartListReducer.cartList.length > 0) {
       const cartList = cartListReducer.cartList;
       setCartItem(
@@ -82,7 +78,12 @@ const MyComponent = (props) => {
           return item.item_code == props.route.params.id;
         })
       );
+    } else {
+      setCartItem([]);
     }
+    await AsyncStorageLib.getItem(ALL_WISHLIST, (err, result) => {
+      if (result) setFavarray(JSON.parse(result));
+    });
   }
 
   async function setLoginInfo() {
@@ -178,8 +179,6 @@ const MyComponent = (props) => {
       .callAPI()
       .then(async function (res) {
         if (validateResponse(res)) {
-          EventRegister.emit(UPDATE_CART_COUNT, product_list.length);
-
           const cartList = cartListReducer.cartList;
           Logger.log({ cartList });
           let saveList = cartList && cartList.length > 0 ? [...cartList] : [];
@@ -289,27 +288,25 @@ const MyComponent = (props) => {
   };
 
   const updateCartData = async (product, quantity) => {
+    let saveList = cartListReducer.cartList;
     product.quantity = quantity;
-
-    if (cartListReducer.cartList && cartListReducer.cartList.length > 0) {
-      let saveList = cartListReducer.cartList;
+    if (saveList && saveList.length > 0) {
       for (const key in saveList) {
-        if (saveList.hasOwnProperty(key)) {
-          const element = saveList[key];
-          if (element.item_code == product.item_code) {
-            if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
-              saveList[key].quantity = quantity;
-            } else {
-              showErrorMessage("Stock limit over");
-            }
-            //saveList[key].quantity = quantity;
+        const element = saveList[key];
+        if (element.item_code == product.item_code) {
+          if (quantity <= parseInt(product.inventory[0].stock_quantity)) {
+            saveList[key].quantity = quantity;
+          } else {
+            showErrorMessage("Stock limit over");
           }
         }
       }
       saveList = saveList.filter(function (person) {
         return person.quantity != 0;
       });
+
       dispatch(updateCartList(saveList));
+      await EventRegister.emit(UPDATE_CART_COUNT, saveList.length);
     }
   };
 
