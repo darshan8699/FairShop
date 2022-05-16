@@ -128,7 +128,7 @@ const MyComponent = (props) => {
           >
             <View style={styles.buttonView}>
               <Image
-                source={Images.badge}
+                source={Images.loyalti}
                 resizeMode="contain"
                 style={styles.icon}
               />

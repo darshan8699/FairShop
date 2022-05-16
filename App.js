@@ -15,15 +15,17 @@ export const store = createStore(rootReducer, applyMiddleware(thunk));
 const MyComponent = () => {
   return (
     <Provider store={store}>
-      {/* <RootSiblingParent> */}
-      <View style={{ flex: 1 }}>
-        <SafeAreaView style={{ flex: 0, backgroundColor: Colors.Background }} />
-        <StatusBar backgroundColor={Colors.Background} />
-        <SafeAreaView style={styles.container}>
-          <MainRouteConfig />
-        </SafeAreaView>
-      </View>
-      {/* </RootSiblingParent> */}
+      <RootSiblingParent>
+        <View style={{ flex: 1 }}>
+          <SafeAreaView
+            style={{ flex: 0, backgroundColor: Colors.Background }}
+          />
+          <StatusBar backgroundColor={Colors.Background} />
+          <SafeAreaView style={styles.container}>
+            <MainRouteConfig />
+          </SafeAreaView>
+        </View>
+      </RootSiblingParent>
     </Provider>
   );
 };

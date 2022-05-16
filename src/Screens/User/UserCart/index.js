@@ -59,6 +59,17 @@ const MyComponent = (props) => {
       });
       setCartList(list);
       updateCartTotal(list);
+    } else {
+      setCartList([]);
+      setTotalAmount(0);
+      setSubTotalPrice(0);
+      setTotalCGST(0);
+      setTotalSGST(0);
+      setTotalIGST(0);
+      setTotalSavings(0);
+      setDiscountedSubtotal(0);
+      setOfferDiscount(0);
+      setTaxableAmount(0);
     }
   }, [cartListReducer.cartList]);
 
