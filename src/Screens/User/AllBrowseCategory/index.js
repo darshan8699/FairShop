@@ -1,8 +1,8 @@
 import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Image, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { FlatList, Image, Text, View, TouchableOpacity } from "react-native";
+
 import APICallService from "../../../API/APICallService";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
@@ -69,9 +69,10 @@ const MyComponent = (props) => {
     <TouchableOpacity
       style={styles.browseCard}
       activeOpacity={1}
-      onPress={() =>
-        Navigator.navigate(Route.ShopCategoryWise, { categoryDetail: item })
-      }
+      onPress={() => {
+        console.log("123");
+        Navigator.navigate(Route.ShopCategoryWise, { categoryDetail: item });
+      }}
     >
       <View style={styles.browseCardView}>
         <Image
