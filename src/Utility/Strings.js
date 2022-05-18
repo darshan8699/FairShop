@@ -129,6 +129,7 @@ export const Strings = {
   OrderNotes: "Order Notes",
   ShippingAddress: "Shipping Address",
   BillingAddress: "Billing Address",
+  SameAsShippingAddress: "Same as Shipping Address",
   PaymentMethod: "Payment Method",
   OtherDetails: "Other Details",
   Razorpay: "Razorpay",

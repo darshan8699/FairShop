@@ -1,7 +1,7 @@
 import AsyncStorageLib from "@react-native-async-storage/async-storage";
 //import liraries
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { FlatList, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import APICallService from "../../../API/APICallService";
 import CustomItemView from "../../../Components/CustomItemView";
 import Header from "../../../Components/Header";
@@ -26,31 +26,38 @@ const data = [
 const MyComponent = (props) => {
   const [newData, setNewData] = useState([]);
   const [isShowLoader, setLoader] = useState(false);
-  const isFirstRun = useRef(true);
-  const dropdownRef = useRef();
+  const [isLoadMoreLoader, setLoadMoreLoader] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
   const [loginInfo, setLoginInfo] = useState("");
   const [prefStoreId, setPrefStoreId] = useState("");
+
+  const [totalPage, setTotalPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const isFirstRun = useRef(true);
+  const dropdownRef = useRef();
 
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
       getLoginData();
-      GetNewProductData();
     }
   });
 
   async function getLoginData() {
+    const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
+    setPrefStoreId(store_id);
+
     const jsonValue = await AsyncStorageLib.getItem("loginInfo");
     const loginInfo = jsonValue != null ? JSON.parse(jsonValue) : null;
     setLoginInfo(loginInfo);
+
+    GetNewProductData(true, 1, store_id);
   }
-  const GetNewProductData = async () => {
-    setLoader(true);
-    const store_id = await AsyncStorageLib.getItem(PREF_STORE_ID);
-    setPrefStoreId(store_id);
+  const GetNewProductData = async (isLoader = true, currentPage, store_id) => {
+    setLoader(isLoader);
     const apiClass = new APICallService(PRODUCT_LIST, {
-      page: 1,
+      page: currentPage,
       categories: props.route.params.categoryDetail.slug,
       store_id: store_id,
     });
@@ -59,7 +66,13 @@ const MyComponent = (props) => {
       .then(async function (res) {
         setLoader(false);
         if (validateResponse(res)) {
-          setNewData(res.data.data);
+          if (currentPage == 1) {
+            setNewData(res.data.data);
+          } else {
+            setLoadMoreLoader(false);
+            setNewData([...newData, ...res.data.data]);
+          }
+          setTotalPage(res.data.last_page);
         } else {
           setNewData([]);
         }
@@ -179,6 +192,19 @@ const MyComponent = (props) => {
             // addToWishList={(id) => addToWishList(id)}
           />
         )}
+        onEndReached={() => {
+          if (!isShowLoader && !isLoadMoreLoader && totalPage > currentPage) {
+            let currentP = currentPage + 1;
+            setLoadMoreLoader(true);
+            setCurrentPage(currentP);
+            GetNewProductData(false, currentP, prefStoreId);
+          }
+        }}
+        ListFooterComponent={() => {
+          return isLoadMoreLoader ? (
+            <ActivityIndicator size="large" color={Colors.Background} />
+          ) : null;
+        }}
       />
       <NoDataView
         isVisible={newData.length == 0}

@@ -16,7 +16,11 @@ import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
 import NoDataView from "../../../Components/NoDataView";
 import Colors from "../../../Utility/Colors";
-import { PREF_STORE_ID, STORE_LOCATOR } from "../../../Utility/Constants";
+import {
+  PREF_STORE_ID,
+  PREF_STORE_SEARCH,
+  STORE_LOCATOR,
+} from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
@@ -36,8 +40,8 @@ const MyComponent = (props) => {
   useEffect(() => {
     if (isFirstRun.current) {
       isFirstRun.current = false;
-      APICallListing();
       setSelectedStore();
+      APICallListing();
     }
   });
 
@@ -54,7 +58,6 @@ const MyComponent = (props) => {
     apiClass
       .callAPI()
       .then(async function (res) {
-        setLoader(false);
         if (validateResponse(res)) {
           const list = [...res.data.items];
           let tempList = [];
@@ -82,6 +85,14 @@ const MyComponent = (props) => {
             });
 
           setPinCodeList(pinList);
+          setTimeout(async () => {
+            setLoader(false);
+            const searchT = await AsyncStorageLib.getItem(PREF_STORE_SEARCH);
+            if (searchT != null) {
+              setSearchText("" + JSON.parse(searchT));
+              setSearchStoreListing(tempList);
+            }
+          }, 500);
         }
       })
       .catch((err) => {
@@ -123,6 +134,10 @@ const MyComponent = (props) => {
           await AsyncStorageLib.setItem(
             PREF_STORE_ID,
             JSON.stringify(item?.id)
+          );
+          await AsyncStorageLib.setItem(
+            PREF_STORE_SEARCH,
+            JSON.stringify(searchText)
           );
           props.navigation.goBack();
         }}
@@ -169,10 +184,12 @@ const MyComponent = (props) => {
           <Text style={styles.text}>{Strings.Enter_pincode}</Text>
         </View>
         <CustomInput
+          value={searchText}
           input={styles.input}
           keyboardType={"numeric"}
           onChangeText={(text) => searchFilter(text)}
         />
+
         {searchStoreListing.length > 0 ? (
           <FlatList
             showsVerticalScrollIndicator={false}

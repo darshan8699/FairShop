@@ -2,6 +2,7 @@ export const UPDATE_CART_COUNT = "UPDATE_CART_COUNT";
 export const PREF_TOKEN = "Token";
 export const PREF_USER_ID = "PREF_USER_ID";
 export const PREF_STORE_ID = "PREF_STORE_ID";
+export const PREF_STORE_SEARCH = "PREF_STORE_SEARCH";
 export const PREF_LOGIN_INFO = "loginInfo";
 export const ALL_WISHLIST = "ALL_WISHLIST";
 export const ALL_CART = "ALL_CART";

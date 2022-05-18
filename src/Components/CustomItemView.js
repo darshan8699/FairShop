@@ -66,12 +66,12 @@ const CustomItemView = (props) => {
   }
 
   const addToWishList = (product_item_code) => {
-    AsyncStorage.getItem(ALL_WISHLIST, (err, result) => {
+    AsyncStorage.getItem(ALL_WISHLIST, async (err, result) => {
       const id = [product_item_code];
       if (result !== null && result != product_item_code) {
         if (JSON.parse(result).includes(product_item_code) == false) {
           var newIds = JSON.parse(result).concat(id);
-          AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(newIds));
+          await AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(newIds));
           const apiClass = new APICallService(ADD_WISHLIST, {
             product_item_code: newIds,
           });
@@ -92,7 +92,10 @@ const CustomItemView = (props) => {
             alteredItems = favItemArray.filter(function (e) {
               return e !== product_item_code;
             });
-            AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(alteredItems));
+            await AsyncStorage.setItem(
+              ALL_WISHLIST,
+              JSON.stringify(alteredItems)
+            );
             const apiClass = new APICallService(ADD_WISHLIST, {
               product_item_code: alteredItems,
             });
@@ -112,7 +115,7 @@ const CustomItemView = (props) => {
           }
         }
       } else {
-        AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(id));
+        await AsyncStorage.setItem(ALL_WISHLIST, JSON.stringify(id));
         const apiClass = new APICallService(ADD_WISHLIST, {
           product_item_code: id,
         });

@@ -433,8 +433,14 @@ const MyComponent = (props) => {
         {productData.brand && (
           <Text style={styles.brand}>Brand : {productData.brand}</Text>
         )}
+
         <View style={styles.priceView}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
             <Text style={styles.price}>₹{productData.rsp}</Text>
             {productData.rsp < productData.mrp && (
               <Text style={styles.totalprice}>₹{productData.mrp}</Text>

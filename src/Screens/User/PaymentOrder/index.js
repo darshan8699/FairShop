@@ -13,11 +13,13 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { EventRegister } from "react-native-event-listeners";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import RazorpayCheckout from "react-native-razorpay";
 import { useDispatch, useSelector } from "react-redux";
 import APICallService from "../../../API/APICallService";
+import { Regular } from "../../../Assets/fonts";
 import { Images } from "../../../Assets/images";
 import CustomInput from "../../../Components/CustomInput";
 import CustomText from "../../../Components/CustomText";
@@ -89,6 +91,9 @@ const PaymentOrder = (props) => {
   const [billingCity, setBillingCity] = useState("");
   const [billingState, setBillingState] = useState("");
   const [billingPincode, setBillingPincode] = useState("");
+
+  const [sameAsSelected, setSameAsSelected] = useState(false);
+
   const [promoCode, setPromocode] = useState("");
   const isFirstRun = useRef(true);
   const { cartListReducer } = useSelector((state) => ({
@@ -763,13 +768,19 @@ const PaymentOrder = (props) => {
     >
       <CustomText name={Strings.Receiver_name} marginTop={Size.FindSize(15)} />
       <CustomInput
-        onChangeText={(text) => setShippingFullName(text)}
+        onChangeText={(text) => {
+          setShippingFullName(text);
+          if (sameAsSelected) setBillingFullName(text);
+        }}
         value={shippingFullName}
       />
 
       <CustomText name={Strings.Contact_No} marginTop={Size.FindSize(25)} />
       <CustomInput
-        onChangeText={(text) => setShippingContact(text)}
+        onChangeText={(text) => {
+          setShippingContact(text);
+          if (sameAsSelected) setBillingContact(text);
+        }}
         value={shippingContact}
         keyboardType="numeric"
         placeHolder={"+91"}
@@ -777,21 +788,30 @@ const PaymentOrder = (props) => {
       />
       <CustomText name={Strings.Email} marginTop={Size.FindSize(25)} />
       <CustomInput
-        onChangeText={(text) => setShippingEmail(text)}
+        onChangeText={(text) => {
+          setShippingEmail(text);
+          if (sameAsSelected) setBillingEmail(text);
+        }}
         keyboardType={"email-address"}
         autoCapitalize={"none"}
         value={shippingEmail}
       />
       <CustomText name={Strings.Address} marginTop={Size.FindSize(25)} />
       <CustomInput
-        onChangeText={(text) => setShippingAddress(text)}
+        onChangeText={(text) => {
+          setShippingAddress(text);
+          if (sameAsSelected) setBillingAddress(text);
+        }}
         value={shippingAddress}
       />
       <View style={{ flexDirection: "row" }}>
         <View style={{ flex: 1 }}>
           <CustomText name={Strings.City} marginTop={Size.FindSize(25)} />
           <CustomInput
-            onChangeText={(text) => setShippingCity(text)}
+            onChangeText={(text) => {
+              setShippingCity(text);
+              if (sameAsSelected) setBillingCity(text);
+            }}
             value={shippingCity}
           />
         </View>
@@ -799,7 +819,10 @@ const PaymentOrder = (props) => {
         <View style={{ flex: 1 }}>
           <CustomText name={Strings.State} marginTop={Size.FindSize(25)} />
           <CustomInput
-            onChangeText={(text) => setShippingState(text)}
+            onChangeText={(text) => {
+              setShippingState(text);
+              if (sameAsSelected) setBillingState(text);
+            }}
             value={shippingState}
           />
         </View>
@@ -814,6 +837,7 @@ const PaymentOrder = (props) => {
                   servicablePincode.includes(text.trim())
                 );
               }
+              if (sameAsSelected) setBillingPincode(text);
             }}
             value={shippingPincode}
             keyboardType="numeric"
@@ -843,10 +867,44 @@ const PaymentOrder = (props) => {
         marginTop: Size.FindSize(10),
       }}
     >
-      <CustomText name={Strings.Receiver_name} marginTop={Size.FindSize(15)} />
+      <BouncyCheckbox
+        text={Strings.SameAsShippingAddress}
+        textStyle={{
+          color: Colors.text,
+          fontSize: Size.FindSize(14),
+          fontFamily: Regular,
+          textDecorationLine: "none",
+        }}
+        iconStyle={{ borderColor: Colors.Background }}
+        fillColor={Colors.Background}
+        style={{ marginTop: Size.FindSize(15) }}
+        onPress={() => {
+          if (sameAsSelected) {
+            setBillingAddress("");
+            setBillingFullName("");
+            setBillingContact("");
+            setBillingEmail("");
+            setBillingCity("");
+            setBillingState("");
+            setBillingPincode("");
+          } else {
+            setBillingAddress(shippingAddress);
+            setBillingFullName(shippingFullName);
+            setBillingContact(shippingContact);
+            setBillingEmail(shippingEmail);
+            setBillingCity(shippingCity);
+            setBillingState(shippingState);
+            setBillingPincode(shippingPincode);
+          }
+          setSameAsSelected(!sameAsSelected);
+        }}
+      />
+
+      <CustomText name={Strings.Receiver_name} marginTop={Size.FindSize(25)} />
       <CustomInput
         onChangeText={(text) => setBillingFullName(text)}
         value={billingFullName}
+        enable={!sameAsSelected}
       />
 
       <CustomText name={Strings.Contact_No} marginTop={Size.FindSize(25)} />
@@ -856,6 +914,7 @@ const PaymentOrder = (props) => {
         keyboardType="numeric"
         placeHolder={"+91"}
         isPhone
+        enable={!sameAsSelected}
       />
       <CustomText name={Strings.Email} marginTop={Size.FindSize(25)} />
       <CustomInput
@@ -863,11 +922,13 @@ const PaymentOrder = (props) => {
         keyboardType={"email-address"}
         autoCapitalize={"none"}
         value={billingEmail}
+        enable={!sameAsSelected}
       />
       <CustomText name={Strings.Address} marginTop={Size.FindSize(25)} />
       <CustomInput
         onChangeText={(text) => setBillingAddress(text)}
         value={billingAddress}
+        enable={!sameAsSelected}
       />
       <View style={{ flexDirection: "row" }}>
         <View style={{ flex: 1 }}>
@@ -875,6 +936,7 @@ const PaymentOrder = (props) => {
           <CustomInput
             onChangeText={(text) => setBillingCity(text)}
             value={billingCity}
+            enable={!sameAsSelected}
           />
         </View>
         <View style={{ width: Size.FindSize(5) }} />
@@ -883,6 +945,7 @@ const PaymentOrder = (props) => {
           <CustomInput
             onChangeText={(text) => setBillingState(text)}
             value={billingState}
+            enable={!sameAsSelected}
           />
         </View>
         <View style={{ width: Size.FindSize(5) }} />
@@ -892,6 +955,7 @@ const PaymentOrder = (props) => {
             onChangeText={(text) => setBillingPincode(text)}
             value={billingPincode}
             keyboardType="numeric"
+            enable={!sameAsSelected}
           />
         </View>
       </View>

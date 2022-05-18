@@ -12,12 +12,12 @@ export default styles = StyleSheet.create({
   imageView: {
     margin: Size.FindSize(13),
     borderWidth: Size.FindSize(1),
-    height: Size.FindSize(366),
+    height: Size.FindSize(250),
     justifyContent: "center",
     borderColor: Colors.cookBorder,
   },
   image: {
-    height: Size.FindSize(309),
+    height: Size.FindSize(200),
     margin: Size.FindSize(28),
   },
   slideImageView: {
@@ -52,7 +52,7 @@ export default styles = StyleSheet.create({
   },
   title: {
     color: Colors.Background,
-    fontSize: Size.FindSize(36),
+    fontSize: Size.FindSize(28),
     fontFamily: Bold,
     marginTop: Size.FindSize(31),
   },
@@ -68,7 +68,6 @@ export default styles = StyleSheet.create({
     marginTop: Size.FindSize(10),
   },
   price: {
-    marginVertical: Size.FindSize(10),
     color: Colors.Background,
     fontSize: Size.FindSize(41),
     fontFamily: Regular,

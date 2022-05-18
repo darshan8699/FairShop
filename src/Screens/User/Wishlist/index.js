@@ -7,9 +7,12 @@ import CustomItemView from "../../../Components/CustomItemView";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
 import NoDataView from "../../../Components/NoDataView";
-import { ALL_WISHLIST, WHISHLIST } from "../../../Utility/Constants";
+import {
+  ALL_WISHLIST,
+  PREF_STORE_ID,
+  WHISHLIST,
+} from "../../../Utility/Constants";
 import { showErrorMessage, validateResponse } from "../../../Utility/Helper";
-import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
