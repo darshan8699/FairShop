@@ -183,7 +183,7 @@ const MyComponent = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           showSuccessMessage(res.message);
-          // props?.route?.params?.onRefresh();
+          props?.route?.params?.onRefresh();
           props.navigation.goBack();
         }
       })

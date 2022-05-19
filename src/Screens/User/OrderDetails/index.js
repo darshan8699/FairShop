@@ -5,6 +5,7 @@ import { FlatList, Image, ScrollView, Text, View } from "react-native";
 import Header2 from "../../../Components/Header2";
 import Colors from "../../../Utility/Colors";
 import { NO_IMAGE_URL } from "../../../Utility/Constants";
+import { getFormateTimeString } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
@@ -69,6 +70,61 @@ const MyComponent = (props) => {
           <Text style={styles.normalText}>
             {moment(orderDetails?.created_at).format("YYYY-MM-DD hh:mm:ss A")}
           </Text>
+          {orderDetails?.order_accepted_at ? (
+            <>
+              <Text
+                style={[
+                  styles.boldText,
+                  { marginTop: Size.FindSize(10), marginBottom: 0 },
+                ]}
+              >
+                {"Order Accepted"}
+              </Text>
+              <Text style={styles.normalText}>
+                {moment(orderDetails?.order_accepted_at).format(
+                  "YYYY-MM-DD hh:mm:ss A"
+                )}
+              </Text>
+            </>
+          ) : null}
+
+          {orderDetails?.delivery_time ? (
+            <>
+              <Text
+                style={[
+                  styles.boldText,
+                  { marginTop: Size.FindSize(10), marginBottom: 0 },
+                ]}
+              >
+                {"TAT"}
+              </Text>
+              <Text style={styles.normalText}>
+                {getFormateTimeString(
+                  orderDetails?.delivery_time,
+                  orderDetails?.order_accepted_at
+                )}
+              </Text>
+            </>
+          ) : null}
+
+          {orderDetails.order_accepted_at ? (
+            <View>
+              <Text
+                style={[
+                  styles.boldText,
+                  { marginTop: Size.FindSize(10), marginBottom: 0 },
+                ]}
+              >
+                {"Order Delivered"}
+              </Text>
+              <Text style={styles.normalText}>
+                {moment(orderDetails?.delivery_time).format(
+                  "YYYY-MM-DD hh:mm:ss A"
+                )}
+              </Text>
+            </View>
+          ) : null}
+
           <Text
             style={[
               styles.boldText,

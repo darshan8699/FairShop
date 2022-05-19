@@ -760,7 +760,7 @@ const PaymentOrder = (props) => {
   const renderShippingAddress = () => (
     <View
       style={{
-        backgroundColor: Colors.line,
+        backgroundColor: Colors.headerline,
         paddingBottom: Size.FindSize(15),
         paddingHorizontal: Size.FindSize(10),
         marginTop: Size.FindSize(10),
@@ -861,7 +861,7 @@ const PaymentOrder = (props) => {
   const renderBillingAddress = () => (
     <View
       style={{
-        backgroundColor: Colors.line,
+        backgroundColor: Colors.headerline,
         paddingBottom: Size.FindSize(15),
         paddingHorizontal: Size.FindSize(10),
         marginTop: Size.FindSize(10),
@@ -878,6 +878,7 @@ const PaymentOrder = (props) => {
         iconStyle={{ borderColor: Colors.Background }}
         fillColor={Colors.Background}
         style={{ marginTop: Size.FindSize(15) }}
+        activeOpacity={1}
         onPress={() => {
           if (sameAsSelected) {
             setBillingAddress("");
@@ -999,7 +1000,7 @@ const PaymentOrder = (props) => {
                 }}
                 marginTop={Size.FindSize(25)}
               />
-              {addressList.length > 0 && (
+              {addressList.length > 0 ? (
                 <View>
                   <FlatList
                     showsHorizontalScrollIndicator={false}
@@ -1019,6 +1020,23 @@ const PaymentOrder = (props) => {
                     />
                   ) : null}
                 </View>
+              ) : (
+                <View style={styles.headerView}>
+                  <TouchableOpacity
+                    style={styles.addbuttonView}
+                    onPress={() =>
+                      Navigator.navigate(Route.Address, {
+                        onRefresh: () => {
+                          APICallGetAddressData();
+                        },
+                      })
+                    }
+                  >
+                    <Text style={styles.addbuttontext}>
+                      {"+ " + Strings.Add}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               )}
 
               {loginData ? null : renderShippingAddress()}
@@ -1030,7 +1048,7 @@ const PaymentOrder = (props) => {
                   paddingHorizontal: Size.FindSize(5),
                 }}
               />
-              {addressList.length > 0 && (
+              {addressList.length > 0 ? (
                 <FlatList
                   showsHorizontalScrollIndicator={false}
                   data={addressList}
@@ -1040,6 +1058,23 @@ const PaymentOrder = (props) => {
                   nestedScrollEnabled={false}
                   bounces={false}
                 />
+              ) : (
+                <View style={styles.headerView}>
+                  <TouchableOpacity
+                    style={styles.addbuttonView}
+                    onPress={() =>
+                      Navigator.navigate(Route.Address, {
+                        onRefresh: () => {
+                          APICallGetAddressData();
+                        },
+                      })
+                    }
+                  >
+                    <Text style={styles.addbuttontext}>
+                      {"+ " + Strings.Add}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               )}
               {loginData ? null : renderBillingAddress()}
             </View>

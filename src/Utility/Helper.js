@@ -113,3 +113,42 @@ export async function checkFavItem(itemCode) {
     }
   });
 }
+
+export function getFormateTimeString(date1, date2) {
+  // var t1 = new Date("2021-08-26T09:15:04.000Z");
+  // var t2 = new Date();
+  // var dif = t1.getTime() - t2.getTime();
+  var now = moment(new Date(date1)); //todays date
+  var end = moment(new Date(date2)); // another date
+  var duration = moment.duration(now.diff(end));
+  var seconds = duration.asSeconds();
+  var minutes = duration.asMinutes();
+  var hours = duration.asHours();
+  var days = duration.asDays();
+  var weeks = duration.asWeeks();
+  var months = duration.asMonths();
+  var years = duration.asYears();
+  var formattedString = "";
+
+  if (seconds <= 59) formattedString = Math.round(seconds) + " seconds ";
+  else if (minutes <= 59)
+    formattedString =
+      Math.round(minutes) +
+      (Math.round(minutes) > 1 ? " minutes " : " minute ");
+  else if (hours <= 24)
+    formattedString =
+      Math.round(hours) + (Math.round(hours) > 1 ? " hours " : " hour ");
+  else if (days <= 31)
+    formattedString =
+      Math.round(days) + (Math.round(days) > 1 ? " days " : " day ");
+  else if (weeks <= 1)
+    formattedString =
+      Math.round(weeks) + (Math.round(weeks) > 1 ? " weeks " : " week ");
+  else if (months <= 12)
+    formattedString =
+      Math.round(months) + (Math.round(months) > 1 ? " months " : " month ");
+  else if (years <= 1)
+    formattedString =
+      Math.round(years) + (Math.round(years) > 1 ? " years " : " year ");
+  return formattedString;
+}

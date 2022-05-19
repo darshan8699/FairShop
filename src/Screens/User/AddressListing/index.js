@@ -1,18 +1,18 @@
 //import liraries
 import React, { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   FlatList,
   Image,
   Text,
   TouchableOpacity,
   View,
-  Alert,
 } from "react-native";
-import { clockRunning, log } from "react-native-reanimated";
 import APICallService from "../../../API/APICallService";
 import { Images } from "../../../Assets/images";
 import Header from "../../../Components/Header";
 import Loader2 from "../../../Components/Loader2";
+import NoDataView from "../../../Components/NoDataView";
 import { Route } from "../../../Navigation/Routes";
 import Colors from "../../../Utility/Colors";
 import { DELETE_ADDRESS, MY_ADDRESS } from "../../../Utility/Constants";
@@ -23,6 +23,7 @@ import {
 } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import Navigator from "../../../Utility/Navigator";
+import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
 import styles from "./styles";
 
@@ -199,6 +200,12 @@ const AddressListing = (props) => {
         data={data}
         renderItem={renderAddressList}
         style={styles.addressList}
+      />
+      <NoDataView
+        isVisible={data.length == 0}
+        title={Strings.No_data_found}
+        containerStyle={{ height: Size.height / 2 }}
+        isLoader={isShowLoader}
       />
     </View>
   );

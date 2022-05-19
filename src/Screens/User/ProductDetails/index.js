@@ -42,6 +42,7 @@ import Logger from "../../../Utility/Logger";
 import Navigator from "../../../Utility/Navigator";
 import { Size } from "../../../Utility/sizes";
 import Strings from "../../../Utility/Strings";
+import { isTextNotEmpty } from "../../../Utility/Validation";
 import styles from "./styles";
 // create a component
 const MyComponent = (props) => {
@@ -112,8 +113,10 @@ const MyComponent = (props) => {
         setLoader(false);
         if (validateResponse(res)) {
           setProductData(res.data.item);
-          setImageArr(res.data.item.images);
+
           if (res.data.item.images) {
+            setImageArr(res.data.item.images);
+            console.log(res.data.item.images[0].url);
             setcurrentImage(res.data.item.images[0].url);
           }
         }
@@ -366,17 +369,15 @@ const MyComponent = (props) => {
       >
         <View style={styles.imageView}>
           <Image
-            source={
-              currentImage
-                ? {
-                    uri: currentImage,
-                  }
-                : Images.placeholder
-            }
+            source={{
+              uri: currentImage ? currentImage : NO_IMAGE_URL,
+            }}
             resizeMode="contain"
             style={[
               styles.image,
-              { alignSelf: currentImage ? null : "center" },
+              {
+                alignSelf: currentImage ? null : "center",
+              },
             ]}
           />
         </View>

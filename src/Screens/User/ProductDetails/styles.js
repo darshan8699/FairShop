@@ -18,6 +18,7 @@ export default styles = StyleSheet.create({
   },
   image: {
     height: Size.FindSize(200),
+    width: "100%",
     margin: Size.FindSize(28),
   },
   slideImageView: {

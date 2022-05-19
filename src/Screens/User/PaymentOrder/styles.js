@@ -8,12 +8,32 @@ export default styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
   },
+  headerView: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flex: 1,
+    paddingHorizontal: Size.FindSize(10),
+    marginTop: Size.FindSize(15),
+  },
   headerText: {
     fontSize: Size.FindSize(24),
     fontFamily: SemiBold,
     color: Colors.headerText,
     marginTop: Size.FindSize(20),
     paddingHorizontal: Size.FindSize(15),
+  },
+  addbuttonView: {
+    paddingHorizontal: Size.FindSize(20),
+    paddingVertical: Size.FindSize(10),
+    borderWidth: Size.FindSize(1),
+    borderColor: Colors.Background,
+    borderStyle: "dashed",
+    flex: 1,
+    alignItems: "center",
+  },
+  addbuttontext: {
+    color: Colors.Background,
   },
   icon: {
     height: Size.FindSize(78),
