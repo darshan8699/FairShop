@@ -89,4 +89,20 @@ export default styles = StyleSheet.create({
   childContainer: {
     padding: Size.FindSize(15),
   },
+  invoiceView: {
+    borderWidth: Size.FindSize(1),
+    borderColor: Colors.Background,
+    borderStyle: "dashed",
+
+    alignItems: "center",
+    backgroundColor: "red",
+  },
+  headerView: {
+    alignSelf: "flex-end",
+    alignItems: "flex-end",
+    marginTop: Size.FindSize(15),
+    borderWidth: Size.FindSize(1),
+    borderColor: Colors.Background,
+    borderStyle: "dashed",
+  },
 });

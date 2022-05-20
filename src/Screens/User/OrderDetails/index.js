@@ -1,7 +1,15 @@
 //import liraries
 import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Image, ScrollView, Text, View } from "react-native";
+import {
+  TouchableOpacity,
+  FlatList,
+  Image,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
+
 import Header2 from "../../../Components/Header2";
 import Colors from "../../../Utility/Colors";
 import { NO_IMAGE_URL } from "../../../Utility/Constants";
@@ -59,6 +67,21 @@ const MyComponent = (props) => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.childContainer}>
+          {orderDetails?.delivery_time && (
+            <TouchableOpacity>
+              <View style={styles.headerView}>
+                <Text
+                  style={[
+                    styles.boldText,
+                    { padding: Size.FindSize(10), fontSize: Size.FindSize(12) },
+                  ]}
+                >
+                  {"Download Invoice"}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
+
           <Text
             style={[
               styles.boldText,

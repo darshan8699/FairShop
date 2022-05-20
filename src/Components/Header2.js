@@ -15,6 +15,7 @@ const Header2 = (props) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{text}</Text>
+
       <TouchableOpacity
         style={styles.iconView}
         onPress={() => {
