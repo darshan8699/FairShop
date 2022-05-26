@@ -2,17 +2,17 @@
 import moment from "moment";
 import React, { useEffect, useRef, useState } from "react";
 import {
-  TouchableOpacity,
   FlatList,
   Image,
+  Linking,
   ScrollView,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
-
 import Header2 from "../../../Components/Header2";
 import Colors from "../../../Utility/Colors";
-import { NO_IMAGE_URL } from "../../../Utility/Constants";
+import { BASE_URL, NO_IMAGE_URL } from "../../../Utility/Constants";
 import { getFormateTimeString } from "../../../Utility/Helper";
 import Logger from "../../../Utility/Logger";
 import { Size } from "../../../Utility/sizes";
@@ -68,7 +68,11 @@ const MyComponent = (props) => {
       >
         <View style={styles.childContainer}>
           {orderDetails?.delivery_time && (
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                Linking.openURL(BASE_URL + "/order/invoice/" + orderDetails.id);
+              }}
+            >
               <View style={styles.headerView}>
                 <Text
                   style={[
@@ -122,15 +126,23 @@ const MyComponent = (props) => {
                 {"TAT"}
               </Text>
               <Text style={styles.normalText}>
-                {getFormateTimeString(
+                {/* {getFormateTimeString(
                   orderDetails?.delivery_time,
                   orderDetails?.order_accepted_at
-                )}
+                )} */}
+                {moment
+                  .duration(
+                    moment(orderDetails.delivery_time).diff(
+                      moment(orderDetails.order_accepted_at)
+                    )
+                  )
+                  .locale("en")
+                  .humanize()}
               </Text>
             </>
           ) : null}
 
-          {orderDetails.order_accepted_at ? (
+          {orderDetails.delivery_time ? (
             <View>
               <Text
                 style={[
